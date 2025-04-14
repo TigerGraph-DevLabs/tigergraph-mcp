@@ -1,0 +1,90 @@
+# Copyright 2025 TigerGraph Inc.
+# Licensed under the Apache License, Version 2.0.
+# See the LICENSE file or https://www.apache.org/licenses/LICENSE-2.0
+#
+# Permission is granted to use, copy, modify, and distribute this software
+# under the License. The software is provided "AS IS", without warranty.
+
+from typing import Optional, List, Tuple, Dict, Any
+from pydantic import Field
+from mcp.types import Tool, TextContent
+
+from tigergraphx import Graph
+
+from tigergraph_mcp.tools import TigerGraphToolNames
+from tigergraph_mcp.tools.base_tool_input import (
+    BaseToolInput,
+    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+)
+
+
+class AddNodesToolInput(BaseToolInput):
+    """Input schema for adding multiple nodes to a graph."""
+
+    graph_name: str = Field(
+        ..., description="The name of the graph where the nodes will be added."
+    )
+    nodes_for_adding: List[str | int] | List[Tuple[str | int, Dict[str, Any]]] = Field(
+        ...,
+        description="A list of node IDs or (node ID, attribute dict) pairs to be added.",
+    )
+    node_type: Optional[str] = Field(
+        None, description="The type of the nodes (optional)."
+    )
+    common_attributes: Optional[Dict[str, Any]] = Field(
+        default_factory=dict,
+        description="Attributes applied to all nodes in the list.",
+    )
+
+
+tools = [
+    Tool(
+        name=TigerGraphToolNames.ADD_NODES,
+        description="""Adds multiple nodes to a TigerGraph graph using TigerGraphX.
+
+Example input:
+```python
+{
+  "graph_name": "SocialGraph",
+  "nodes_for_adding": [
+    ("Alice", {"age": 30, "gender": "Female"}),
+    ("Mike", {"age": 29})
+  ],
+  "node_type": "Person",
+  "common_attributes": {"city": "New York"},
+}
+```
+
+**`tigergraph_connection_config`** must also be provided to establish the connection to TigerGraph.
+
+### Configuration Options:
+The `tigergraph_connection_config` is required to authenticate and configure the connection to the TigerGraph instance. It can either be explicitly provided or populated via environment variables (recommended). Do not mix both methods.
+
+For more details on configuring `tigergraph_connection_config`, please refer to the following:
+"""
+        + "\n\n"
+        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION.strip(),
+        inputSchema=AddNodesToolInput.model_json_schema(),
+    )
+]
+
+
+async def add_nodes(
+    graph_name: str,
+    nodes_for_adding: List[str | int] | List[Tuple[str | int, Dict[str, Any]]],
+    node_type: Optional[str] = None,
+    common_attributes: Optional[Dict[str, Any]] = None,
+    tigergraph_connection_config: Optional[Dict] = None,
+) -> list[TextContent]:
+    try:
+        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        count = graph.add_nodes_from(
+            nodes_for_adding, node_type, **(common_attributes or {})
+        )
+        if count:
+            result = f"✅ Successfully added {str(count)} nodes of type '{node_type or 'default'}' to graph '{graph_name}'."
+        else:
+            result = f"❌ Failed to add nodes to graph '{graph_name}'"
+    except Exception as e:
+        result = f"❌ Failed to add nodes to graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=result)]

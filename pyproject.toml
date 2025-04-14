@@ -1,0 +1,34 @@
+[project]
+name = "tigergraph-mcp"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "xunalei.lin",email = "xuanlei.lin@tigergraph.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+
+dependencies = [
+    "mcp (>=1.6.0,<2.0.0)",
+    "tigergraphx (>=0.2.2,<0.3.0)",
+]
+
+[tool.poetry.group.dev.dependencies]
+poethepoet = "^0.33.1"
+pytest = "^8.3.5"
+pytest-asyncio = "^0.26.0"
+pytest-html = "^4.1.1"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[project.scripts]
+tigergraph-mcp = "tigergraph_mcp.main:main"
+
+[tool.poe.tasks]
+# Start MCP Server
+start_mcp_server = "python -m tigergraph_mcp.main"
+
+# Integration Test
+integration_test = {cmd = "pytest -vs ./tests/integration --html=htmlcov/it-report.html", env = {PYTHONDONTWRITEBYTECODE = "1"}}
