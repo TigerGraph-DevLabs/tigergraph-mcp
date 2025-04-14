@@ -151,34 +151,21 @@ class TestNodeTools(BaseGraphFixture):
         async with stdio_client(self.server_params) as (read, write):
             async with ClientSession(read, write) as session:
                 await session.initialize()
-                # Succeed
-                G = Graph.from_db(self.graph_name, self.tigergraph_connection_config)
-                G.add_nodes_from(
-                    nodes_for_adding=[
-                        ("User_E", {"name": "John"}),
-                        ("User_F", {"name": "Alice"}),
-                    ],
-                    node_type="User",
-                    age=30,
+                result = await session.call_tool(
+                    TigerGraphToolNames.ADD_NODES,
+                    arguments={
+                        "graph_name": self.graph_name,
+                        "nodes_for_adding": [
+                            ("User_E", {"name": "John"}),
+                            ("User_F", {"name": "Alice"}),
+                        ],
+                        "node_type": "User",
+                        "common_attributes": {"age": 30},
+                        "tigergraph_connection_config": self.tigergraph_connection_config,
+                    },
                 )
 
-                ## Failed
-                # result = await session.call_tool(
-                #     TigerGraphToolNames.ADD_NODES,
-                #     arguments={
-                #         "graph_name": self.graph_name,
-                #         "nodes_for_adding": [
-                #             # "User_E",
-                #             # "User_F",
-                #             ("User_E", {"name": "John"}),
-                #             ("User_F", {"name": "Alice"}),
-                #         ],
-                #         "node_type": "User",
-                #         "common_attributes": {"age": 30},
-                #         "tigergraph_connection_config": self.tigergraph_connection_config,
-                #     },
-                # )
-                # assert "Successfully added 2 nodes" in str(result)
+                assert "Successfully added 2 nodes" in str(result)
 
                 assert self.G.has_node("User_E", "User")
                 assert self.G.has_node("User_F", "User")

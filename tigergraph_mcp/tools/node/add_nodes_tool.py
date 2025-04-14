@@ -77,9 +77,26 @@ async def add_nodes(
     tigergraph_connection_config: Optional[Dict] = None,
 ) -> list[TextContent]:
     try:
+        # Normalize the nodes_for_adding list to ensure each item is a (node_id, attributes_dict) tuple.
+        # This is necessary because JSON doesn't distinguish between lists and tuples — any tuple
+        # (e.g., ("User_A", {"age": 25})) sent by the client will arrive as a list (["User_A", {"age": 25}]).
+        # To handle this gracefully, we treat any 2-element list or tuple where the second item is a dict
+        # as a valid node+attribute pair, and any string/int as a bare node ID with no attributes.
+        normalized_nodes = []
+        for item in nodes_for_adding:
+            if isinstance(item, (str, int)):
+                normalized_nodes.append((item, {}))
+            elif isinstance(item, (list, tuple)) and len(item) == 2:
+                node_id, attributes = item
+                if not isinstance(attributes, dict):
+                    raise ValueError("Each node's attributes must be a dictionary.")
+                normalized_nodes.append((node_id, attributes))
+            else:
+                raise ValueError("Each item in nodes_for_adding must be a node ID or [node ID, attribute dict].")
+
         graph = Graph.from_db(graph_name, tigergraph_connection_config)
         count = graph.add_nodes_from(
-            nodes_for_adding, node_type, **(common_attributes or {})
+            normalized_nodes, node_type, **(common_attributes or {})
         )
         if count:
             result = f"✅ Successfully added {str(count)} nodes of type '{node_type or 'default'}' to graph '{graph_name}'."
