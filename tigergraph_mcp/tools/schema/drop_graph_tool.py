@@ -11,7 +11,7 @@ from mcp.types import Tool, TextContent
 
 from tigergraphx import Graph
 
-from tigergraph_mcp.tools import TigerGraphToolNames
+from tigergraph_mcp.tools import TigerGraphToolName
 from tigergraph_mcp.tools.base_tool_input import (
     BaseToolInput,
     TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
@@ -26,7 +26,7 @@ class GraphDropToolInput(BaseToolInput):
 
 tools = [
     Tool(
-        name=TigerGraphToolNames.DROP_GRAPH,
+        name=TigerGraphToolName.DROP_GRAPH,
         description="""Drops a graph inside TigerGraph using TigerGraphX.
 
 Example input:

@@ -5,7 +5,7 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from .tigergraph_tool_names import TigerGraphToolNames
+from .tigergraph_tool_names import TigerGraphToolName
 from .tool_registry import get_all_tools
 from .schema import (
     create_schema,
@@ -26,7 +26,7 @@ from .node import (
 
 __all__ = [
     # TigerGraph Tool Names
-    "TigerGraphToolNames",
+    "TigerGraphToolName",
     # Get All Tools
     "get_all_tools",
     # Tools for Schema Operations

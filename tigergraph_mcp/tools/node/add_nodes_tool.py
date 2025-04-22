@@ -11,7 +11,7 @@ from mcp.types import Tool, TextContent
 
 from tigergraphx import Graph
 
-from tigergraph_mcp.tools import TigerGraphToolNames
+from tigergraph_mcp.tools import TigerGraphToolName
 from tigergraph_mcp.tools.base_tool_input import (
     BaseToolInput,
     TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
@@ -39,7 +39,7 @@ class AddNodesToolInput(BaseToolInput):
 
 tools = [
     Tool(
-        name=TigerGraphToolNames.ADD_NODES,
+        name=TigerGraphToolName.ADD_NODES,
         description="""Adds multiple nodes to a TigerGraph graph using TigerGraphX.
 
 Example input:

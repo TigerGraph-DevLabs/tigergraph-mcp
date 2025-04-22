@@ -1,0 +1,19 @@
+select_tool_task:
+  description: >
+    Analyze the conversation history, focusing especially on the most recent entries:
+
+    "{conversation_history}"
+
+    The later entries in the list represent the most recent and relevant parts of the conversation between the user and the assistant, 
+    and should be given higher priority when interpreting the user's intent, especially the last instruction from the user.
+
+    From the available tools:
+    {tools}
+
+    Select the most appropriate tool that can fulfill the user's current intent. If no tools match the instruction, return "None".
+
+  expected_output: >
+    A single tool name from the provided list: {tools}, or None (without quotes) if none of them are appropriate for the instruction. 
+    Do not include any surrounding quotes in the output.
+
+  agent: tool_selector_agent

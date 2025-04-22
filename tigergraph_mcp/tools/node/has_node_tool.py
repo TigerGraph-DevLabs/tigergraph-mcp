@@ -11,7 +11,7 @@ from mcp.types import Tool, TextContent
 
 from tigergraphx import Graph
 
-from tigergraph_mcp.tools import TigerGraphToolNames
+from tigergraph_mcp.tools import TigerGraphToolName
 from tigergraph_mcp.tools.base_tool_input import (
     BaseToolInput,
     TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
@@ -32,7 +32,7 @@ class HasNodeToolInput(BaseToolInput):
 
 tools = [
     Tool(
-        name=TigerGraphToolNames.HAS_NODE,
+        name=TigerGraphToolName.HAS_NODE,
         description="""Checks if a node exists in a TigerGraph graph using TigerGraphX.
 
 Example input:

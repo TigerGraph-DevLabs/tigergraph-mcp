@@ -10,7 +10,7 @@ from pydantic import Field
 from mcp.types import Tool, TextContent
 
 from tigergraphx import Graph
-from tigergraph_mcp.tools import TigerGraphToolNames
+from tigergraph_mcp.tools import TigerGraphToolName
 from tigergraph_mcp.tools.base_tool_input import (
     BaseToolInput,
     TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
@@ -27,7 +27,7 @@ class ClearGraphDataToolInput(BaseToolInput):
 
 tools = [
     Tool(
-        name=TigerGraphToolNames.CLEAR_GRAPH_DATA,
+        name=TigerGraphToolName.CLEAR_GRAPH_DATA,
         description="""Clears all nodes and edges from a graph in TigerGraph using TigerGraphX.
 
 Example Input:

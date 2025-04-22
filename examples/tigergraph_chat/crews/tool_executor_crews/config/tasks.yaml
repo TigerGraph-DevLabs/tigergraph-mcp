@@ -1,0 +1,227 @@
+# ------------------------------ Schema Operations ------------------------------
+create_schema_task:
+  description: >
+    Create a schema in TigerGraph using the provided schema definition.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Based on the provided schema description, you will generate an appropriate graph schema that meets the user’s requirements. Ensure to ask for any missing details if necessary.
+
+  expected_output: >
+    Confirmation that the schema has been successfully created in TigerGraph, including the graph name, but without displaying the details of the created graph schema.
+
+  agent: schema_agent
+
+get_schema_task:
+  description: >
+    Retrieve the schema of a graph from TigerGraph using the provided graph name.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Based on the provided graph name, you will retrieve and display the schema of the corresponding graph in TigerGraph. Ensure that the user has provided the correct graph name.
+
+  expected_output: >
+    The schema of the graph, including details such as node types, edge types, and their respective attributes.
+
+  agent: schema_agent
+
+graph_drop_task:
+  description: >
+    Drop a specified graph from TigerGraph.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Verify the provided graph name before proceeding.
+
+  expected_output: >
+    Confirmation of successful graph deletion, including the graph name.
+
+  agent: schema_agent
+
+# ------------------------------ Data Loading Operations ------------------------------
+load_data_task:
+  description: >
+    Load data into a TigerGraph graph using a user-provided description of the data files.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    First, analyze the file structure and user-provided details (such as CSV headers, file paths, and data mappings). Then, generate a valid loading job configuration and use the appropriate tool to load the data into the target graph.
+
+  expected_output: >
+    Confirmation that the data has been successfully loaded into the specified graph, including the graph name, or a meaningful error message if the process fails.
+
+  agent: data_loader_agent
+
+# # ------------------------------ Node Operations ------------------------------
+# add_node_task:
+#   description: >
+#     Add a node to the graph in TigerGraph with the specified attributes.
+# 
+#     Instructions
+#     ------------
+#     You are given a list representing a conversation history between the user and the assistant. 
+#     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+#     so prioritize those when interpreting the instructions:
+#     {conversation_history}
+# 
+#     Given a node ID and optional node type, add the node to the graph along with any provided attributes. Ensure the node type is valid before proceeding.
+# 
+#   expected_output: >
+#     Confirmation that the node has been successfully added to the graph.
+# 
+#   agent: node_agent
+# 
+# add_nodes_task:
+#   description: >
+#     Add multiple nodes to the graph in TigerGraph with the specified attributes.
+# 
+#     Instructions
+#     ------------
+#     You are given a list representing a conversation history between the user and the assistant. 
+#     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+#     so prioritize those when interpreting the instructions:
+#     {conversation_history}
+# 
+#     Given a list of node IDs and optional attributes, add them to the graph in bulk. Ensure efficient processing and handle missing or inconsistent data gracefully.
+# 
+#   expected_output: >
+#     Confirmation of the number of nodes successfully added to the graph.
+# 
+#   agent: node_agent
+# 
+# remove_node_task:
+#   description: >
+#     Remove a node from the graph in TigerGraph.
+# 
+#     Instructions
+#     ------------
+#     You are given a list representing a conversation history between the user and the assistant. 
+#     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+#     so prioritize those when interpreting the instructions:
+#     {conversation_history}
+# 
+#     Given a node ID and optional node type, remove the node from the graph if it exists. Validate that the node exists before attempting removal.
+# 
+#   expected_output: >
+#     Confirmation that the node has been successfully removed or an error message if the node was not found.
+# 
+#   agent: node_agent
+# 
+# has_node_task:
+#   description: >
+#     Check if a node exists in the graph.
+# 
+#     Instructions
+#     ------------
+#     You are given a list representing a conversation history between the user and the assistant. 
+#     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+#     so prioritize those when interpreting the instructions:
+#     {conversation_history}
+# 
+#     Given a node ID and optional node type, verify whether the node is present in the graph.
+# 
+#   expected_output: >
+#     A boolean value indicating whether the node exists in the graph.
+# 
+#   agent: node_agent
+# 
+# get_node_data_task:
+#   description: >
+#     Retrieve data for a specific node in the graph.
+# 
+#     Instructions
+#     ------------
+#     You are given a list representing a conversation history between the user and the assistant. 
+#     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+#     so prioritize those when interpreting the instructions:
+#     {conversation_history}
+# 
+#     Given a node ID and optional node type, fetch and return the node's attributes and properties.
+# 
+#   expected_output: >
+#     A structured representation of the node’s attributes.
+# 
+#   agent: node_agent
+# 
+# get_node_edges_task:
+#   description: >
+#     Retrieve edges connected to a specific node in the graph.
+# 
+#     Instructions
+#     ------------
+#     You are given a list representing a conversation history between the user and the assistant. 
+#     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+#     so prioritize those when interpreting the instructions:
+#     {conversation_history}
+# 
+#     Given a node ID, optional node type, and optional edge types, fetch all edges associated with the node.
+# 
+#   expected_output: >
+#     A list of edges connected to the node, represented as (from_id, to_id) pairs.
+# 
+#   agent: node_agent
+# 
+# clear_nodes_task:
+#   description: >
+#     Remove all nodes from the graph.
+# 
+#     Instructions
+#     ------------
+#     You are given a list representing a conversation history between the user and the assistant. 
+#     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+#     so prioritize those when interpreting the instructions:
+#     {conversation_history}
+# 
+#     Clear all nodes from the graph while maintaining structural integrity.
+# 
+#   expected_output: >
+#     Confirmation that all nodes have been successfully cleared from the graph.
+# 
+#   agent: node_agent
+# 
+# # ------------------------------ Edge Operations ------------------------------
+# 
+# 
+# # ------------------------------ Statistics Operations ------------------------------
+# 
+# 
+# # ------------------------------ Query Operations ------------------------------
+# 
+# 
+# # ------------------------------ Vector Operations ------------------------------

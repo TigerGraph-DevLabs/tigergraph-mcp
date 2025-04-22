@@ -5,9 +5,9 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from .tools import TigerGraphToolNames
+from .tools import TigerGraphToolName
 
 
 __all__ = [
-    "TigerGraphToolNames",
+    "TigerGraphToolName",
 ]

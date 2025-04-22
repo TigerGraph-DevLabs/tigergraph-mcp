@@ -5,7 +5,7 @@ from mcp.client.stdio import stdio_client
 from tigergraphx import Graph
 
 from tests.integration.base_graph_fixture import BaseGraphFixture
-from tigergraph_mcp import TigerGraphToolNames
+from tigergraph_mcp import TigerGraphToolName
 
 
 @pytest.mark.skip(
@@ -121,7 +121,7 @@ class TestDataTools(BaseGraphFixture):
             async with ClientSession(read, write) as session:
                 await session.initialize()
                 result = await session.call_tool(
-                    TigerGraphToolNames.LOAD_DATA,
+                    TigerGraphToolName.LOAD_DATA,
                     arguments={
                         "graph_name": self.graph_name,
                         "loading_job_config": loading_job_config,

@@ -5,7 +5,7 @@ from mcp.client.stdio import stdio_client
 from tigergraphx import Graph
 
 from tests.integration.base_graph_fixture import BaseGraphFixture
-from tigergraph_mcp import TigerGraphToolNames
+from tigergraph_mcp import TigerGraphToolName
 
 
 class TestNodeTools(BaseGraphFixture):
@@ -134,7 +134,7 @@ class TestNodeTools(BaseGraphFixture):
             async with ClientSession(read, write) as session:
                 await session.initialize()
                 result = await session.call_tool(
-                    TigerGraphToolNames.ADD_NODE,
+                    TigerGraphToolName.ADD_NODE,
                     arguments={
                         "graph_name": self.graph_name,
                         "node_id": "User_D",
@@ -152,7 +152,7 @@ class TestNodeTools(BaseGraphFixture):
             async with ClientSession(read, write) as session:
                 await session.initialize()
                 result = await session.call_tool(
-                    TigerGraphToolNames.ADD_NODES,
+                    TigerGraphToolName.ADD_NODES,
                     arguments={
                         "graph_name": self.graph_name,
                         "nodes_for_adding": [
@@ -178,7 +178,7 @@ class TestNodeTools(BaseGraphFixture):
 
                 # Call the remove_node tool
                 result = await session.call_tool(
-                    TigerGraphToolNames.REMOVE_NODE,
+                    TigerGraphToolName.REMOVE_NODE,
                     arguments={
                         "graph_name": self.graph_name,
                         "node_id": "User_C",
@@ -199,7 +199,7 @@ class TestNodeTools(BaseGraphFixture):
 
                 # Call the has_node tool
                 result = await session.call_tool(
-                    TigerGraphToolNames.HAS_NODE,
+                    TigerGraphToolName.HAS_NODE,
                     arguments={
                         "graph_name": self.graph_name,
                         "node_id": "User_C",
@@ -217,7 +217,7 @@ class TestNodeTools(BaseGraphFixture):
 
                 # Retrieve data for an existing node
                 result = await session.call_tool(
-                    TigerGraphToolNames.GET_NODE_DATA,
+                    TigerGraphToolName.GET_NODE_DATA,
                     arguments={
                         "graph_name": self.graph_name,
                         "node_id": "User_C",
@@ -238,7 +238,7 @@ class TestNodeTools(BaseGraphFixture):
                 await session.initialize()
 
                 result = await session.call_tool(
-                    TigerGraphToolNames.GET_NODE_EDGES,
+                    TigerGraphToolName.GET_NODE_EDGES,
                     arguments={
                         "graph_name": self.graph_name,
                         "node_id": "User_C",
@@ -262,7 +262,7 @@ class TestNodeTools(BaseGraphFixture):
 
                 # Clear graph data
                 result = await session.call_tool(
-                    TigerGraphToolNames.CLEAR_GRAPH_DATA,
+                    TigerGraphToolName.CLEAR_GRAPH_DATA,
                     arguments={
                         "graph_name": self.graph_name,
                         "tigergraph_connection_config": self.tigergraph_connection_config,

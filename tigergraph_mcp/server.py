@@ -11,7 +11,7 @@ from mcp.server.stdio import stdio_server
 from mcp.types import Tool, TextContent
 
 from .tools import (
-    TigerGraphToolNames,
+    TigerGraphToolName,
     get_all_tools,
     create_schema,
     get_schema,
@@ -41,29 +41,29 @@ async def serve() -> None:
         try:
             match name:
                 # Tools for Schema Operations
-                case TigerGraphToolNames.CREATE_SCHEMA:
+                case TigerGraphToolName.CREATE_SCHEMA:
                     return await create_schema(**arguments)
-                case TigerGraphToolNames.GET_SCHEMA:
+                case TigerGraphToolName.GET_SCHEMA:
                     return await get_schema(**arguments)
-                case TigerGraphToolNames.DROP_GRAPH:
+                case TigerGraphToolName.DROP_GRAPH:
                     return await drop_graph(**arguments)
                 # Tools for Data Operations
-                case TigerGraphToolNames.LOAD_DATA:
+                case TigerGraphToolName.LOAD_DATA:
                     return await load_data(**arguments)
                 # Tools for Node Operations
-                case TigerGraphToolNames.ADD_NODE:
+                case TigerGraphToolName.ADD_NODE:
                     return await add_node(**arguments)
-                case TigerGraphToolNames.ADD_NODES:
+                case TigerGraphToolName.ADD_NODES:
                     return await add_nodes(**arguments)
-                case TigerGraphToolNames.REMOVE_NODE:
+                case TigerGraphToolName.REMOVE_NODE:
                     return await remove_node(**arguments)
-                case TigerGraphToolNames.HAS_NODE:
+                case TigerGraphToolName.HAS_NODE:
                     return await has_node(**arguments)
-                case TigerGraphToolNames.GET_NODE_DATA:
+                case TigerGraphToolName.GET_NODE_DATA:
                     return await get_node_data(**arguments)
-                case TigerGraphToolNames.GET_NODE_EDGES:
+                case TigerGraphToolName.GET_NODE_EDGES:
                     return await get_node_edges(**arguments)
-                case TigerGraphToolNames.CLEAR_GRAPH_DATA:
+                case TigerGraphToolName.CLEAR_GRAPH_DATA:
                     return await clear_graph_data(**arguments)
                 # Tools for Edge Operations
                 # Tools for Query Operations

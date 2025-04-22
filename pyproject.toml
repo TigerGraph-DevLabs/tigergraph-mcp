@@ -14,10 +14,18 @@ dependencies = [
 ]
 
 [tool.poetry.group.dev.dependencies]
+# Task Runner
 poethepoet = "^0.33.1"
+
+# Testing Frameworks
 pytest = "^8.3.5"
 pytest-asyncio = "^0.26.0"
 pytest-html = "^4.1.1"
+
+# Agentic AI
+crewai = {extras = ["tools"], version = "^0.114.0"}
+mcpadapt = "^0.1.3"
+panel = "^1.6.2"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -32,3 +40,6 @@ start_mcp_server = "python -m tigergraph_mcp.main"
 
 # Integration Test
 integration_test = {cmd = "pytest -vs ./tests/integration --html=htmlcov/it-report.html", env = {PYTHONDONTWRITEBYTECODE = "1"}}
+
+# Agentic AI
+tigergraph_chat = "panel serve examples/tigergraph_chat/main.py"

@@ -11,7 +11,7 @@ from mcp.types import Tool, TextContent
 
 from tigergraphx import Graph
 
-from tigergraph_mcp.tools import TigerGraphToolNames
+from tigergraph_mcp.tools import TigerGraphToolName
 from tigergraph_mcp.tools.base_tool_input import (
     BaseToolInput,
     TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
@@ -34,7 +34,7 @@ class GetNodeDataToolInput(BaseToolInput):
 
 tools = [
     Tool(
-        name=TigerGraphToolNames.GET_NODE_DATA,
+        name=TigerGraphToolName.GET_NODE_DATA,
         description="""Retrieves data for a specific node in a TigerGraph graph using TigerGraphX.
 
 Example Input:

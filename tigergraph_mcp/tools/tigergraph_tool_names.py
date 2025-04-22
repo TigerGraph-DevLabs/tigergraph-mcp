@@ -1,7 +1,8 @@
 from enum import Enum
+from typing import Optional
 
 
-class TigerGraphToolNames(str, Enum):
+class TigerGraphToolName(str, Enum):
     # Schema Operations
     CREATE_SCHEMA = "graph/create_schema"
     GET_SCHEMA = "graph/get_schema"
@@ -16,3 +17,10 @@ class TigerGraphToolNames(str, Enum):
     GET_NODE_EDGES = "graph/get_node_edges"
     HAS_NODE = "graph/has_node"
     REMOVE_NODE = "graph/remove_node"
+
+    @classmethod
+    def from_value(cls, value: str) -> Optional["TigerGraphToolName"]:
+        try:
+            return cls(value)
+        except ValueError:
+            return None

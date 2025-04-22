@@ -11,7 +11,7 @@ from mcp.types import Tool, TextContent
 
 from tigergraphx import Graph
 
-from tigergraph_mcp.tools import TigerGraphToolNames
+from tigergraph_mcp.tools import TigerGraphToolName
 from tigergraph_mcp.tools.base_tool_input import (
     BaseToolInput,
     TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
@@ -32,7 +32,7 @@ class RemoveNodeToolInput(BaseToolInput):
 
 tools = [
     Tool(
-        name=TigerGraphToolNames.REMOVE_NODE,
+        name=TigerGraphToolName.REMOVE_NODE,
         description="""Removes a node from a TigerGraph database using TigerGraphX.
 
 Example input:
