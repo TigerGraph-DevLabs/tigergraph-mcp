@@ -5,7 +5,7 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from typing import Dict, List, Optional
+from typing import Optional, List
 from pydantic import Field
 from mcp.types import Tool, TextContent
 
@@ -18,54 +18,56 @@ from tigergraph_mcp.tools.base_tool_input import (
 )
 
 
-class GetNodeDataToolInput(BaseToolInput):
-    """Input schema for retrieving node data from a TigerGraph graph."""
+class DegreeToolInput(BaseToolInput):
+    """Input schema for computing the degree of a node in a TigerGraph graph."""
 
     graph_name: str = Field(
         ..., description="The name of the graph containing the node."
     )
     node_id: str | int = Field(
-        ..., description="The identifier of the node to retrieve data for."
+        ..., description="The identifier of the node whose degree is to be computed."
     )
     node_type: Optional[str] = Field(
         None, description="The type of the node (optional)."
+    )
+    edge_types: Optional[List[str] | str] = Field(
+        None,
+        description="A single edge type or list of edge types to consider. If omitted, all edge types are included.",
     )
 
 
 tools = [
     Tool(
-        name=TigerGraphToolName.GET_NODE_DATA,
-        description="""Retrieves data for a specific node in a TigerGraph graph using TigerGraphX.
+        name=TigerGraphToolName.DEGREE,
+        description="""Returns the degree of a node in a TigerGraph database using TigerGraphX.
 
-Example Input:
+Example input:
 ```python
 graph_name = "SocialGraph"
 node_id = "Alice"
-node_type = "Person"  # Optional
+node_type = "Person"
+edge_types = ["Friendship", "Follow"]
 ```
+
+If no `edge_types` are provided, all edge types will be used.
 """
         + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-        inputSchema=GetNodeDataToolInput.model_json_schema(),
+        inputSchema=DegreeToolInput.model_json_schema(),
     )
 ]
 
 
-async def get_node_data(
+async def degree(
     graph_name: str,
     node_id: str | int,
     node_type: Optional[str] = None,
-    tigergraph_connection_config: Optional[Dict] = None,
+    edge_types: Optional[List[str] | str] = None,
+    tigergraph_connection_config: Optional[dict] = None,
 ) -> List[TextContent]:
     try:
         graph = Graph.from_db(graph_name, tigergraph_connection_config)
-        node_data = graph.get_node_data(node_id, node_type)
-        if node_data is None:
-            result = f"⚠️ Node '{node_id}' of type '{node_type or 'default'}' not found in graph '{graph_name}'."
-        else:
-            result = (
-                f"✅ Node data for '{node_id}' in graph '{graph_name}': {node_data}"
-            )
+        deg = graph.degree(node_id, node_type=node_type, edge_types=edge_types)
+        result = f"📏 Degree of node '{node_id}' (Type: {node_type or 'default'}) in graph '{graph_name}' is {deg}."
     except Exception as e:
-        result = f"❌ Failed to retrieve node data in graph '{graph_name}': {str(e)}"
-
+        result = f"❌ Failed to compute degree for node '{node_id}' in graph '{graph_name}': {str(e)}"
     return [TextContent(type="text", text=result)]

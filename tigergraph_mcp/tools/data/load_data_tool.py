@@ -5,7 +5,7 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from typing import Optional, Dict, Union
+from typing import Dict, List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
 
@@ -24,7 +24,7 @@ class LoadDataToolInput(BaseToolInput):
     graph_name: str = Field(
         ..., description="The name of the graph where data will be loaded."
     )
-    loading_job_config: Union[Dict, str] = Field(
+    loading_job_config: Dict | str = Field(
         ...,
         description=(
             "The loading job configuration used to load data into the graph.\n"
@@ -80,16 +80,8 @@ loading_job_config = {
     ],
 }
 ```
-
-**`tigergraph_connection_config`** must also be provided to establish the connection to TigerGraph.
-
-### Configuration Options:
-The `tigergraph_connection_config` is required to authenticate and configure the connection to the TigerGraph instance. It can either be explicitly provided or populated via environment variables (recommended). Do not mix both methods.
-
-For more details on configuring `tigergraph_connection_config`, please refer to the following:
 """
-        + "\n\n"
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION.strip(),
+        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
         inputSchema=LoadDataToolInput.model_json_schema(),
     )
 ]
@@ -99,7 +91,7 @@ async def load_data(
     graph_name: str,
     loading_job_config: Dict,
     tigergraph_connection_config: Optional[Dict] = None,
-) -> list[TextContent]:
+) -> List[TextContent]:
     try:
         graph = Graph.from_db(graph_name, tigergraph_connection_config)
         graph.load_data(loading_job_config)

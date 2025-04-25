@@ -5,7 +5,7 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from typing import Optional, Dict
+from typing import Dict, List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
 
@@ -35,16 +35,8 @@ Example input:
 ```python
 graph_name = "MyGraph"
 ```
-
-**`tigergraph_connection_config`** must also be provided to establish the connection to TigerGraph.
-
-### Configuration Options:
-The `tigergraph_connection_config` is required to authenticate and configure the connection to the TigerGraph instance. It can either be explicitly provided or populated via environment variables (recommended). Do not mix both methods.
-
-For more details on configuring `tigergraph_connection_config`, please refer to the following:
 """
-        + "\n\n"
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION.strip(),
+        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
         inputSchema=GetSchemaToolInput.model_json_schema(),
     )
 ]
@@ -53,7 +45,7 @@ For more details on configuring `tigergraph_connection_config`, please refer to 
 async def get_schema(
     graph_name: str,
     tigergraph_connection_config: Optional[Dict] = None,
-) -> list[TextContent]:
+) -> List[TextContent]:
     try:
         graph = Graph.from_db(graph_name, tigergraph_connection_config)
         schema = graph.get_schema()

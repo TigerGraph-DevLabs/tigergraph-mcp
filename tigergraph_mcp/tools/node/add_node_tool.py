@@ -5,7 +5,7 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from typing import Optional, Dict
+from typing import Dict, List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
 
@@ -24,7 +24,7 @@ class AddNodeToolInput(BaseToolInput):
     graph_name: str = Field(
         ..., description="The name of the graph where the node will be added."
     )
-    node_id: str = Field(..., description="The unique identifier of the node.")
+    node_id: str | int = Field(..., description="The unique identifier of the node.")
     node_type: Optional[str] = Field(
         None, description="The type of the node (optional)."
     )
@@ -45,16 +45,8 @@ node_id = "Alice"
 node_type = "Person"
 attributes = {"age": 30, "gender": "Female"}
 ```
-
-**`tigergraph_connection_config`** must also be provided to establish the connection to TigerGraph.
-
-### Configuration Options:
-The `tigergraph_connection_config` is required to authenticate and configure the connection to the TigerGraph instance. It can either be explicitly provided or populated via environment variables (recommended). Do not mix both methods.
-
-For more details on configuring `tigergraph_connection_config`, please refer to the following:
 """
-        + "\n\n"
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION.strip(),
+        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
         inputSchema=AddNodeToolInput.model_json_schema(),
     )
 ]
@@ -62,11 +54,11 @@ For more details on configuring `tigergraph_connection_config`, please refer to 
 
 async def add_node(
     graph_name: str,
-    node_id: str,
+    node_id: str | int,
     node_type: Optional[str] = None,
     attributes: Optional[Dict] = None,
     tigergraph_connection_config: Optional[Dict] = None,
-) -> list[TextContent]:
+) -> List[TextContent]:
     try:
         attributes = attributes or {}
         graph = Graph.from_db(graph_name, tigergraph_connection_config)

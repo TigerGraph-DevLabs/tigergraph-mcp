@@ -6,6 +6,7 @@
 # under the License. The software is provided "AS IS", without warranty.
 
 import logging
+from typing import Dict, List
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import Tool, TextContent
@@ -24,6 +25,19 @@ from .tools import (
     get_node_data,
     get_node_edges,
     clear_graph_data,
+    add_edge,
+    add_edges,
+    has_edge,
+    get_edge_data,
+    degree,
+    number_of_nodes,
+    number_of_edges,
+    upsert,
+    fetch_node,
+    fetch_nodes,
+    search,
+    search_multi_vector_attributes,
+    search_top_k_similar_nodes,
 )
 
 logger = logging.getLogger(__name__)
@@ -33,11 +47,11 @@ async def serve() -> None:
     server = Server("TigerGraph-MCP")
 
     @server.list_tools()
-    async def list_tools() -> list[Tool]:
+    async def list_tools() -> List[Tool]:
         return get_all_tools()
 
     @server.call_tool()
-    async def call_tool(name: str, arguments: dict) -> list[TextContent]:
+    async def call_tool(name: str, arguments: Dict) -> List[TextContent]:
         try:
             match name:
                 # Tools for Schema Operations
@@ -66,8 +80,35 @@ async def serve() -> None:
                 case TigerGraphToolName.CLEAR_GRAPH_DATA:
                     return await clear_graph_data(**arguments)
                 # Tools for Edge Operations
+                case TigerGraphToolName.ADD_EDGE:
+                    return await add_edge(**arguments)
+                case TigerGraphToolName.ADD_EDGES:
+                    return await add_edges(**arguments)
+                case TigerGraphToolName.HAS_EDGE:
+                    return await has_edge(**arguments)
+                case TigerGraphToolName.GET_EDGE_DATA:
+                    return await get_edge_data(**arguments)
+                # Tools for Statistics Operations
+                case TigerGraphToolName.DEGREE:
+                    return await degree(**arguments)
+                case TigerGraphToolName.NUMBER_OF_NODES:
+                    return await number_of_nodes(**arguments)
+                case TigerGraphToolName.NUMBER_OF_EDGES:
+                    return await number_of_edges(**arguments)
                 # Tools for Query Operations
                 # Tools for Vector Operations
+                case TigerGraphToolName.UPSERT:
+                    return await upsert(**arguments)
+                case TigerGraphToolName.FETCH_NODE:
+                    return await fetch_node(**arguments)
+                case TigerGraphToolName.FETCH_NODES:
+                    return await fetch_nodes(**arguments)
+                case TigerGraphToolName.SEARCH:
+                    return await search(**arguments)
+                case TigerGraphToolName.SEARCH_MULTI_VECTOR_ATTRIBUTES:
+                    return await search_multi_vector_attributes(**arguments)
+                case TigerGraphToolName.SEARCH_TOP_K_SIMILAR_NODES:
+                    return await search_top_k_similar_nodes(**arguments)
                 case _:
                     raise ValueError(f"Unknown tool: {name}")
         except Exception as e:

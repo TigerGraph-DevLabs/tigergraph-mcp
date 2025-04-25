@@ -22,6 +22,25 @@ from .node import (
     get_node_edges,
     clear_graph_data,
 )
+from .edge import (
+    add_edge,
+    add_edges,
+    has_edge,
+    get_edge_data,
+)
+from .statistics import (
+    degree,
+    number_of_nodes,
+    number_of_edges,
+)
+from .vector import (
+    upsert,
+    fetch_node,
+    fetch_nodes,
+    search,
+    search_multi_vector_attributes,
+    search_top_k_similar_nodes,
+)
 
 
 __all__ = [
@@ -45,6 +64,20 @@ __all__ = [
     "get_node_edges",
     "clear_graph_data",
     # Tools for Edge Operations
+    "add_edge",
+    "add_edges",
+    "has_edge",
+    "get_edge_data",
+    # Tools for Statistics Operations
+    "degree",
+    "number_of_nodes",
+    "number_of_edges",
     # Tools for Query Operations
     # Tools for Vector Operations
+    "upsert",
+    "fetch_node",
+    "fetch_nodes",
+    "search",
+    "search_multi_vector_attributes",
+    "search_top_k_similar_nodes",
 ]

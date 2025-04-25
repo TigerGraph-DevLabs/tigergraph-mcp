@@ -1,0 +1,63 @@
+# Copyright 2025 TigerGraph Inc.
+# Licensed under the Apache License, Version 2.0.
+# See the LICENSE file or https://www.apache.org/licenses/LICENSE-2.0
+#
+# Permission is granted to use, copy, modify, and distribute this software
+# under the License. The software is provided "AS IS", without warranty.
+
+from typing import List, Optional
+from pydantic import Field
+from mcp.types import Tool, TextContent
+
+from tigergraphx import Graph
+
+from tigergraph_mcp.tools import TigerGraphToolName
+from tigergraph_mcp.tools.base_tool_input import (
+    BaseToolInput,
+    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+)
+
+
+class NumberOfEdgesToolInput(BaseToolInput):
+    """Input schema for getting the number of edges in a TigerGraph graph."""
+
+    graph_name: str = Field(..., description="The name of the graph to query.")
+    edge_type: Optional[str] = Field(
+        None,
+        description="The type of edges to count (optional). If omitted, counts all edges.",
+    )
+
+
+tools = [
+    Tool(
+        name=TigerGraphToolName.NUMBER_OF_EDGES,
+        description="""Returns the number of edges in a TigerGraph database using TigerGraphX.
+
+Example input:
+```python
+graph_name = "SocialGraph"
+edge_type = "Friendship"  # Optional
+```
+
+If `edge_type` is not provided, all edges will be counted.
+"""
+        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+        inputSchema=NumberOfEdgesToolInput.model_json_schema(),
+    )
+]
+
+
+async def number_of_edges(
+    graph_name: str,
+    edge_type: Optional[str] = None,
+    tigergraph_connection_config: Optional[dict] = None,
+) -> List[TextContent]:
+    try:
+        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        count = graph.number_of_edges(edge_type)
+        result = f"🔗 Graph '{graph_name}' has {count} edge(s)" + (
+            f" of type '{edge_type}'." if edge_type else "."
+        )
+    except Exception as e:
+        result = f"❌ Failed to count edges in graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=result)]

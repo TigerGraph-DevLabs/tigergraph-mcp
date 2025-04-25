@@ -22,6 +22,25 @@ from .node import (
     get_node_edges_tool,
     clear_graph_data_tool,
 )
+from .edge import (
+    add_edge_tool,
+    add_edges_tool,
+    has_edge_tool,
+    get_edge_data_tool,
+)
+from .statistics import (
+    degree_tool,
+    number_of_nodes_tool,
+    number_of_edges_tool,
+)
+from .vector import (
+    upsert_tool,
+    fetch_node_tool,
+    fetch_nodes_tool,
+    search_tool,
+    search_multi_vector_attributes_tool,
+    search_top_k_similar_nodes_tool,
+)
 
 
 def get_all_tools() -> list[Tool]:
@@ -40,4 +59,20 @@ def get_all_tools() -> list[Tool]:
         + get_node_data_tool.tools
         + get_node_edges_tool.tools
         + clear_graph_data_tool.tools
+        # Tools for Edge Operations
+        + add_edge_tool.tools
+        + add_edges_tool.tools
+        + has_edge_tool.tools
+        + get_edge_data_tool.tools
+        # Tools for Statistics Operations
+        + degree_tool.tools
+        + number_of_nodes_tool.tools
+        + number_of_edges_tool.tools
+        # Tools for Vector Operations
+        + upsert_tool.tools
+        + fetch_node_tool.tools
+        + fetch_nodes_tool.tools
+        + search_tool.tools
+        + search_multi_vector_attributes_tool.tools
+        + search_top_k_similar_nodes_tool.tools
     )

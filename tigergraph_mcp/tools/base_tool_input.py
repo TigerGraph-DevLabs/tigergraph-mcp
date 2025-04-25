@@ -10,12 +10,11 @@ from pydantic import BaseModel, Field
 
 
 TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION = """
-Configuration for connecting to a TigerGraph instance.
 
-All fields can either be populated **from environment variables** (recommended) or **explicitly provided**.  
-**Do not provide both**—either use the environment variables **or** explicitly pass the values.
+**`tigergraph_connection_config`** must also be provided to establish the connection to TigerGraph.
 
-If environment variables are not found, it is recommended to set the environment variables or explicitly provide the necessary parameters.
+### Configuration Options:
+The `tigergraph_connection_config` is required to authenticate and configure the connection to the TigerGraph instance. It can either be explicitly provided or populated via environment variables. Do not mix both methods.
 
 The following environment variables are used (with their corresponding defaults if not set):
 

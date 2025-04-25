@@ -5,7 +5,7 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from typing import Optional, List, Tuple, Dict, Any
+from typing import Any, Dict, List, Optional, Tuple
 from pydantic import Field
 from mcp.types import Tool, TextContent
 
@@ -54,16 +54,8 @@ Example input:
   "common_attributes": {"city": "New York"},
 }
 ```
-
-**`tigergraph_connection_config`** must also be provided to establish the connection to TigerGraph.
-
-### Configuration Options:
-The `tigergraph_connection_config` is required to authenticate and configure the connection to the TigerGraph instance. It can either be explicitly provided or populated via environment variables (recommended). Do not mix both methods.
-
-For more details on configuring `tigergraph_connection_config`, please refer to the following:
 """
-        + "\n\n"
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION.strip(),
+        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
         inputSchema=AddNodesToolInput.model_json_schema(),
     )
 ]
@@ -75,7 +67,7 @@ async def add_nodes(
     node_type: Optional[str] = None,
     common_attributes: Optional[Dict[str, Any]] = None,
     tigergraph_connection_config: Optional[Dict] = None,
-) -> list[TextContent]:
+) -> List[TextContent]:
     try:
         # Normalize the nodes_for_adding list to ensure each item is a (node_id, attributes_dict) tuple.
         # This is necessary because JSON doesn't distinguish between lists and tuples — any tuple
@@ -92,7 +84,9 @@ async def add_nodes(
                     raise ValueError("Each node's attributes must be a dictionary.")
                 normalized_nodes.append((node_id, attributes))
             else:
-                raise ValueError("Each item in nodes_for_adding must be a node ID or [node ID, attribute dict].")
+                raise ValueError(
+                    "Each item in nodes_for_adding must be a node ID or [node ID, attribute dict]."
+                )
 
         graph = Graph.from_db(graph_name, tigergraph_connection_config)
         count = graph.add_nodes_from(
