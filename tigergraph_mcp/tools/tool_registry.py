@@ -33,6 +33,11 @@ from .statistics import (
     number_of_nodes_tool,
     number_of_edges_tool,
 )
+from .query import (
+    get_nodes_tool,
+    get_neighbors_tool,
+    breadth_first_search_tool,
+)
 from .vector import (
     upsert_tool,
     fetch_node_tool,
@@ -68,6 +73,10 @@ def get_all_tools() -> list[Tool]:
         + degree_tool.tools
         + number_of_nodes_tool.tools
         + number_of_edges_tool.tools
+        # Tools for Query Operations
+        + get_nodes_tool.tools
+        + get_neighbors_tool.tools
+        + breadth_first_search_tool.tools
         # Tools for Vector Operations
         + upsert_tool.tools
         + fetch_node_tool.tools

@@ -5407,15 +5407,15 @@ fastembed-gpu = ["fastembed-gpu (==0.5.1)"]
 
 [[package]]
 name = "ragas"
-version = "0.2.14"
+version = "0.2.15"
 description = ""
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 markers = "python_version <= \"3.11\" or python_version == \"3.12\""
 files = [
-    {file = "ragas-0.2.14-py3-none-any.whl", hash = "sha256:874ebe9f4e04d83f88b7fded35cc2fe849e7dec2cff824db39c686faca8bb6e2"},
-    {file = "ragas-0.2.14.tar.gz", hash = "sha256:a438d93cee9eccdcfb749ab741cb36438ab69e8903684b6fb39ad24b6241d1cb"},
+    {file = "ragas-0.2.15-py3-none-any.whl", hash = "sha256:298cd3d1fe3bd21ca4d31023a55079740d7bdd27a8c915bb371cec3c50cde608"},
+    {file = "ragas-0.2.15.tar.gz", hash = "sha256:2d0cd77b315a9c9c02ceb0a19ca8a48e82e1d02416587a2944ea51e6e327cd7b"},
 ]
 
 [package.dependencies]
@@ -6081,15 +6081,15 @@ test = ["pytest", "tornado (>=4.5)", "typeguard"]
 
 [[package]]
 name = "tigergraphx"
-version = "0.2.2"
+version = "0.2.3"
 description = "TigerGraphX is a high-level Python library offering a unified, Python-native interface for graph databases, advanced analytics, and GraphRAG workflows. Combining the simplicity of NetworkX with the advanced capabilities of TigerGraph, including tgCloud, it empowers Python developers to harness the power of graphs without the need to learn query languages like Cypher or GSQL."
 optional = false
 python-versions = "<3.13,>=3.10"
 groups = ["main"]
 markers = "python_version <= \"3.11\" or python_version == \"3.12\""
 files = [
-    {file = "tigergraphx-0.2.2-py3-none-any.whl", hash = "sha256:d43f965cf62a712a6e70b0f9725d042aaa29d6684691729d0ece7a270e38487b"},
-    {file = "tigergraphx-0.2.2.tar.gz", hash = "sha256:216739871190dae1b4b32f9318aef73e33ecf77b142f9b5c4af0b7886a0cc7a0"},
+    {file = "tigergraphx-0.2.3-py3-none-any.whl", hash = "sha256:0d417f7b4fb1b4b8b19fa04f950549a79e69c396594b9786e3d7363daeed9faf"},
+    {file = "tigergraphx-0.2.3.tar.gz", hash = "sha256:b64096d207964aa425394d7162975c691cc7b16c63c459be845856bde0deeffb"},
 ]
 
 [package.dependencies]
@@ -7332,4 +7332,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "2c96b9ed1792ce8a5ba8beb18c0b2447b9f5128dacac8c00fc6169a16e090751"
+content-hash = "5b60ca5183d847b3ee50a8678488f8b31070ca018acf30099e17e63b4809e5cb"

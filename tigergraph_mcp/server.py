@@ -11,6 +11,8 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import Tool, TextContent
 
+from tigergraph_mcp.tools.query.breadth_first_search_tool import breadth_first_search
+
 from .tools import (
     TigerGraphToolName,
     get_all_tools,
@@ -32,6 +34,8 @@ from .tools import (
     degree,
     number_of_nodes,
     number_of_edges,
+    get_nodes,
+    get_neighbors,
     upsert,
     fetch_node,
     fetch_nodes,
@@ -96,6 +100,12 @@ async def serve() -> None:
                 case TigerGraphToolName.NUMBER_OF_EDGES:
                     return await number_of_edges(**arguments)
                 # Tools for Query Operations
+                case TigerGraphToolName.GET_NODES:
+                    return await get_nodes(**arguments)
+                case TigerGraphToolName.GET_NEIGHBORS:
+                    return await get_neighbors(**arguments)
+                case TigerGraphToolName.BREADTH_FIRST_SEARCH:
+                    return await breadth_first_search(**arguments)
                 # Tools for Vector Operations
                 case TigerGraphToolName.UPSERT:
                     return await upsert(**arguments)

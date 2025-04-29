@@ -33,6 +33,11 @@ from .statistics import (
     number_of_nodes,
     number_of_edges,
 )
+from .query import (
+    get_nodes,
+    get_neighbors,
+    breadth_first_search,
+)
 from .vector import (
     upsert,
     fetch_node,
@@ -73,6 +78,9 @@ __all__ = [
     "number_of_nodes",
     "number_of_edges",
     # Tools for Query Operations
+    "get_nodes",
+    "get_neighbors",
+    "breadth_first_search",
     # Tools for Vector Operations
     "upsert",
     "fetch_node",
