@@ -109,3 +109,132 @@ class ToolExecutorCrews:
             tasks=[self.load_data_task()],
             verbose=True,
         )
+
+    # ------------------------------ Node Operations ------------------------------
+    @agent
+    def node_agent(self) -> Agent:
+        return Agent(  # pyright: ignore
+            config=self.agents_config["node_agent"],  # pyright: ignore
+            tools=[
+                self.tool_registry[TigerGraphToolName.GET_SCHEMA],
+                self.tool_registry[TigerGraphToolName.ADD_NODE],
+                self.tool_registry[TigerGraphToolName.ADD_NODES],
+                self.tool_registry[TigerGraphToolName.CLEAR_GRAPH_DATA],
+                self.tool_registry[TigerGraphToolName.GET_NODE_DATA],
+                self.tool_registry[TigerGraphToolName.GET_NODE_EDGES],
+                self.tool_registry[TigerGraphToolName.HAS_NODE],
+                self.tool_registry[TigerGraphToolName.REMOVE_NODE],
+            ],
+        )
+
+    @task
+    def add_node_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["add_node_task"],  # pyright: ignore
+            # callback=print_output,
+            # human_input=True,
+        )
+
+    @crew
+    def add_node_crew(self) -> Crew:
+        return Crew(
+            agents=[self.node_agent()],
+            tasks=[self.add_node_task()],
+            verbose=True,
+        )
+
+    @task
+    def add_nodes_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["add_nodes_task"],  # pyright: ignore
+            # callback=print_output,
+            # human_input=True,
+        )
+
+    @crew
+    def add_nodes_crew(self) -> Crew:
+        return Crew(
+            agents=[self.node_agent()],
+            tasks=[self.add_nodes_task()],
+            verbose=True,
+        )
+
+    @task
+    def remove_node_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["remove_node_task"],  # pyright: ignore
+            # callback=print_output,
+            # human_input=True,
+        )
+
+    @crew
+    def remove_node_crew(self) -> Crew:
+        return Crew(
+            agents=[self.node_agent()],
+            tasks=[self.remove_node_task()],
+            verbose=True,
+        )
+
+    @task
+    def has_node_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["has_node_task"],  # pyright: ignore
+            # callback=print_output,
+            # human_input=True,
+        )
+
+    @crew
+    def has_node_crew(self) -> Crew:
+        return Crew(
+            agents=[self.node_agent()],
+            tasks=[self.has_node_task()],
+            verbose=True,
+        )
+
+    @task
+    def get_node_data_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["get_node_data_task"],  # pyright: ignore
+            # callback=print_output,
+            # human_input=True,
+        )
+
+    @crew
+    def get_node_data_crew(self) -> Crew:
+        return Crew(
+            agents=[self.node_agent()],
+            tasks=[self.get_node_data_task()],
+            verbose=True,
+        )
+
+    @task
+    def get_node_edges_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["get_node_edges_task"],  # pyright: ignore
+            # callback=print_output,
+            # human_input=True,
+        )
+
+    @crew
+    def get_node_edges_crew(self) -> Crew:
+        return Crew(
+            agents=[self.node_agent()],
+            tasks=[self.get_node_edges_task()],
+            verbose=True,
+        )
+
+    @task
+    def clear_graph_data_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["clear_graph_data_task"],  # pyright: ignore
+            # callback=print_output,
+            # human_input=True,
+        )
+
+    @crew
+    def clear_graph_data_crew(self) -> Crew:
+        return Crew(
+            agents=[self.node_agent()],
+            tasks=[self.clear_graph_data_task()],
+            verbose=True,
+        )

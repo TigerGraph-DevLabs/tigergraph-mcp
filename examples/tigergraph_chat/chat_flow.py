@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional
 from pydantic import BaseModel
 import os
+from functools import lru_cache
 
 from crewai.flow.flow import Flow, listen, or_, router, start
 from crewai.tools import BaseTool
@@ -105,9 +106,13 @@ I'm here to help – just let me know what you'd like to do! 🚀
     def add_nodes(self):
         return self._handle_task(TigerGraphToolName.ADD_NODES)
 
-    @router(TigerGraphToolName.CLEAR_GRAPH_DATA.value)
-    def clear_graph_data(self):
-        return self._handle_task(TigerGraphToolName.CLEAR_GRAPH_DATA)
+    @router(TigerGraphToolName.REMOVE_NODE.value)
+    def remove_node(self):
+        return self._handle_task(TigerGraphToolName.REMOVE_NODE)
+
+    @router(TigerGraphToolName.HAS_NODE.value)
+    def has_node(self):
+        return self._handle_task(TigerGraphToolName.HAS_NODE)
 
     @router(TigerGraphToolName.GET_NODE_DATA.value)
     def get_node_data(self):
@@ -117,13 +122,9 @@ I'm here to help – just let me know what you'd like to do! 🚀
     def get_node_edges(self):
         return self._handle_task(TigerGraphToolName.GET_NODE_EDGES)
 
-    @router(TigerGraphToolName.HAS_NODE.value)
-    def has_node(self):
-        return self._handle_task(TigerGraphToolName.HAS_NODE)
-
-    @router(TigerGraphToolName.REMOVE_NODE.value)
-    def remove_node(self):
-        return self._handle_task(TigerGraphToolName.REMOVE_NODE)
+    @router(TigerGraphToolName.CLEAR_GRAPH_DATA.value)
+    def clear_graph_data(self):
+        return self._handle_task(TigerGraphToolName.CLEAR_GRAPH_DATA)
 
     def _handle_task(self, task_name: TigerGraphToolName):
         inputs = {
@@ -145,8 +146,10 @@ I'm here to help – just let me know what you'd like to do! 🚀
         self.state.conversation_history.append(f"Assistant: {output_text}")
         user_input = chat_session.wait_for_user_input()
         self.state.conversation_history.append(f"User: {user_input}")
+        self.state.matched_tool = None
         return "user_provided_followup"
 
+    @lru_cache(maxsize=1)
     def _get_connection_config_from_env(self) -> Dict:
         return {
             "host": os.environ.get("TG_HOST", "http://127.0.0.1"),

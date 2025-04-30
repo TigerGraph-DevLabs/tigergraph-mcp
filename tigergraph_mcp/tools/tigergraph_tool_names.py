@@ -12,11 +12,11 @@ class TigerGraphToolName(str, Enum):
     # Node Operations
     ADD_NODE = "graph/add_node"
     ADD_NODES = "graph/add_nodes"
-    CLEAR_GRAPH_DATA = "graph/clear_graph_data"
+    REMOVE_NODE = "graph/remove_node"
+    HAS_NODE = "graph/has_node"
     GET_NODE_DATA = "graph/get_node_data"
     GET_NODE_EDGES = "graph/get_node_edges"
-    HAS_NODE = "graph/has_node"
-    REMOVE_NODE = "graph/remove_node"
+    CLEAR_GRAPH_DATA = "graph/clear_graph_data"
     # Edge Operations
     ADD_EDGE = "graph/add_edge"
     ADD_EDGES = "graph/add_edges_from"
