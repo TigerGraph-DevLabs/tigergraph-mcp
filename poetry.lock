@@ -1105,22 +1105,22 @@ typing-inspect = ">=0.4.0,<1"
 
 [[package]]
 name = "datasets"
-version = "3.5.0"
+version = "3.5.1"
 description = "HuggingFace community-driven open-source library of datasets"
 optional = false
 python-versions = ">=3.9.0"
 groups = ["main"]
 markers = "python_version <= \"3.11\" or python_version == \"3.12\""
 files = [
-    {file = "datasets-3.5.0-py3-none-any.whl", hash = "sha256:b3b7f163acc6ac4e01a1b00eef26d48bd4039288ceea3601d169272bd5581006"},
-    {file = "datasets-3.5.0.tar.gz", hash = "sha256:9e39560e34f83a64e48ceca7adeb645ede3c3055c5cf48ed2b454f8ed2b89754"},
+    {file = "datasets-3.5.1-py3-none-any.whl", hash = "sha256:4074dda8dd6e9ece242b1580a8ef3928777d59ae1db144d911229e443a093cbb"},
+    {file = "datasets-3.5.1.tar.gz", hash = "sha256:f835b45dbbd7065c1191734b6f7c8d96fdf8c5751feaa5aa52b2a0dc43eea58f"},
 ]
 
 [package.dependencies]
 aiohttp = "*"
 dill = ">=0.3.0,<0.3.9"
 filelock = "*"
-fsspec = {version = ">=2023.1.0,<=2024.12.0", extras = ["http"]}
+fsspec = {version = ">=2023.1.0,<=2025.3.0", extras = ["http"]}
 huggingface-hub = ">=0.24.0"
 multiprocess = "<0.70.17"
 numpy = ">=1.17"
@@ -6081,15 +6081,15 @@ test = ["pytest", "tornado (>=4.5)", "typeguard"]
 
 [[package]]
 name = "tigergraphx"
-version = "0.2.3"
+version = "0.2.4"
 description = "TigerGraphX is a high-level Python library offering a unified, Python-native interface for graph databases, advanced analytics, and GraphRAG workflows. Combining the simplicity of NetworkX with the advanced capabilities of TigerGraph, including tgCloud, it empowers Python developers to harness the power of graphs without the need to learn query languages like Cypher or GSQL."
 optional = false
 python-versions = "<3.13,>=3.10"
 groups = ["main"]
 markers = "python_version <= \"3.11\" or python_version == \"3.12\""
 files = [
-    {file = "tigergraphx-0.2.3-py3-none-any.whl", hash = "sha256:0d417f7b4fb1b4b8b19fa04f950549a79e69c396594b9786e3d7363daeed9faf"},
-    {file = "tigergraphx-0.2.3.tar.gz", hash = "sha256:b64096d207964aa425394d7162975c691cc7b16c63c459be845856bde0deeffb"},
+    {file = "tigergraphx-0.2.4-py3-none-any.whl", hash = "sha256:2cd86bd63e4709acff24c51881d5118c6b309a83d153628018f3bf0b5e110a92"},
+    {file = "tigergraphx-0.2.4.tar.gz", hash = "sha256:622c16c5e29f8ea161489f7a7ac06bc805498d03e6c2fdd81e49f28779972a49"},
 ]
 
 [package.dependencies]
@@ -7332,4 +7332,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "5b60ca5183d847b3ee50a8678488f8b31070ca018acf30099e17e63b4809e5cb"
+content-hash = "0fbf736cda2605fef1d59487f2a8ada7266f5c77d9bd7cf808956ba6b80ec25a"

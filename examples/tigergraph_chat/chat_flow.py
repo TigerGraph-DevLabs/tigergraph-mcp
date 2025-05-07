@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import os
 from functools import lru_cache
 
@@ -9,22 +9,26 @@ from tigergraph_mcp import TigerGraphToolName
 
 from chat_session_manager import chat_session
 from crews import ToolSelectorCrew, ToolExecutorCrews
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ChatSessionState(BaseModel):
-    conversation_history: List[str] = []
-    tool_registry: Dict[str, BaseTool] = {}
+    conversation_history: List[str] = Field(default_factory=list)
+    tool_registry: Dict[str, BaseTool] = Field(default_factory=dict)
     matched_tool: Optional[str] = None
 
 
 class ChatFlow(Flow[ChatSessionState]):
     @start()
     def initialize_session(self):
-        pass
+        logger.info("Session initialized.")
 
     @listen(or_(initialize_session, "user_provided_followup"))
     def match_tool_from_instructions(self):
         """Use CrewAI to select the most relevant tool based on instructions."""
+        logger.debug("Matching tool from conversation...")
         inputs = {
             "conversation_history": str(self.state.conversation_history),
             "tools": str(self.state.tool_registry.keys()),
@@ -33,17 +37,20 @@ class ChatFlow(Flow[ChatSessionState]):
         crew = ToolSelectorCrew().crew()
         output = crew.kickoff(inputs=inputs)
 
-        if output.raw != "None":
-            self.state.matched_tool = output.raw
+        selected = output.raw
+        logger.debug(f"Tool selector output: {selected}")
+
+        if selected and selected in self.state.tool_registry:
+            self.state.matched_tool = selected
+        else:
+            logger.warning(f"Unrecognized or no tool matched: {selected}")
 
     @router(match_tool_from_instructions)
     def route_tool_decision(self):
-        """Route based on whether a relevant tool was identified."""
         return "tool_selected" if self.state.matched_tool else "no_tool_matched"
 
     @router("no_tool_matched")
     def handle_no_tool_match(self):
-        """Handles the case when no tool is matched — provides a helpful message to the user."""
         help_message = self.get_help_message()
         chat_session.chat_ui.send(help_message, user="Assistant", respond=False)
         user_input = chat_session.wait_for_user_input()
@@ -78,53 +85,9 @@ I'm here to help – just let me know what you'd like to do! 🚀
         return help_message
 
     @router("tool_selected")
-    def proceed_with_tool(self):
-        """Tool was selected – proceed to tool execution logic."""
-        return self.state.matched_tool
-
-    @router(TigerGraphToolName.CREATE_SCHEMA.value)
-    def create_schema(self):
-        return self._handle_task(TigerGraphToolName.CREATE_SCHEMA)
-
-    @router(TigerGraphToolName.GET_SCHEMA.value)
-    def get_schema(self):
-        return self._handle_task(TigerGraphToolName.GET_SCHEMA)
-
-    @router(TigerGraphToolName.DROP_GRAPH.value)
-    def drop_graph(self):
-        return self._handle_task(TigerGraphToolName.DROP_GRAPH)
-
-    @router(TigerGraphToolName.LOAD_DATA.value)
-    def load_data(self):
-        return self._handle_task(TigerGraphToolName.LOAD_DATA)
-
-    @router(TigerGraphToolName.ADD_NODE.value)
-    def add_node(self):
-        return self._handle_task(TigerGraphToolName.ADD_NODE)
-
-    @router(TigerGraphToolName.ADD_NODES.value)
-    def add_nodes(self):
-        return self._handle_task(TigerGraphToolName.ADD_NODES)
-
-    @router(TigerGraphToolName.REMOVE_NODE.value)
-    def remove_node(self):
-        return self._handle_task(TigerGraphToolName.REMOVE_NODE)
-
-    @router(TigerGraphToolName.HAS_NODE.value)
-    def has_node(self):
-        return self._handle_task(TigerGraphToolName.HAS_NODE)
-
-    @router(TigerGraphToolName.GET_NODE_DATA.value)
-    def get_node_data(self):
-        return self._handle_task(TigerGraphToolName.GET_NODE_DATA)
-
-    @router(TigerGraphToolName.GET_NODE_EDGES.value)
-    def get_node_edges(self):
-        return self._handle_task(TigerGraphToolName.GET_NODE_EDGES)
-
-    @router(TigerGraphToolName.CLEAR_GRAPH_DATA.value)
-    def clear_graph_data(self):
-        return self._handle_task(TigerGraphToolName.CLEAR_GRAPH_DATA)
+    def dispatch_tool(self):
+        task = TigerGraphToolName.from_value(self.state.matched_tool or "")
+        return self._handle_task(task) if task else "no_tool_matched"
 
     def _handle_task(self, task_name: TigerGraphToolName):
         inputs = {
@@ -137,7 +100,10 @@ I'm here to help – just let me know what you'd like to do! 🚀
         crew_factory = ToolExecutorCrews(tools=self.state.tool_registry)
 
         if not hasattr(crew_factory, crew_method_name):
-            raise ValueError(f"No crew found for task: {task_name}")
+            available = [m for m in dir(crew_factory) if m.endswith("_crew")]
+            raise ValueError(
+                f"No crew found for task: {task_name}. Available: {available}"
+            )
 
         crew = getattr(crew_factory, crew_method_name)()
         output = crew.kickoff(inputs=inputs)

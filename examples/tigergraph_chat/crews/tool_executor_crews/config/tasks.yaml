@@ -244,12 +244,360 @@ clear_graph_data_task:
   agent: node_agent
 
 # ------------------------------ Edge Operations ------------------------------
+add_edge_task:
+  description: >
+    Add a single edge between two existing nodes.
 
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Extract the source node, target node, edge type, and any edge attributes from the conversation. 
+    Validate the edge type and ensure both nodes exist before adding the edge.
+
+  expected_output: >
+    A confirmation that the edge has been successfully added, or a validation error if the edge could not be created.
+
+  agent: edge_agent
+
+add_edges_task:
+  description: >
+    Add multiple edges in bulk between nodes.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Extract a list of edge definitions (source, target, edge type, and optional attributes) from the user input. 
+    Validate each edge against the schema and existing nodes before attempting to add them in bulk.
+
+  expected_output: >
+    A report summarizing the number of successfully added edges, skipped edges, and any errors encountered.
+
+  agent: edge_agent
+
+has_edge_task:
+  description: >
+    Check whether an edge exists between two specified nodes.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Extract the source node, target node, and edge type from the conversation. 
+    Return whether the specified edge currently exists in the graph.
+
+  expected_output: >
+    A Boolean value (true/false) indicating whether the specified edge exists between the given nodes.
+
+  agent: edge_agent
+
+get_edge_data_task:
+  description: >
+    Retrieve all attribute data associated with a specific edge between two nodes.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Extract the source node, target node, and edge type from the user’s instruction. 
+    Query the graph and return all stored edge attributes if the edge exists.
+
+  expected_output: >
+    A dictionary of edge attributes if the edge exists, or an informative error message if it does not.
+
+  agent: edge_agent
 
 # ------------------------------ Statistics Operations ------------------------------
+degree_task:
+  description: >
+    Calculate the degree of one or more nodes in the graph.
 
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Determine the degree (number of connected edges) for the specified node(s).
+
+  expected_output: >
+    A dictionary or table listing each node and its degree.
+
+  agent: statistics_agent
+
+number_of_nodes_task:
+  description: >
+    Return the number of nodes currently in the graph.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Report the total number of nodes in the graph.
+
+  expected_output: >
+    An integer indicating how many nodes are currently in the graph.
+
+  agent: statistics_agent
+
+number_of_edges_task:
+  description: >
+    Return the number of edges currently in the graph.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Report the total number of edges in the graph.
+
+  expected_output: >
+    An integer indicating how many edges are currently in the graph.
+
+  agent: statistics_agent
 
 # ------------------------------ Query Operations ------------------------------
+get_nodes_task:
+  description: >
+    Retrieve all or a filtered subset of nodes from the graph.
 
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Fetch all nodes of the specified type, optionally applying attribute filters.
+
+  expected_output: >
+    A list or table of nodes that match the criteria, including their attributes.
+
+  agent: query_agent
+
+get_neighbors_task:
+  description: >
+    Retrieve neighbors (connected nodes) for a specific node in the graph.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Identify all direct neighbors of the specified node, optionally filtered by edge types.
+
+  expected_output: >
+    A structured list or DataFrame showing the neighboring nodes and the edges connecting them.
+
+  agent: query_agent
+
+breadth_first_search_task:
+  description: >
+    Perform a breadth-first search (BFS) traversal from a given start node.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Perform BFS starting from the specified node(s) and return nodes found within the given hop range.
+
+  expected_output: >
+    A list or DataFrame of nodes visited during the BFS traversal, including their `_bfs_level`.
+
+  agent: query_agent
 
 # ------------------------------ Vector Operations ------------------------------
+upsert_vector_task:
+  description: >
+    Upsert (insert or update) vector data for a node in the graph.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Use the provided node ID and vector to update or insert vector attributes in the graph.
+
+  expected_output: >
+    A confirmation that the vector data has been successfully upserted.
+
+  agent: vector_agent
+
+fetch_node_task:
+  description: >
+    Retrieve a specific node, including its vector attributes.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Fetch the full data and vector representation of the specified node.
+
+  expected_output: >
+    A structured representation of the node, including its vector fields.
+
+  agent: vector_agent
+
+fetch_nodes_task:
+  description: >
+    Retrieve multiple nodes, optionally filtered, including vector attributes.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Fetch multiple nodes and include their vector fields in the response.
+
+  expected_output: >
+    A list or DataFrame of nodes with their full data and vector embeddings.
+
+  agent: vector_agent
+
+vector_search_task:
+  description: >
+    Perform a similarity search using a single vector query.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Use the given vector input to search for the most similar nodes in the graph.
+
+  expected_output: >
+    A ranked list of nodes based on similarity scores to the input vector.
+
+  agent: vector_agent
+
+search_multi_vector_attributes_task:
+  description: >
+    Perform a similarity search using multiple vector attributes.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Use multiple vector attributes to search for nodes with the best combined similarity.
+
+  expected_output: >
+    A list of the most relevant nodes based on multiple vector dimensions.
+
+  agent: vector_agent
+
+search_top_k_similar_nodes_task:
+  description: >
+    Retrieve the top-K most similar nodes to a given vector input.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Connection Configuration
+    ------------------------
+    {connection_config}
+
+    Find and return the top K nodes most similar to the provided vector representation.
+
+  expected_output: >
+    A list of the top K nodes sorted by similarity score.
+
+  agent: vector_agent

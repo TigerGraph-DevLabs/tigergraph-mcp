@@ -238,3 +238,248 @@ class ToolExecutorCrews:
             tasks=[self.clear_graph_data_task()],
             verbose=True,
         )
+
+    # ------------------------------ Edge Operations ------------------------------
+    @agent
+    def edge_agent(self) -> Agent:
+        return Agent(  # pyright: ignore
+            config=self.agents_config["edge_agent"],  # pyright: ignore
+            tools=[
+                self.tool_registry[TigerGraphToolName.GET_SCHEMA],
+                self.tool_registry[TigerGraphToolName.ADD_EDGE],
+                self.tool_registry[TigerGraphToolName.ADD_EDGES],
+                self.tool_registry[TigerGraphToolName.HAS_EDGE],
+                self.tool_registry[TigerGraphToolName.GET_EDGE_DATA],
+            ],
+        )
+
+    @task
+    def add_edge_task(self) -> Task:
+        return Task(config=self.tasks_config["add_edge_task"])  # pyright: ignore
+
+    @crew
+    def add_edge_crew(self) -> Crew:
+        return Crew(
+            agents=[self.edge_agent()],
+            tasks=[self.add_edge_task()],
+            verbose=True,
+        )
+
+    @task
+    def add_edges_task(self) -> Task:
+        return Task(config=self.tasks_config["add_edges_task"])  # pyright: ignore
+
+    @crew
+    def add_edges_crew(self) -> Crew:
+        return Crew(
+            agents=[self.edge_agent()],
+            tasks=[self.add_edges_task()],
+            verbose=True,
+        )
+
+    @task
+    def has_edge_task(self) -> Task:
+        return Task(config=self.tasks_config["has_edge_task"])  # pyright: ignore
+
+    @crew
+    def has_edge_crew(self) -> Crew:
+        return Crew(
+            agents=[self.edge_agent()],
+            tasks=[self.has_edge_task()],
+            verbose=True,
+        )
+
+    @task
+    def get_edge_data_task(self) -> Task:
+        return Task(config=self.tasks_config["get_edge_data_task"])  # pyright: ignore
+
+    @crew
+    def get_edge_data_crew(self) -> Crew:
+        return Crew(
+            agents=[self.edge_agent()],
+            tasks=[self.get_edge_data_task()],
+            verbose=True,
+        )
+
+    # ------------------------------ Statistics Operations ------------------------------
+    @agent
+    def statistics_agent(self) -> Agent:
+        return Agent(  # pyright: ignore
+            config=self.agents_config["statistics_agent"],  # pyright: ignore
+            tools=[
+                self.tool_registry[TigerGraphToolName.DEGREE],
+                self.tool_registry[TigerGraphToolName.NUMBER_OF_NODES],
+                self.tool_registry[TigerGraphToolName.NUMBER_OF_EDGES],
+            ],
+        )
+
+    @task
+    def degree_task(self) -> Task:
+        return Task(config=self.tasks_config["degree_task"])  # pyright: ignore
+
+    @crew
+    def degree_crew(self) -> Crew:
+        return Crew(
+            agents=[self.statistics_agent()],
+            tasks=[self.degree_task()],
+            verbose=True,
+        )
+
+    @task
+    def number_of_nodes_task(self) -> Task:
+        return Task(config=self.tasks_config["number_of_nodes_task"])  # pyright: ignore
+
+    @crew
+    def number_of_nodes_crew(self) -> Crew:
+        return Crew(
+            agents=[self.statistics_agent()],
+            tasks=[self.number_of_nodes_task()],
+            verbose=True,
+        )
+
+    @task
+    def number_of_edges_task(self) -> Task:
+        return Task(config=self.tasks_config["number_of_edges_task"])  # pyright: ignore
+
+    @crew
+    def number_of_edges_crew(self) -> Crew:
+        return Crew(
+            agents=[self.statistics_agent()],
+            tasks=[self.number_of_edges_task()],
+            verbose=True,
+        )
+
+    # ------------------------------ Query Operations ------------------------------
+    @agent
+    def query_agent(self) -> Agent:
+        return Agent(  # pyright: ignore
+            config=self.agents_config["query_agent"],  # pyright: ignore
+            tools=[
+                self.tool_registry[TigerGraphToolName.GET_NODES],
+                self.tool_registry[TigerGraphToolName.GET_NEIGHBORS],
+                self.tool_registry[TigerGraphToolName.BREADTH_FIRST_SEARCH],
+            ],
+        )
+
+    @task
+    def get_nodes_task(self) -> Task:
+        return Task(config=self.tasks_config["get_nodes_task"])  # pyright: ignore
+
+    @crew
+    def get_nodes_crew(self) -> Crew:
+        return Crew(
+            agents=[self.query_agent()],
+            tasks=[self.get_nodes_task()],
+            verbose=True,
+        )
+
+    @task
+    def get_neighbors_task(self) -> Task:
+        return Task(config=self.tasks_config["get_neighbors_task"])  # pyright: ignore
+
+    @crew
+    def get_neighbors_crew(self) -> Crew:
+        return Crew(
+            agents=[self.query_agent()],
+            tasks=[self.get_neighbors_task()],
+            verbose=True,
+        )
+
+    @task
+    def breadth_first_search_task(self) -> Task:
+        return Task(config=self.tasks_config["breadth_first_search_task"])  # pyright: ignore
+
+    @crew
+    def breadth_first_search_crew(self) -> Crew:
+        return Crew(
+            agents=[self.query_agent()],
+            tasks=[self.breadth_first_search_task()],
+            verbose=True,
+        )
+
+    # ------------------------------ Vector Operations ------------------------------
+    @agent
+    def vector_agent(self) -> Agent:
+        return Agent(  # pyright: ignore
+            config=self.agents_config["vector_agent"],  # pyright: ignore
+            tools=[
+                self.tool_registry[TigerGraphToolName.UPSERT],
+                self.tool_registry[TigerGraphToolName.FETCH_NODE],
+                self.tool_registry[TigerGraphToolName.FETCH_NODES],
+                self.tool_registry[TigerGraphToolName.SEARCH],
+                self.tool_registry[TigerGraphToolName.SEARCH_MULTI_VECTOR_ATTRIBUTES],
+                self.tool_registry[TigerGraphToolName.SEARCH_TOP_K_SIMILAR_NODES],
+            ],
+        )
+
+    @task
+    def upsert_vector_task(self) -> Task:
+        return Task(config=self.tasks_config["upsert_vector_task"])  # pyright: ignore
+
+    @crew
+    def upsert_vector_crew(self) -> Crew:
+        return Crew(
+            agents=[self.vector_agent()],
+            tasks=[self.upsert_vector_task()],
+            verbose=True,
+        )
+
+    @task
+    def fetch_node_task(self) -> Task:
+        return Task(config=self.tasks_config["fetch_node_task"])  # pyright: ignore
+
+    @crew
+    def fetch_node_crew(self) -> Crew:
+        return Crew(
+            agents=[self.vector_agent()],
+            tasks=[self.fetch_node_task()],
+            verbose=True,
+        )
+
+    @task
+    def fetch_nodes_task(self) -> Task:
+        return Task(config=self.tasks_config["fetch_nodes_task"])  # pyright: ignore
+
+    @crew
+    def fetch_nodes_crew(self) -> Crew:
+        return Crew(
+            agents=[self.vector_agent()],
+            tasks=[self.fetch_nodes_task()],
+            verbose=True,
+        )
+
+    @task
+    def vector_search_task(self) -> Task:
+        return Task(config=self.tasks_config["vector_search_task"])  # pyright: ignore
+
+    @crew
+    def vector_search_crew(self) -> Crew:
+        return Crew(
+            agents=[self.vector_agent()],
+            tasks=[self.vector_search_task()],
+            verbose=True,
+        )
+
+    @task
+    def search_multi_vector_attributes_task(self) -> Task:
+        return Task(config=self.tasks_config["search_multi_vector_attributes_task"])  # pyright: ignore
+
+    @crew
+    def search_multi_vector_attributes_crew(self) -> Crew:
+        return Crew(
+            agents=[self.vector_agent()],
+            tasks=[self.search_multi_vector_attributes_task()],
+            verbose=True,
+        )
+
+    @task
+    def search_top_k_similar_nodes_task(self) -> Task:
+        return Task(config=self.tasks_config["search_top_k_similar_nodes_task"])  # pyright: ignore
+
+    @crew
+    def search_top_k_similar_nodes_crew(self) -> Crew:
+        return Crew(
+            agents=[self.vector_agent()],
+            tasks=[self.search_top_k_similar_nodes_task()],
+            verbose=True,
+        )
