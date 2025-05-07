@@ -19,7 +19,6 @@ class TestQueryTools(UserProductGraphFixture):
                         "node_type": "User",
                         "filter_expression": "s.age > 20",
                         "limit": 10,
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert "✅ Retrieved nodes" in str(result)
@@ -39,7 +38,6 @@ class TestQueryTools(UserProductGraphFixture):
                         "filter_expression": "s.id != t.id",
                         "return_attributes": ["id", "name", "price"],
                         "limit": 5,
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert "✅ Retrieved neighbors" in str(result)
@@ -57,7 +55,6 @@ class TestQueryTools(UserProductGraphFixture):
                         "node_type": "Product",
                         "edge_types": ["similar_to"],
                         "max_hops": 1,
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert "✅ BFS traversal results" in str(result)

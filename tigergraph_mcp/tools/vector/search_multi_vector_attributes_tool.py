@@ -1,16 +1,13 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class SearchMultiVectorAttributesInput(BaseToolInput):
+class SearchMultiVectorAttributesInput(BaseModel):
     """Input schema for searching with multiple vector attributes."""
 
     graph_name: str = Field(..., description="The name of the graph to search in.")
@@ -78,8 +75,7 @@ results = G.search_multi_vector_attributes(
     return_attributes_list=[["name", "gender"], ["name"]],
 )
 ```
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=SearchMultiVectorAttributesInput.model_json_schema(),
     )
 ]
@@ -92,10 +88,9 @@ async def search_multi_vector_attributes(
     node_types: Optional[List[str]] = None,
     limit: int = 10,
     return_attributes_list: Optional[List[List[str]]] = None,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         results = graph.search_multi_vector_attributes(
             data=data,
             vector_attribute_names=vector_attribute_names,

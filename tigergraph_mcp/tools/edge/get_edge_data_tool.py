@@ -5,20 +5,17 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from typing import Dict, Optional
+from typing import Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class GetEdgeDataToolInput(BaseToolInput):
+class GetEdgeDataToolInput(BaseModel):
     """Input schema for retrieving a specific edge's data from a TigerGraph graph."""
 
     graph_name: str = Field(
@@ -57,8 +54,7 @@ src_node_type = "Person"
 edge_type = "Friendship"
 tgt_node_type = "Person"
 ```
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=GetEdgeDataToolInput.model_json_schema(),
     )
 ]
@@ -71,10 +67,9 @@ async def get_edge_data(
     src_node_type: Optional[str] = None,
     edge_type: Optional[str] = None,
     tgt_node_type: Optional[str] = None,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> list[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         edge_data = graph.get_edge_data(
             src_node_id=src_node_id,
             tgt_node_id=tgt_node_id,

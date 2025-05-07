@@ -5,20 +5,17 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from typing import Dict, List, Optional
+from typing import List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class HasNodeToolInput(BaseToolInput):
+class HasNodeToolInput(BaseModel):
     """Input schema for checking node existence in a TigerGraph graph."""
 
     graph_name: str = Field(
@@ -41,8 +38,7 @@ graph_name = "SocialGraph"
 node_id = "Alice"
 node_type = "Person"  # Optional
 ```
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=HasNodeToolInput.model_json_schema(),
     )
 ]
@@ -52,10 +48,9 @@ async def has_node(
     graph_name: str,
     node_id: str | int,
     node_type: Optional[str] = None,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         exists = graph.has_node(node_id, node_type)
         result = f"✅ Node '{node_id}' of type '{node_type or 'default'}' exists in graph '{graph_name}': {exists}."
     except Exception as e:

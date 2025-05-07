@@ -8,17 +8,14 @@
 from typing import List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class HasEdgeToolInput(BaseToolInput):
+class HasEdgeToolInput(BaseModel):
     """Input schema for checking if an edge exists in a TigerGraph graph."""
 
     graph_name: str = Field(
@@ -53,8 +50,7 @@ tgt_node_type = "Person"
 ```
 
 This will return a boolean value indicating whether the specified edge exists.
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=HasEdgeToolInput.model_json_schema(),
     )
 ]
@@ -67,10 +63,9 @@ async def has_edge(
     src_node_type: Optional[str] = None,
     edge_type: Optional[str] = None,
     tgt_node_type: Optional[str] = None,
-    tigergraph_connection_config: Optional[dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         exists = graph.has_edge(
             src_node_id,
             tgt_node_id,

@@ -8,17 +8,14 @@
 from typing import List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class NumberOfEdgesToolInput(BaseToolInput):
+class NumberOfEdgesToolInput(BaseModel):
     """Input schema for getting the number of edges in a TigerGraph graph."""
 
     graph_name: str = Field(..., description="The name of the graph to query.")
@@ -40,8 +37,7 @@ edge_type = "Friendship"  # Optional
 ```
 
 If `edge_type` is not provided, all edges will be counted.
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=NumberOfEdgesToolInput.model_json_schema(),
     )
 ]
@@ -50,10 +46,9 @@ If `edge_type` is not provided, all edges will be counted.
 async def number_of_edges(
     graph_name: str,
     edge_type: Optional[str] = None,
-    tigergraph_connection_config: Optional[dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         count = graph.number_of_edges(edge_type)
         result = f"🔗 Graph '{graph_name}' has {count} edge(s)" + (
             f" of type '{edge_type}'." if edge_type else "."

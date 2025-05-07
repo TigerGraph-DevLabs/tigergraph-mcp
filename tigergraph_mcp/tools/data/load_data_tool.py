@@ -5,20 +5,17 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from typing import Dict, List, Optional
+from typing import Dict, List
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class LoadDataToolInput(BaseToolInput):
+class LoadDataToolInput(BaseModel):
     """Input schema for loading data into a TigerGraph graph."""
 
     graph_name: str = Field(
@@ -80,8 +77,7 @@ loading_job_config = {
     ],
 }
 ```
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=LoadDataToolInput.model_json_schema(),
     )
 ]
@@ -90,10 +86,9 @@ loading_job_config = {
 async def load_data(
     graph_name: str,
     loading_job_config: Dict,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         graph.load_data(loading_job_config)
         result = f"✅ Data loaded successfully into graph '{graph_name}'."
     except Exception as e:

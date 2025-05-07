@@ -25,7 +25,6 @@ class TestEdgeTools(UserProductGraphFixture):
                         "edge_type": "purchased",
                         "tgt_node_type": "Product",
                         "attributes": {"purchase_date": "2024-01-12"},
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert "added successfully to graph" in str(result)
@@ -55,7 +54,6 @@ class TestEdgeTools(UserProductGraphFixture):
                         "edge_type": "purchased",
                         "tgt_node_type": "Product",
                         "attributes": {"quantity": 1},
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
 
@@ -78,7 +76,6 @@ class TestEdgeTools(UserProductGraphFixture):
                         "src_node_type": "User",
                         "edge_type": "purchased",
                         "tgt_node_type": "Product",
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert f"exists in graph '{self.graph_name}': True" in str(result)
@@ -99,7 +96,6 @@ class TestEdgeTools(UserProductGraphFixture):
                         "src_node_type": "User",
                         "edge_type": "purchased",
                         "tgt_node_type": "Product",
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert "✅ Edge data retrieved:" in str(result)

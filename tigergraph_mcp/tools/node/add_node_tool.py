@@ -8,17 +8,14 @@
 from typing import Dict, List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class AddNodeToolInput(BaseToolInput):
+class AddNodeToolInput(BaseModel):
     """Input schema for adding a node to a TigerGraph graph."""
 
     graph_name: str = Field(
@@ -45,8 +42,7 @@ node_id = "Alice"
 node_type = "Person"
 attributes = {"age": 30, "gender": "Female"}
 ```
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=AddNodeToolInput.model_json_schema(),
     )
 ]
@@ -57,11 +53,10 @@ async def add_node(
     node_id: str | int,
     node_type: Optional[str] = None,
     attributes: Optional[Dict] = None,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> List[TextContent]:
     try:
         attributes = attributes or {}
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         graph.add_node(node_id, node_type, **attributes)
         result = f"✅ Node '{node_id}' (Type: {node_type or 'default'}) added successfully to graph '{graph_name}'."
     except Exception as e:

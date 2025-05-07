@@ -8,17 +8,14 @@
 from typing import Any, Dict, List, Optional, Tuple
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class AddNodesToolInput(BaseToolInput):
+class AddNodesToolInput(BaseModel):
     """Input schema for adding multiple nodes to a graph."""
 
     graph_name: str = Field(
@@ -54,8 +51,7 @@ Example input:
   "common_attributes": {"city": "New York"},
 }
 ```
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=AddNodesToolInput.model_json_schema(),
     )
 ]
@@ -66,7 +62,6 @@ async def add_nodes(
     nodes_for_adding: List[str | int] | List[Tuple[str | int, Dict[str, Any]]],
     node_type: Optional[str] = None,
     common_attributes: Optional[Dict[str, Any]] = None,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> List[TextContent]:
     try:
         # Normalize the nodes_for_adding list to ensure each item is a (node_id, attributes_dict) tuple.
@@ -87,8 +82,7 @@ async def add_nodes(
                 raise ValueError(
                     "Each item in nodes_for_adding must be a node ID or [node ID, attribute dict]."
                 )
-
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         count = graph.add_nodes_from(
             normalized_nodes, node_type, **(common_attributes or {})
         )

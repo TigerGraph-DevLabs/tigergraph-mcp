@@ -8,17 +8,14 @@
 from typing import Optional, List
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class DegreeToolInput(BaseToolInput):
+class DegreeToolInput(BaseModel):
     """Input schema for computing the degree of a node in a TigerGraph graph."""
 
     graph_name: str = Field(
@@ -50,8 +47,7 @@ edge_types = ["Friendship", "Follow"]
 ```
 
 If no `edge_types` are provided, all edge types will be used.
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=DegreeToolInput.model_json_schema(),
     )
 ]
@@ -62,10 +58,9 @@ async def degree(
     node_id: str | int,
     node_type: Optional[str] = None,
     edge_types: Optional[List[str] | str] = None,
-    tigergraph_connection_config: Optional[dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         deg = graph.degree(node_id, node_type=node_type, edge_types=edge_types)
         result = f"📏 Degree of node '{node_id}' (Type: {node_type or 'default'}) in graph '{graph_name}' is {deg}."
     except Exception as e:

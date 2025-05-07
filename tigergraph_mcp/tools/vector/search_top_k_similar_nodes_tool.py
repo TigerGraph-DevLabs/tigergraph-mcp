@@ -1,16 +1,13 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class SearchTopKSimilarNodesInput(BaseToolInput):
+class SearchTopKSimilarNodesInput(BaseModel):
     """Input schema for top-k similar node search using a reference node's vector."""
 
     graph_name: str = Field(..., description="The name of the graph to search in.")
@@ -48,8 +45,7 @@ limit = 5
 return_attributes = ["name", "gender"]
 ```
 This tool compares the query node's vector with others and returns the most similar ones.
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=SearchTopKSimilarNodesInput.model_json_schema(),
     )
 ]
@@ -62,10 +58,9 @@ async def search_top_k_similar_nodes(
     node_type: Optional[str] = None,
     limit: int = 5,
     return_attributes: Optional[List[str]] = None,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         results = graph.search_top_k_similar_nodes(
             node_id=node_id,
             vector_attribute_name=vector_attribute_name,

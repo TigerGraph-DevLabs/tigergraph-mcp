@@ -1,7 +1,5 @@
 from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
-import os
-from functools import lru_cache
 
 from crewai.flow.flow import Flow, listen, or_, router, start
 from crewai.tools import BaseTool
@@ -92,7 +90,6 @@ I'm here to help – just let me know what you'd like to do! 🚀
     def _handle_task(self, task_name: TigerGraphToolName):
         inputs = {
             "conversation_history": str(self.state.conversation_history),
-            "connection_config": self._get_connection_config_from_env(),
         }
 
         # Convert tool name to method name: "graph/create_schema" -> "create_schema_crew"
@@ -114,15 +111,3 @@ I'm here to help – just let me know what you'd like to do! 🚀
         self.state.conversation_history.append(f"User: {user_input}")
         self.state.matched_tool = None
         return "user_provided_followup"
-
-    @lru_cache(maxsize=1)
-    def _get_connection_config_from_env(self) -> Dict:
-        return {
-            "host": os.environ.get("TG_HOST", "http://127.0.0.1"),
-            "restpp_port": os.environ.get("TG_RESTPP_PORT", "14240"),
-            "gsql_port": os.environ.get("TG_GSQL_PORT", "14240"),
-            "username": os.environ.get("TG_USERNAME", ""),
-            "password": os.environ.get("TG_PASSWORD", ""),
-            "secret": os.environ.get("TG_SECRET", ""),
-            "token": os.environ.get("TG_TOKEN", ""),
-        }

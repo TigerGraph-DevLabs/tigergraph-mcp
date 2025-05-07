@@ -10,10 +10,6 @@ create_schema_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Based on the provided schema description, you will generate an appropriate graph schema that meets the user’s requirements. Ensure to ask for any missing details if necessary.
 
   expected_output: >
@@ -32,10 +28,6 @@ get_schema_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Based on the provided graph name, you will retrieve and display the schema of the corresponding graph in TigerGraph. Ensure that the user has provided the correct graph name.
 
   expected_output: >
@@ -53,10 +45,6 @@ graph_drop_task:
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
     {conversation_history}
-
-    Connection Configuration
-    ------------------------
-    {connection_config}
 
     Verify the provided graph name before proceeding.
 
@@ -77,10 +65,6 @@ load_data_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     First, analyze the file structure and user-provided details (such as CSV headers, file paths, and data mappings). Then, generate a valid loading job configuration and use the appropriate tool to load the data into the target graph.
 
   expected_output: >
@@ -100,10 +84,6 @@ add_node_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Given a node ID and optional node type, add the node to the graph along with any provided attributes. Ensure the node type is valid before proceeding.
 
   expected_output: >
@@ -121,10 +101,6 @@ add_nodes_task:
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
     {conversation_history}
-
-    Connection Configuration
-    ------------------------
-    {connection_config}
 
     Given a list of node IDs and optional attributes, add them to the graph in bulk. Ensure efficient processing and handle missing or inconsistent data gracefully.
 
@@ -144,10 +120,6 @@ remove_node_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Given a node ID and optional node type, remove the node from the graph if it exists. Validate that the node exists before attempting removal.
 
   expected_output: >
@@ -165,10 +137,6 @@ has_node_task:
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
     {conversation_history}
-
-    Connection Configuration
-    ------------------------
-    {connection_config}
 
     Given a node ID and optional node type, verify whether the node is present in the graph.
 
@@ -188,10 +156,6 @@ get_node_data_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Given a node ID and optional node type, fetch and return the node's attributes and properties.
 
   expected_output: >
@@ -210,10 +174,6 @@ get_node_edges_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Given a node ID, optional node type, and optional edge types, fetch all edges associated with the node.
 
   expected_output: >
@@ -231,10 +191,6 @@ clear_graph_data_task:
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
     {conversation_history}
-
-    Connection Configuration
-    ------------------------
-    {connection_config}
 
     Clear all nodes from the graph while maintaining structural integrity.
 
@@ -255,10 +211,6 @@ add_edge_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Extract the source node, target node, edge type, and any edge attributes from the conversation. 
     Validate the edge type and ensure both nodes exist before adding the edge.
 
@@ -277,10 +229,6 @@ add_edges_task:
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
     {conversation_history}
-
-    Connection Configuration
-    ------------------------
-    {connection_config}
 
     Extract a list of edge definitions (source, target, edge type, and optional attributes) from the user input. 
     Validate each edge against the schema and existing nodes before attempting to add them in bulk.
@@ -301,10 +249,6 @@ has_edge_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Extract the source node, target node, and edge type from the conversation. 
     Return whether the specified edge currently exists in the graph.
 
@@ -323,10 +267,6 @@ get_edge_data_task:
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
     {conversation_history}
-
-    Connection Configuration
-    ------------------------
-    {connection_config}
 
     Extract the source node, target node, and edge type from the user’s instruction. 
     Query the graph and return all stored edge attributes if the edge exists.
@@ -348,10 +288,6 @@ degree_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Determine the degree (number of connected edges) for the specified node(s).
 
   expected_output: >
@@ -370,10 +306,6 @@ number_of_nodes_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Report the total number of nodes in the graph.
 
   expected_output: >
@@ -390,10 +322,6 @@ number_of_edges_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent:
     {conversation_history}
-
-    Connection Configuration
-    ------------------------
-    {connection_config}
 
     Report the total number of edges in the graph.
 
@@ -414,10 +342,6 @@ get_nodes_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Fetch all nodes of the specified type, optionally applying attribute filters.
 
   expected_output: >
@@ -436,10 +360,6 @@ get_neighbors_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Identify all direct neighbors of the specified node, optionally filtered by edge types.
 
   expected_output: >
@@ -457,10 +377,6 @@ breadth_first_search_task:
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
     {conversation_history}
-
-    Connection Configuration
-    ------------------------
-    {connection_config}
 
     Perform BFS starting from the specified node(s) and return nodes found within the given hop range.
 
@@ -481,10 +397,6 @@ upsert_vector_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Use the provided node ID and vector to update or insert vector attributes in the graph.
 
   expected_output: >
@@ -502,10 +414,6 @@ fetch_node_task:
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
     {conversation_history}
-
-    Connection Configuration
-    ------------------------
-    {connection_config}
 
     Fetch the full data and vector representation of the specified node.
 
@@ -525,10 +433,6 @@ fetch_nodes_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Fetch multiple nodes and include their vector fields in the response.
 
   expected_output: >
@@ -546,10 +450,6 @@ vector_search_task:
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
     {conversation_history}
-
-    Connection Configuration
-    ------------------------
-    {connection_config}
 
     Use the given vector input to search for the most similar nodes in the graph.
 
@@ -569,10 +469,6 @@ search_multi_vector_attributes_task:
     so prioritize those when interpreting the instructions:
     {conversation_history}
 
-    Connection Configuration
-    ------------------------
-    {connection_config}
-
     Use multiple vector attributes to search for nodes with the best combined similarity.
 
   expected_output: >
@@ -590,10 +486,6 @@ search_top_k_similar_nodes_task:
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
     {conversation_history}
-
-    Connection Configuration
-    ------------------------
-    {connection_config}
 
     Find and return the top K nodes most similar to the provided vector representation.
 

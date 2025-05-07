@@ -7,17 +7,14 @@
 from typing import List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class GetNodesToolInput(BaseToolInput):
+class GetNodesToolInput(BaseModel):
     """Input schema for retrieving nodes from a TigerGraph graph."""
 
     graph_name: str = Field(..., description="The name of the graph to query.")
@@ -67,8 +64,7 @@ Notes:
 - Use `filter_expression` to apply conditions (e.g., "s.age >= 25 and s.gender == 'Female'").
 - If `return_attributes` is specified, only the listed attributes will be returned.
 - Results are always returned as a list of dictionaries.
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=GetNodesToolInput.model_json_schema(),
     )
 ]
@@ -82,10 +78,9 @@ async def get_nodes(
     filter_expression: Optional[str] = None,
     return_attributes: Optional[List[str]] = None,
     limit: Optional[int] = None,
-    tigergraph_connection_config: Optional[dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         nodes = graph.get_nodes(
             node_type=node_type,
             all_node_types=all_node_types,

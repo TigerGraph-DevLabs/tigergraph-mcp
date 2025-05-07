@@ -8,17 +8,14 @@
 from typing import Dict, List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class AddEdgeToolInput(BaseToolInput):
+class AddEdgeToolInput(BaseModel):
     """Input schema for adding an edge to a TigerGraph graph."""
 
     graph_name: str = Field(
@@ -57,8 +54,7 @@ attributes = {"closeness": 2.5}
 ```
 
 If node types and edge type are not specified, default single-type behavior is assumed.
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=AddEdgeToolInput.model_json_schema(),
     )
 ]
@@ -72,11 +68,10 @@ async def add_edge(
     edge_type: Optional[str] = None,
     tgt_node_type: Optional[str] = None,
     attributes: Optional[Dict] = None,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> List[TextContent]:
     try:
         attributes = attributes or {}
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         graph.add_edge(
             src_node_id,
             tgt_node_id,

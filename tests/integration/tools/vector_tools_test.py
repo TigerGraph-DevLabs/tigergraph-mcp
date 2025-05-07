@@ -42,7 +42,6 @@ class TestVectorTools(BaseGraphFixture):
         }
         self.G = Graph(
             graph_schema=graph_schema,
-            tigergraph_connection_config=self.tigergraph_connection_config,
         )
 
     @pytest.fixture(autouse=True)
@@ -122,7 +121,6 @@ class TestVectorTools(BaseGraphFixture):
                             },
                         ],
                         "node_type": "Entity",
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert "✅ Successfully upserted" in str(result)
@@ -141,7 +139,6 @@ class TestVectorTools(BaseGraphFixture):
                         "node_id": "Entity_1",
                         "vector_attribute_name": "emb_description",
                         "node_type": "Entity",
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert "📦 Retrieved vector for node" in str(result)
@@ -160,7 +157,6 @@ class TestVectorTools(BaseGraphFixture):
                         "node_ids": ["Entity_1", "Entity_2"],
                         "vector_attribute_name": "emb_description",
                         "node_type": "Entity",
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert "📦 Retrieved vectors" in str(result)
@@ -180,7 +176,6 @@ class TestVectorTools(BaseGraphFixture):
                         "vector_attribute_name": "emb_description",
                         "node_type": "Entity",
                         "limit": 1,
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert "🔍 Search results:" in str(result)
@@ -200,7 +195,6 @@ class TestVectorTools(BaseGraphFixture):
                         "vector_attribute_name": "emb_description",
                         "node_type": "Entity",
                         "limit": 1,
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert "🔍 Top-k similar nodes for" in str(result)

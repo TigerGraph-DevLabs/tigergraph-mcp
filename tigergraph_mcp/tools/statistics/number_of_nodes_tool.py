@@ -8,17 +8,14 @@
 from typing import List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class NumberOfNodesToolInput(BaseToolInput):
+class NumberOfNodesToolInput(BaseModel):
     """Input schema for getting the number of nodes in a TigerGraph graph."""
 
     graph_name: str = Field(..., description="The name of the graph to query.")
@@ -40,15 +37,7 @@ node_type = "Person"  # Optional
 ```
 
 If `node_type` is not provided, all nodes will be counted.
-
-**`tigergraph_connection_config`** must also be provided to establish the connection to TigerGraph.
-
-### Configuration Options:
-The `tigergraph_connection_config` is required to authenticate and configure the connection to the TigerGraph instance. It can either be explicitly provided or populated via environment variables (recommended). Do not mix both methods.
-
-For more details on configuring `tigergraph_connection_config`, please refer to the following:
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=NumberOfNodesToolInput.model_json_schema(),
     )
 ]
@@ -57,10 +46,9 @@ For more details on configuring `tigergraph_connection_config`, please refer to 
 async def number_of_nodes(
     graph_name: str,
     node_type: Optional[str] = None,
-    tigergraph_connection_config: Optional[dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         count = graph.number_of_nodes(node_type)
         result = f"🔢 Graph '{graph_name}' has {count} node(s)" + (
             f" of type '{node_type}'." if node_type else "."

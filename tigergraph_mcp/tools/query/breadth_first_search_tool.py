@@ -8,16 +8,13 @@
 from typing import List, Optional, Union
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class BFSToolInput(BaseToolInput):
+class BFSToolInput(BaseModel):
     """Input schema for performing a BFS traversal on a TigerGraph graph."""
 
     graph_name: str = Field(..., description="The name of the graph to query.")
@@ -55,8 +52,7 @@ Notes:
 - Optionally filter traversal by specifying `edge_types`.
 - Returns all reachable nodes up to the specified depth with a '_bfs_level' indicating distance from the start node.
 - Results are returned as a list of dictionaries.
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=BFSToolInput.model_json_schema(),
     )
 ]
@@ -69,10 +65,9 @@ async def breadth_first_search(
     edge_types: Optional[Union[str, List[str]]] = None,
     max_hops: Optional[int] = None,
     limit: Optional[int] = None,
-    tigergraph_connection_config: Optional[dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         bfs_result = graph.bfs(
             start_nodes=start_nodes,
             node_type=node_type,

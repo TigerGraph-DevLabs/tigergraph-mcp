@@ -21,7 +21,6 @@ class TestStatisticsTools(UserProductGraphFixture):
                         "node_id": "Product_1",
                         "node_type": "Product",
                         "edge_types": ["reverse_purchased", "similar_to"],
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
 
@@ -39,7 +38,6 @@ class TestStatisticsTools(UserProductGraphFixture):
                     TigerGraphToolName.NUMBER_OF_NODES,
                     arguments={
                         "graph_name": self.graph_name,
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
 
@@ -56,7 +54,6 @@ class TestStatisticsTools(UserProductGraphFixture):
                     TigerGraphToolName.NUMBER_OF_EDGES,
                     arguments={
                         "graph_name": self.graph_name,
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
 

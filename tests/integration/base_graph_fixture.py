@@ -1,6 +1,5 @@
-import yaml
 from pathlib import Path
-from typing import Any, Dict
+from dotenv import dotenv_values, load_dotenv
 import time
 import pytest
 from mcp import StdioServerParameters
@@ -8,16 +7,22 @@ from tigergraphx import Graph
 
 
 class BaseGraphFixture:
-    tigergraph_connection_config: Dict[str, Any]
-    server_params = StdioServerParameters(command="tigergraph-mcp")
+    dotenv_path: Path = Path(".env")
+
+    # Load env as dictionary for server_params
+    env_dict: dict = dotenv_values(dotenv_path=dotenv_path.expanduser().resolve())
+
+    # Server parameters using the parsed .env file
+    server_params = StdioServerParameters(
+        command="tigergraph-mcp",
+        env=env_dict,
+    )
 
     @pytest.fixture(scope="class", autouse=True)
-    def load_connection_config(self, request):
-        """Load connection config from YAML and attach to class."""
-        config_path = Path(__file__).parent / "config" / "tigergraph_connection.yaml"
-        with open(config_path, "r") as f:
-            config = yaml.safe_load(f)
-        request.cls.tigergraph_connection_config = config
+    def load_env_file(self):
+        """Load .env file so TigerGraphX can read connection info from it."""
+        load_dotenv(dotenv_path=self.dotenv_path.expanduser().resolve(), override=True)
+
 
 class UserProductGraphFixture(BaseGraphFixture):
     def setup_graph(self):
@@ -64,10 +69,7 @@ class UserProductGraphFixture(BaseGraphFixture):
                 },
             },
         }
-        self.G = Graph(
-            graph_schema=self.graph_schema,
-            tigergraph_connection_config=self.tigergraph_connection_config,
-        )
+        self.G = Graph(graph_schema=self.graph_schema)
 
     @pytest.fixture(autouse=True)
     def add_nodes_and_edges(self):

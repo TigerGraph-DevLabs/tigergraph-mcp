@@ -19,7 +19,6 @@ class TestNodeTools(UserProductGraphFixture):
                         "node_id": "User_D",
                         "node_type": "User",
                         "attributes": {"age": 30, "name": "John"},
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert "added successfully to graph" in str(result)
@@ -40,7 +39,6 @@ class TestNodeTools(UserProductGraphFixture):
                         ],
                         "node_type": "User",
                         "common_attributes": {"age": 30},
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
 
@@ -62,7 +60,6 @@ class TestNodeTools(UserProductGraphFixture):
                         "graph_name": self.graph_name,
                         "node_id": "User_C",
                         "node_type": "User",
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert "removed successfully" in str(result)
@@ -83,7 +80,6 @@ class TestNodeTools(UserProductGraphFixture):
                         "graph_name": self.graph_name,
                         "node_id": "User_C",
                         "node_type": "User",
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert f"exists in graph '{self.graph_name}': True" in str(result)
@@ -101,7 +97,6 @@ class TestNodeTools(UserProductGraphFixture):
                         "graph_name": self.graph_name,
                         "node_id": "User_C",
                         "node_type": "User",
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
 
@@ -123,7 +118,6 @@ class TestNodeTools(UserProductGraphFixture):
                         "node_id": "User_C",
                         "node_type": "User",
                         "edge_types": "purchased",
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
 
@@ -144,7 +138,6 @@ class TestNodeTools(UserProductGraphFixture):
                     TigerGraphToolName.CLEAR_GRAPH_DATA,
                     arguments={
                         "graph_name": self.graph_name,
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert (

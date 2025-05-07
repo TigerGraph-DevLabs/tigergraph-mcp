@@ -5,20 +5,17 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from typing import Dict, List, Optional
+from typing import Dict, List
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class CreateSchemaToolInput(BaseToolInput):
+class CreateSchemaToolInput(BaseModel):
     """Input schema for creating a TigerGraph graph schema."""
 
     graph_schema: Dict = Field(..., description="The schema definition of the graph.")
@@ -81,8 +78,7 @@ graph_schema = {
     },
 }
 ```
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=CreateSchemaToolInput.model_json_schema(),
     )
 ]
@@ -90,10 +86,9 @@ graph_schema = {
 
 async def create_schema(
     graph_schema: Dict,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph(graph_schema, tigergraph_connection_config)
+        graph = Graph(graph_schema)
         result = f"✅ Schema for graph '{graph.name}' created successfully."
     except Exception as e:
         result = f"❌ Schema creation failed: {str(e)}."

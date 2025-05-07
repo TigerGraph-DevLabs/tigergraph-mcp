@@ -1,4 +1,5 @@
-from dotenv import load_dotenv
+from dotenv import dotenv_values, load_dotenv
+from pathlib import Path
 import panel as pn
 import threading
 
@@ -11,8 +12,10 @@ from chat_session_manager import chat_session
 
 
 class TigerGraphChatApp:
+    dotenv_path: Path = Path(".env")
+
     def __init__(self):
-        load_dotenv()
+        load_dotenv(dotenv_path=self.dotenv_path)
         pn.extension(design="material")
         chat_session.chat_ui.callback = self.callback
         self.send_welcome_message()
@@ -30,8 +33,11 @@ class TigerGraphChatApp:
         """Starts a new CrewAI process if one isn't already running."""
         chat_session.set_flow_active(True)
         try:
+            env_dict: dict = dotenv_values(
+                dotenv_path=self.dotenv_path.expanduser().resolve()
+            )
             with MCPAdapt(
-                StdioServerParameters(command="tigergraph-mcp"),
+                StdioServerParameters(command="tigergraph-mcp", env=env_dict),
                 CrewAIAdapter(),
             ) as tools:
                 tool_registry = {tool.name: tool for tool in tools}

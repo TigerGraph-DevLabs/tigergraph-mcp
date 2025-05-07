@@ -49,10 +49,7 @@ class TestDataTools(BaseGraphFixture):
                 },
             },
         }
-        self.G = Graph(
-            graph_schema=self.graph_schema,
-            tigergraph_connection_config=self.tigergraph_connection_config,
-        )
+        self.G = Graph(graph_schema=self.graph_schema)
 
     @pytest.fixture(autouse=True)
     def setup_files_and_graph(self):
@@ -125,7 +122,6 @@ class TestDataTools(BaseGraphFixture):
                     arguments={
                         "graph_name": self.graph_name,
                         "loading_job_config": loading_job_config,
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
                     },
                 )
                 assert "Data loaded successfully into graph" in str(result)

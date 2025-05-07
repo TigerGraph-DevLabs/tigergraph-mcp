@@ -8,16 +8,13 @@
 from typing import List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class GetNeighborsToolInput(BaseToolInput):
+class GetNeighborsToolInput(BaseModel):
     """Input schema for retrieving neighbors from a TigerGraph graph."""
 
     graph_name: str = Field(..., description="The name of the graph to query.")
@@ -77,8 +74,7 @@ Notes:
 - Filter neighbors using edge or node attributes via `filter_expression`.
 - If `return_attributes` is specified, only those attributes will be included in the results.
 - Results are always returned as a list of dictionaries.
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=GetNeighborsToolInput.model_json_schema(),
     )
 ]
@@ -96,10 +92,9 @@ async def get_neighbors(
     filter_expression: Optional[str] = None,
     return_attributes: Optional[List[str]] = None,
     limit: Optional[int] = None,
-    tigergraph_connection_config: Optional[dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         neighbors = graph.get_neighbors(
             start_nodes=start_nodes,
             start_node_type=start_node_type,

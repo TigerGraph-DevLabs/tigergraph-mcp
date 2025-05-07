@@ -43,7 +43,7 @@ class TestSchemaTools(BaseGraphFixture):
                                 },
                             },
                         },
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
+                        # "dotenv_path": self.dotenv_path,
                     },
                 )
                 assert "✅ Schema for graph 'Social' created successfully." in str(
@@ -56,7 +56,7 @@ class TestSchemaTools(BaseGraphFixture):
                     "graph/get_schema",
                     arguments={
                         "graph_name": graph_name,
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
+                        # "dotenv_path": self.dotenv_path,
                     },
                 )
                 assert "Person" in str(get_result)
@@ -66,7 +66,7 @@ class TestSchemaTools(BaseGraphFixture):
                     "graph/drop_graph",
                     arguments={
                         "graph_name": graph_name,
-                        "tigergraph_connection_config": self.tigergraph_connection_config,
+                        # "dotenv_path": self.dotenv_path,
                     },
                 )
                 assert "✅" in str(drop_result)

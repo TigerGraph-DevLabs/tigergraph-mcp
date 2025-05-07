@@ -8,17 +8,14 @@
 from typing import Any, Dict, List, Optional, Tuple, Sequence
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class AddEdgesFromToolInput(BaseToolInput):
+class AddEdgesFromToolInput(BaseModel):
     """Input schema for adding multiple edges to a graph."""
 
     graph_name: str = Field(
@@ -63,8 +60,7 @@ Example input:
   "tgt_node_type": "Person",
   "attributes": {"verified": true}
 }
-```"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+```""",
         inputSchema=AddEdgesFromToolInput.model_json_schema(),
     )
 ]
@@ -79,7 +75,6 @@ async def add_edges(
     edge_type: Optional[str] = None,
     tgt_node_type: Optional[str] = None,
     attributes: Optional[Dict[str, Any]] = None,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> List[TextContent]:
     try:
         # Normalize ebunch so each item is a (src, tgt, attributes) tuple
@@ -98,7 +93,7 @@ async def add_edges(
                     "Each item in ebunch_to_add must be (src, tgt) or (src, tgt, attribute dict)."
                 )
 
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         count = graph.add_edges_from(
             normalized_edges,
             src_node_type,

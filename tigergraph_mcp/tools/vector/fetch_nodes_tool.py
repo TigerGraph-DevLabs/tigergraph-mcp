@@ -1,16 +1,13 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class FetchNodesToolInput(BaseToolInput):
+class FetchNodesToolInput(BaseModel):
     """Input schema for fetching multiple nodes' embedding vectors."""
 
     graph_name: str = Field(
@@ -41,8 +38,7 @@ node_type = "Person"  # Optional
 ```
 
 If `vector_attribute_name` is not provided, no vectors will be retrieved, and a warning will be returned.
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=FetchNodesToolInput.model_json_schema(),
     )
 ]
@@ -53,10 +49,9 @@ async def fetch_nodes(
     node_ids: List[str] | List[int],
     vector_attribute_name: Optional[str] = None,
     node_type: Optional[str] = None,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         if not vector_attribute_name:
             return [
                 TextContent(

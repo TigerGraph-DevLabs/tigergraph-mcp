@@ -1,16 +1,13 @@
 from typing import Dict, List, Optional
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class UpsertToolInput(BaseToolInput):
+class UpsertToolInput(BaseModel):
     """Input schema for upserting nodes with vector data."""
 
     graph_name: str = Field(
@@ -45,8 +42,7 @@ data = [
     {"name": "Emily", "age": 28, "gender": "Female", "emb_1": [0.7, 0.8, 0.9]},
 ]
 ```
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=UpsertToolInput.model_json_schema(),
     )
 ]
@@ -56,10 +52,9 @@ async def upsert(
     graph_name: str,
     data: Dict | List[Dict],
     node_type: Optional[str] = None,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         result = graph.upsert(data=data, node_type=node_type)
         return [
             TextContent(

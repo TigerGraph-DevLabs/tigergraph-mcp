@@ -5,19 +5,16 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from typing import Optional, List, Dict
+from typing import Optional, List
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class GetNodeEdgesToolInput(BaseToolInput):
+class GetNodeEdgesToolInput(BaseModel):
     """Input schema for retrieving edges connected to a specific node."""
 
     graph_name: str = Field(
@@ -47,8 +44,7 @@ node_id = "Alice"
 node_type = "Person"  # Optional
 edge_types = ["Friendship", "Colleague"]  # Optional filter
 ```
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=GetNodeEdgesToolInput.model_json_schema(),
     )
 ]
@@ -59,10 +55,9 @@ async def get_node_edges(
     node_id: str | int,
     node_type: Optional[str] = None,
     edge_types: Optional[str | List[str]] = None,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         edges = graph.get_node_edges(node_id, node_type, edge_types)
 
         if not edges:

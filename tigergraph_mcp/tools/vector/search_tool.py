@@ -1,16 +1,13 @@
-from typing import Dict, List, Optional, Set
+from typing import List, Optional, Set
 from pydantic import Field
 from mcp.types import Tool, TextContent
+from pydantic import BaseModel
 
 from tigergraphx import Graph
 from tigergraph_mcp.tools import TigerGraphToolName
-from tigergraph_mcp.tools.base_tool_input import (
-    BaseToolInput,
-    TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
-)
 
 
-class SearchToolInput(BaseToolInput):
+class SearchToolInput(BaseModel):
     """Input schema for vector-based node search."""
 
     graph_name: str = Field(..., description="The name of the graph to search in.")
@@ -52,8 +49,7 @@ candidate_ids = None  # Optional
 ```
 
 This tool performs a vector similarity search and returns the most similar nodes based on the given vector.
-"""
-        + TIGERGRAPH_CONNECTION_CONFIG_DESCRIPTION,
+""",
         inputSchema=SearchToolInput.model_json_schema(),
     )
 ]
@@ -67,10 +63,9 @@ async def search(
     limit: int = 10,
     return_attributes: Optional[str | List[str]] = None,
     candidate_ids: Optional[Set[str]] = None,
-    tigergraph_connection_config: Optional[Dict] = None,
 ) -> List[TextContent]:
     try:
-        graph = Graph.from_db(graph_name, tigergraph_connection_config)
+        graph = Graph.from_db(graph_name)
         results = graph.search(
             data=data,
             vector_attribute_name=vector_attribute_name,
