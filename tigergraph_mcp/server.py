@@ -34,6 +34,10 @@ from .tools import (
     degree,
     number_of_nodes,
     number_of_edges,
+    create_query,
+    install_query,
+    drop_query,
+    run_query,
     get_nodes,
     get_neighbors,
     upsert,
@@ -100,6 +104,14 @@ async def serve() -> None:
                 case TigerGraphToolName.NUMBER_OF_EDGES:
                     return await number_of_edges(**arguments)
                 # Tools for Query Operations
+                case TigerGraphToolName.CREATE_QUERY:
+                    return await create_query(**arguments)
+                case TigerGraphToolName.INSTALL_QUERY:
+                    return await install_query(**arguments)
+                case TigerGraphToolName.DROP_QUERY:
+                    return await drop_query(**arguments)
+                case TigerGraphToolName.RUN_QUERY:
+                    return await run_query(**arguments)
                 case TigerGraphToolName.GET_NODES:
                     return await get_nodes(**arguments)
                 case TigerGraphToolName.GET_NEIGHBORS:

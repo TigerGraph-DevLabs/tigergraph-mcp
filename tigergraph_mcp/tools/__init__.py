@@ -34,6 +34,10 @@ from .statistics import (
     number_of_edges,
 )
 from .query import (
+    create_query,
+    install_query,
+    drop_query,
+    run_query,
     get_nodes,
     get_neighbors,
     breadth_first_search,
@@ -78,6 +82,10 @@ __all__ = [
     "number_of_nodes",
     "number_of_edges",
     # Tools for Query Operations
+    "create_query",
+    "install_query",
+    "drop_query",
+    "run_query",
     "get_nodes",
     "get_neighbors",
     "breadth_first_search",

@@ -34,6 +34,10 @@ from .statistics import (
     number_of_edges_tool,
 )
 from .query import (
+    create_query_tool,
+    install_query_tool,
+    drop_query_tool,
+    run_query_tool,
     get_nodes_tool,
     get_neighbors_tool,
     breadth_first_search_tool,
@@ -74,6 +78,10 @@ def get_all_tools() -> list[Tool]:
         + number_of_nodes_tool.tools
         + number_of_edges_tool.tools
         # Tools for Query Operations
+        + create_query_tool.tools
+        + install_query_tool.tools
+        + drop_query_tool.tools
+        + run_query_tool.tools
         + get_nodes_tool.tools
         + get_neighbors_tool.tools
         + breadth_first_search_tool.tools

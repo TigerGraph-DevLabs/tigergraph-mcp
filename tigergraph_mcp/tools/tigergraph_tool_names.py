@@ -27,10 +27,13 @@ class TigerGraphToolName(str, Enum):
     NUMBER_OF_NODES = "graph/number_of_nodes"
     NUMBER_OF_EDGES = "graph/number_of_edges"
     # Query Operations
+    CREATE_QUERY = "graph/create_query"
+    INSTALL_QUERY = "graph/install_query"
+    DROP_QUERY = "graph/DROP_QUERY"
+    RUN_QUERY = "graph/run_query"
     GET_NODES = "graph/get_nodes"
     GET_NEIGHBORS = "graph/get_neighbors"
     BREADTH_FIRST_SEARCH = "graph/breadth_first_search"
-    RUN_QUERY = "graph/run_query"
     # Vector Operations
     UPSERT = "graph/upsert"
     FETCH_NODE = "graph/fetch_node"
