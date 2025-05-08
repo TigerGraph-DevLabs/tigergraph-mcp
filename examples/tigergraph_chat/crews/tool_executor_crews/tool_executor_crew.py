@@ -307,6 +307,7 @@ class ToolExecutorCrews:
         return Agent(  # pyright: ignore
             config=self.agents_config["statistics_agent"],  # pyright: ignore
             tools=[
+                self.tool_registry[TigerGraphToolName.GET_SCHEMA],
                 self.tool_registry[TigerGraphToolName.DEGREE],
                 self.tool_registry[TigerGraphToolName.NUMBER_OF_NODES],
                 self.tool_registry[TigerGraphToolName.NUMBER_OF_EDGES],
@@ -355,10 +356,63 @@ class ToolExecutorCrews:
         return Agent(  # pyright: ignore
             config=self.agents_config["query_agent"],  # pyright: ignore
             tools=[
+                self.tool_registry[TigerGraphToolName.GET_SCHEMA],
+                self.tool_registry[TigerGraphToolName.CREATE_QUERY],
+                self.tool_registry[TigerGraphToolName.INSTALL_QUERY],
+                self.tool_registry[TigerGraphToolName.DROP_QUERY],
+                self.tool_registry[TigerGraphToolName.RUN_QUERY],
                 self.tool_registry[TigerGraphToolName.GET_NODES],
                 self.tool_registry[TigerGraphToolName.GET_NEIGHBORS],
                 self.tool_registry[TigerGraphToolName.BREADTH_FIRST_SEARCH],
             ],
+        )
+
+    @task
+    def create_query_task(self) -> Task:
+        return Task(config=self.tasks_config["create_query_task"])  # pyright: ignore
+
+    @crew
+    def create_query_crew(self) -> Crew:
+        return Crew(
+            agents=[self.query_agent()],
+            tasks=[self.create_query_task()],
+            verbose=True,
+        )
+
+    @task
+    def install_query_task(self) -> Task:
+        return Task(config=self.tasks_config["install_query_task"])  # pyright: ignore
+
+    @crew
+    def install_query_crew(self) -> Crew:
+        return Crew(
+            agents=[self.query_agent()],
+            tasks=[self.install_query_task()],
+            verbose=True,
+        )
+
+    @task
+    def run_query_task(self) -> Task:
+        return Task(config=self.tasks_config["run_query_task"])  # pyright: ignore
+
+    @crew
+    def run_query_crew(self) -> Crew:
+        return Crew(
+            agents=[self.query_agent()],
+            tasks=[self.run_query_task()],
+            verbose=True,
+        )
+
+    @task
+    def drop_query_task(self) -> Task:
+        return Task(config=self.tasks_config["drop_query_task"])  # pyright: ignore
+
+    @crew
+    def drop_query_crew(self) -> Crew:
+        return Crew(
+            agents=[self.query_agent()],
+            tasks=[self.drop_query_task()],
+            verbose=True,
         )
 
     @task
@@ -403,6 +457,7 @@ class ToolExecutorCrews:
         return Agent(  # pyright: ignore
             config=self.agents_config["vector_agent"],  # pyright: ignore
             tools=[
+                self.tool_registry[TigerGraphToolName.GET_SCHEMA],
                 self.tool_registry[TigerGraphToolName.UPSERT],
                 self.tool_registry[TigerGraphToolName.FETCH_NODE],
                 self.tool_registry[TigerGraphToolName.FETCH_NODES],

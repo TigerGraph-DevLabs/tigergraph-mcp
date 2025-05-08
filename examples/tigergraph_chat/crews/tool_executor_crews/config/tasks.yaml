@@ -331,6 +331,78 @@ number_of_edges_task:
   agent: statistics_agent
 
 # ------------------------------ Query Operations ------------------------------
+create_query_task:
+  description: >
+    Create a new GSQL query on the graph using raw GSQL syntax.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Extract the full GSQL query content from the conversation and use it to create the query.
+
+  expected_output: >
+    A confirmation message indicating whether the query was successfully created.
+
+  agent: query_agent
+
+install_query_task:
+  description: >
+    Install a previously created GSQL query on the graph.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Extract the name of the query to be installed and install it on the graph.
+
+  expected_output: >
+    A confirmation message indicating successful installation of the query.
+
+  agent: query_agent
+
+run_query_task:
+  description: >
+    Execute a pre-installed GSQL query with specified input parameters.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Extract the query name and any parameters required for execution, then run the query.
+
+  expected_output: >
+    A structured list or DataFrame representing the output of the executed query.
+
+  agent: query_agent
+
+drop_query_task:
+  description: >
+    Drop an existing GSQL query from the graph.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+    {conversation_history}
+
+    Identify the query to be dropped and remove it from the graph.
+
+  expected_output: >
+    A confirmation message indicating whether the query was successfully dropped.
+
+  agent: query_agent
+
 get_nodes_task:
   description: >
     Retrieve all or a filtered subset of nodes from the graph.
