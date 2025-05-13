@@ -3,6 +3,7 @@ import pytest
 
 from mcp import ClientSession
 from mcp.client.stdio import stdio_client
+from tigergraph_mcp import TigerGraphToolName
 
 from tests.integration.base_graph_fixture import BaseGraphFixture
 
@@ -18,7 +19,7 @@ class TestSchemaTools(BaseGraphFixture):
                 # Create Schema
                 graph_name = "Social"
                 create_result = await session.call_tool(
-                    "graph/create_schema",
+                    TigerGraphToolName.CREATE_SCHEMA,
                     arguments={
                         "graph_schema": {
                             "graph_name": graph_name,
@@ -43,7 +44,6 @@ class TestSchemaTools(BaseGraphFixture):
                                 },
                             },
                         },
-                        # "dotenv_path": self.dotenv_path,
                     },
                 )
                 assert "✅ Schema for graph 'Social' created successfully." in str(
@@ -53,20 +53,18 @@ class TestSchemaTools(BaseGraphFixture):
                 # Get Schema
                 time.sleep(3)
                 get_result = await session.call_tool(
-                    "graph/get_schema",
+                    TigerGraphToolName.GET_SCHEMA,
                     arguments={
                         "graph_name": graph_name,
-                        # "dotenv_path": self.dotenv_path,
                     },
                 )
                 assert "Person" in str(get_result)
 
                 # Drop Graph
                 drop_result = await session.call_tool(
-                    "graph/drop_graph",
+                    TigerGraphToolName.DROP_GRAPH,
                     arguments={
                         "graph_name": graph_name,
-                        # "dotenv_path": self.dotenv_path,
                     },
                 )
                 assert "✅" in str(drop_result)

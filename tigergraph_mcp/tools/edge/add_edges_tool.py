@@ -21,9 +21,7 @@ class AddEdgesFromToolInput(BaseModel):
     graph_name: str = Field(
         ..., description="The name of the graph where the edges will be added."
     )
-    ebunch_to_add: Sequence[
-        Tuple[str | int, str | int] | Tuple[str | int, str | int, Dict[str, Any]]
-    ] = Field(
+    ebunch_to_add: Sequence[List] = Field(
         ...,
         description="A list of (src, tgt) or (src, tgt, attribute_dict) edge tuples.",
     )
@@ -69,7 +67,7 @@ Example input:
 async def add_edges(
     graph_name: str,
     ebunch_to_add: Sequence[
-        Tuple[str | int, str | int] | Tuple[str | int, str | int, Dict[str, Any]]
+        List | Tuple[str | int, str | int] | Tuple[str | int, str | int, Dict[str, Any]]
     ],
     src_node_type: Optional[str] = None,
     edge_type: Optional[str] = None,

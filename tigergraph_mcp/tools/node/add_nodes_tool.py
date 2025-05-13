@@ -21,9 +21,9 @@ class AddNodesToolInput(BaseModel):
     graph_name: str = Field(
         ..., description="The name of the graph where the nodes will be added."
     )
-    nodes_for_adding: List[str | int] | List[Tuple[str | int, Dict[str, Any]]] = Field(
+    nodes_for_adding: List[str | int] | List[List] = Field(
         ...,
-        description="A list of node IDs or (node ID, attribute dict) pairs to be added.",
+        description="A list of node IDs or [node ID, attribute dict] pairs to be added.",
     )
     node_type: Optional[str] = Field(
         None, description="The type of the nodes (optional)."
@@ -59,7 +59,7 @@ Example input:
 
 async def add_nodes(
     graph_name: str,
-    nodes_for_adding: List[str | int] | List[Tuple[str | int, Dict[str, Any]]],
+    nodes_for_adding: List[str | int] | List[List | Tuple[str | int, Dict[str, Any]]],
     node_type: Optional[str] = None,
     common_attributes: Optional[Dict[str, Any]] = None,
 ) -> List[TextContent]:
