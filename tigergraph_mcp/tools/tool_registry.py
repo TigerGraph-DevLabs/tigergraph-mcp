@@ -7,13 +7,13 @@
 
 from mcp.types import Tool
 
-from .schema import (
+from .graph.schema import (
     create_schema_tool,
     get_schema_tool,
     drop_graph_tool,
 )
-from .data import load_data_tool
-from .node import (
+from .graph.data import load_data_tool
+from .graph.node import (
     add_node_tool,
     add_nodes_tool,
     remove_node_tool,
@@ -22,18 +22,18 @@ from .node import (
     get_node_edges_tool,
     clear_graph_data_tool,
 )
-from .edge import (
+from .graph.edge import (
     add_edge_tool,
     add_edges_tool,
     has_edge_tool,
     get_edge_data_tool,
 )
-from .statistics import (
+from .graph.statistics import (
     degree_tool,
     number_of_nodes_tool,
     number_of_edges_tool,
 )
-from .query import (
+from .graph.query import (
     create_query_tool,
     install_query_tool,
     drop_query_tool,
@@ -42,7 +42,7 @@ from .query import (
     get_neighbors_tool,
     breadth_first_search_tool,
 )
-from .vector import (
+from .graph.vector import (
     upsert_tool,
     fetch_node_tool,
     fetch_nodes_tool,

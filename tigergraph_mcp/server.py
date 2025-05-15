@@ -11,8 +11,6 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import Tool, TextContent
 
-from tigergraph_mcp.tools.query.breadth_first_search_tool import breadth_first_search
-
 from .tools import (
     TigerGraphToolName,
     get_all_tools,
@@ -40,6 +38,7 @@ from .tools import (
     run_query,
     get_nodes,
     get_neighbors,
+    breadth_first_search,
     upsert,
     fetch_node,
     fetch_nodes,
