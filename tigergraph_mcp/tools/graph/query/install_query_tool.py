@@ -41,11 +41,11 @@ async def install_query(graph_name: str, query_name: str) -> List[TextContent]:
         graph = Graph.from_db(graph_name)
         success = graph.install_query(query_name)
         if success:
-            result = f"✅ Query '{query_name}' successfully installed on graph '{graph_name}'."
+            message = f"✅ Query '{query_name}' successfully installed on graph '{graph_name}'."
         else:
-            result = (
+            message = (
                 f"⚠️ Query '{query_name}' installation on graph '{graph_name}' failed."
             )
     except Exception as e:
-        result = f"❌ Failed to install query '{query_name}' on graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to install query '{query_name}' on graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

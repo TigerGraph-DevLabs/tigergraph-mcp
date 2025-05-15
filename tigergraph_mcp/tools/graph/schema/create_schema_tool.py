@@ -89,8 +89,8 @@ async def create_schema(
 ) -> List[TextContent]:
     try:
         graph = Graph(graph_schema)
-        result = f"✅ Schema for graph '{graph.name}' created successfully."
+        message = f"✅ Schema for graph '{graph.name}' created successfully."
     except Exception as e:
-        result = f"❌ Schema creation failed: {str(e)}."
+        message = f"❌ Schema creation failed: {str(e)}."
 
-    return [TextContent(type="text", text=result)]
+    return [TextContent(type="text", text=message)]

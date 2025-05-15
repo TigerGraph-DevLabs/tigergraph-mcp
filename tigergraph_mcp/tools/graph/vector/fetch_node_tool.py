@@ -61,9 +61,9 @@ async def fetch_node(
             ]
         vector = graph.fetch_node(node_id, vector_attribute_name, node_type)
         if vector is None:
-            result = f"⚠️ Vector attribute '{vector_attribute_name}' not found for node '{node_id}' in graph '{graph_name}'."
+            message = f"⚠️ Vector attribute '{vector_attribute_name}' not found for node '{node_id}' in graph '{graph_name}'."
         else:
-            result = f"📦 Retrieved vector for node '{node_id}' (type: {node_type or 'default'}): {vector}"
+            message = f"📦 Retrieved vector for node '{node_id}' (type: {node_type or 'default'}): {vector}"
     except Exception as e:
-        result = f"❌ Failed to fetch node vector for '{node_id}' in graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to fetch node vector for '{node_id}' in graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

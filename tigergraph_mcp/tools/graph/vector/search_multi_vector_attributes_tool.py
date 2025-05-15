@@ -99,11 +99,11 @@ async def search_multi_vector_attributes(
             return_attributes_list=return_attributes_list,
         )
         if not results:
-            result = f"⚠️ No similar nodes found in graph '{graph_name}'."
+            message = f"⚠️ No similar nodes found in graph '{graph_name}'."
         else:
             formatted = "\n".join(str(entry) for entry in results)
-            result = f"🔍 Search results using multiple vector attributes:\n{formatted}"
+            message = f"🔍 Search results using multiple vector attributes:\n{formatted}"
     except Exception as e:
-        result = f"❌ Failed to perform multi-vector search on graph '{graph_name}': {str(e)}"
+        message = f"❌ Failed to perform multi-vector search on graph '{graph_name}': {str(e)}"
 
-    return [TextContent(type="text", text=result)]
+    return [TextContent(type="text", text=message)]

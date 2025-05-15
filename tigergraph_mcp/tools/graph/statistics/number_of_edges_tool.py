@@ -50,9 +50,9 @@ async def number_of_edges(
     try:
         graph = Graph.from_db(graph_name)
         count = graph.number_of_edges(edge_type)
-        result = f"🔗 Graph '{graph_name}' has {count} edge(s)" + (
+        message = f"🔗 Graph '{graph_name}' has {count} edge(s)" + (
             f" of type '{edge_type}'." if edge_type else "."
         )
     except Exception as e:
-        result = f"❌ Failed to count edges in graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to count edges in graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

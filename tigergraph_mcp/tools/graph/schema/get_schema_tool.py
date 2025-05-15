@@ -44,7 +44,7 @@ async def get_schema(
     try:
         graph = Graph.from_db(graph_name)
         schema = graph.get_schema()
-        result = f"✅ Schema for graph '{graph_name}': {schema}"
+        message = f"✅ Schema for graph '{graph_name}': {schema}"
     except Exception as e:
-        result = f"❌ Failed to retrieve schema for graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to retrieve schema for graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

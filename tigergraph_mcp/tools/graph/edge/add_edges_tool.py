@@ -101,10 +101,10 @@ async def add_edges(
         )
 
         if count:
-            result = f"✅ Successfully added {count} edge(s) of type '{edge_type or 'default'}' to graph '{graph_name}'."
+            message = f"✅ Successfully added {count} edge(s) of type '{edge_type or 'default'}' to graph '{graph_name}'."
         else:
-            result = f"❌ Failed to add edges to graph '{graph_name}'."
+            message = f"❌ Failed to add edges to graph '{graph_name}'."
     except Exception as e:
-        result = f"❌ Failed to add edges to graph '{graph_name}': {str(e)}"
+        message = f"❌ Failed to add edges to graph '{graph_name}': {str(e)}"
 
-    return [TextContent(type="text", text=result)]
+    return [TextContent(type="text", text=message)]

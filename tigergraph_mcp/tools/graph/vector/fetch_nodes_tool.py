@@ -66,15 +66,15 @@ async def fetch_nodes(
             node_type=node_type,
         )
         if not vectors:
-            result = f"⚠️ No vectors found for the specified node IDs in graph '{graph_name}'."
+            message = f"⚠️ No vectors found for the specified node IDs in graph '{graph_name}'."
         else:
             formatted = "\n".join(
                 f"{node_id}: {vec}" for node_id, vec in vectors.items()
             )
-            result = f"📦 Retrieved vectors:\n{formatted}"
+            message = f"📦 Retrieved vectors:\n{formatted}"
     except Exception as e:
-        result = (
+        message = (
             f"❌ Failed to fetch vectors for nodes in graph '{graph_name}': {str(e)}"
         )
 
-    return [TextContent(type="text", text=result)]
+    return [TextContent(type="text", text=message)]

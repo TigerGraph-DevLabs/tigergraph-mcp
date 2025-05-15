@@ -69,11 +69,11 @@ async def search_top_k_similar_nodes(
             return_attributes=return_attributes,
         )
         if not results:
-            result = f"⚠️ No similar nodes found for node '{node_id}' in graph '{graph_name}'."
+            message = f"⚠️ No similar nodes found for node '{node_id}' in graph '{graph_name}'."
         else:
             formatted = "\n".join(str(entry) for entry in results)
-            result = f"🔍 Top-k similar nodes for '{node_id}':\n{formatted}"
+            message = f"🔍 Top-k similar nodes for '{node_id}':\n{formatted}"
     except Exception as e:
-        result = f"❌ Failed to search similar nodes for '{node_id}' in graph '{graph_name}': {str(e)}"
+        message = f"❌ Failed to search similar nodes for '{node_id}' in graph '{graph_name}': {str(e)}"
 
-    return [TextContent(type="text", text=result)]
+    return [TextContent(type="text", text=message)]

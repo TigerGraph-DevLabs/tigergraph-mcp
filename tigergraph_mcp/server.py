@@ -45,6 +45,9 @@ from .tools import (
     search,
     search_multi_vector_attributes,
     search_top_k_similar_nodes,
+    create_data_source,
+    drop_data_source,
+    preview_sample_data,
 )
 
 logger = logging.getLogger(__name__)
@@ -130,6 +133,12 @@ async def serve() -> None:
                     return await search_multi_vector_attributes(**arguments)
                 case TigerGraphToolName.SEARCH_TOP_K_SIMILAR_NODES:
                     return await search_top_k_similar_nodes(**arguments)
+                case TigerGraphToolName.CREATE_DATA_SOURCE:
+                    return await create_data_source(**arguments)
+                case TigerGraphToolName.DROP_DATA_SOURCE:
+                    return await drop_data_source(**arguments)
+                case TigerGraphToolName.PREVIEW_SAMPLE_DATA:
+                    return await preview_sample_data(**arguments)
                 case _:
                     raise ValueError(f"Unknown tool: {name}")
         except Exception as e:

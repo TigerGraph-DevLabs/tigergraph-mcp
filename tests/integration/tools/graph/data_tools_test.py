@@ -4,7 +4,7 @@ from mcp import ClientSession
 from mcp.client.stdio import stdio_client
 from tigergraphx import Graph
 
-from tests.integration.base_graph_fixture import BaseGraphFixture
+from tests.integration.base_graph_fixture import BaseFixture
 from tigergraph_mcp import TigerGraphToolName
 
 
@@ -23,7 +23,7 @@ source,target,closeness
 John,John,11
 """
 )
-class TestDataTools(BaseGraphFixture):
+class TestDataTools(BaseFixture):
     def setup_graph(self):
         """Set up the graph shared across all tests."""
         self.graph_name = "SocialGraph"

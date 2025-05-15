@@ -40,7 +40,11 @@ from .graph import (
     search_multi_vector_attributes,
     search_top_k_similar_nodes,
 )
-
+from .db import (
+    create_data_source,
+    drop_data_source,
+    preview_sample_data,
+)
 
 __all__ = [
     # TigerGraph Tool Names
@@ -86,4 +90,8 @@ __all__ = [
     "search",
     "search_multi_vector_attributes",
     "search_top_k_similar_nodes",
+    # Tools for Data Source Operations
+    "create_data_source",
+    "drop_data_source",
+    "preview_sample_data",
 ]

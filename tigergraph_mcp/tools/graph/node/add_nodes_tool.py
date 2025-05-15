@@ -87,9 +87,9 @@ async def add_nodes(
             normalized_nodes, node_type, **(common_attributes or {})
         )
         if count:
-            result = f"✅ Successfully added {str(count)} nodes of type '{node_type or 'default'}' to graph '{graph_name}'."
+            message = f"✅ Successfully added {str(count)} nodes of type '{node_type or 'default'}' to graph '{graph_name}'."
         else:
-            result = f"❌ Failed to add nodes to graph '{graph_name}'"
+            message = f"❌ Failed to add nodes to graph '{graph_name}'"
     except Exception as e:
-        result = f"❌ Failed to add nodes to graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to add nodes to graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

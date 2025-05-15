@@ -52,7 +52,7 @@ async def has_node(
     try:
         graph = Graph.from_db(graph_name)
         exists = graph.has_node(node_id, node_type)
-        result = f"✅ Node '{node_id}' of type '{node_type or 'default'}' exists in graph '{graph_name}': {exists}."
+        message = f"✅ Node '{node_id}' of type '{node_type or 'default'}' exists in graph '{graph_name}': {exists}."
     except Exception as e:
-        result = f"❌ Failed to check node existence in graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to check node existence in graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

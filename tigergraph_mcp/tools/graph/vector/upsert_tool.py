@@ -56,16 +56,9 @@ async def upsert(
     try:
         graph = Graph.from_db(graph_name)
         result = graph.upsert(data=data, node_type=node_type)
-        return [
-            TextContent(
-                type="text",
-                text=f"✅ Successfully upserted {result} node(s) into graph '{graph_name}'.",
-            )
-        ]
+        message = (
+            f"✅ Successfully upserted {result} node(s) into graph '{graph_name}'."
+        )
     except Exception as e:
-        return [
-            TextContent(
-                type="text",
-                text=f"❌ Failed to upsert data into graph '{graph_name}': {str(e)}",
-            )
-        ]
+        message = f"❌ Failed to upsert data into graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

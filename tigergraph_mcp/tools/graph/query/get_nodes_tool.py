@@ -92,9 +92,9 @@ async def get_nodes(
         )
         assert isinstance(nodes, List)
         if not nodes:
-            result = "⚠️ No nodes found."
+            message = "⚠️ No nodes found."
         else:
-            result = "✅ Retrieved nodes:\n" + "\n".join([str(node) for node in nodes])
+            message = "✅ Retrieved nodes:\n" + "\n".join([str(node) for node in nodes])
     except Exception as e:
-        result = f"❌ Failed to retrieve nodes from graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to retrieve nodes from graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

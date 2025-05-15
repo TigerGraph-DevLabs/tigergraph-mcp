@@ -6,7 +6,7 @@ from mcp import StdioServerParameters
 from tigergraphx import Graph
 
 
-class BaseGraphFixture:
+class BaseFixture:
     dotenv_path: Path = Path(".env")
 
     # Load env as dictionary for server_params
@@ -24,7 +24,7 @@ class BaseGraphFixture:
         load_dotenv(dotenv_path=self.dotenv_path.expanduser().resolve(), override=True)
 
 
-class UserProductGraphFixture(BaseGraphFixture):
+class UserProductGraphFixture(BaseFixture):
     def setup_graph(self):
         """Set up the graph shared across all tests."""
         self.graph_name = "UserProductGraph"

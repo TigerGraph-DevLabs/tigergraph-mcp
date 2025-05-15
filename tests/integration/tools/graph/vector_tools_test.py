@@ -3,12 +3,12 @@ import time
 from mcp import ClientSession
 from mcp.client.stdio import stdio_client
 
-from tests.integration.base_graph_fixture import BaseGraphFixture
+from tests.integration.base_graph_fixture import BaseFixture
 from tigergraph_mcp import TigerGraphToolName
 from tigergraphx import Graph
 
 
-class TestVectorTools(BaseGraphFixture):
+class TestVectorTools(BaseFixture):
     def setup_graph(self):
         """Set up the graph and add nodes and edges."""
         self.graph_name = "TigerVector"

@@ -5,10 +5,10 @@ from mcp import ClientSession
 from mcp.client.stdio import stdio_client
 from tigergraph_mcp import TigerGraphToolName
 
-from tests.integration.base_graph_fixture import BaseGraphFixture
+from tests.integration.base_graph_fixture import BaseFixture
 
 
-class TestSchemaTools(BaseGraphFixture):
+class TestSchemaTools(BaseFixture):
     @pytest.mark.asyncio
     async def test_schema_tools(self):
         async with stdio_client(self.server_params) as (read, write):

@@ -3,6 +3,7 @@ from typing import Optional
 
 
 class TigerGraphToolName(str, Enum):
+    # -------------------- Graph Operations --------------------
     # Schema Operations
     CREATE_SCHEMA = "graph__create_schema"
     GET_SCHEMA = "graph__get_schema"
@@ -41,6 +42,12 @@ class TigerGraphToolName(str, Enum):
     SEARCH = "graph__search"
     SEARCH_MULTI_VECTOR_ATTRIBUTES = "graph__search_multi_vector_attributes"
     SEARCH_TOP_K_SIMILAR_NODES = "graph__search_top_k_similar_nodes"
+
+    # -------------------- Database Operations --------------------
+    # Data Source Operations
+    CREATE_DATA_SOURCE = "db__create_data_source"
+    DROP_DATA_SOURCE = "db__drop_data_source"
+    PREVIEW_SAMPLE_DATA = "db__preview_sample_data"
 
     @classmethod
     def from_value(cls, value: str) -> Optional["TigerGraphToolName"]:

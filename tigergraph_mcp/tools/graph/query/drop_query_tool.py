@@ -44,9 +44,9 @@ async def drop_query(
         graph = Graph.from_db(graph_name)
         success = graph.drop_query(query_name)
         if success:
-            output = f"✅ Query '{query_name}' was successfully dropped from graph '{graph_name}'."
+            message = f"✅ Query '{query_name}' was successfully dropped from graph '{graph_name}'."
         else:
-            output = f"⚠️ Failed to drop query '{query_name}' from graph '{graph_name}'."
+            message = f"⚠️ Failed to drop query '{query_name}' from graph '{graph_name}'."
     except Exception as e:
-        output = f"❌ Error while dropping query '{query_name}' from graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=output)]
+        message = f"❌ Error while dropping query '{query_name}' from graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

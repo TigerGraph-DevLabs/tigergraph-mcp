@@ -73,7 +73,7 @@ async def has_edge(
             edge_type=edge_type,
             tgt_node_type=tgt_node_type,
         )
-        result = f"✅ Edge between '{src_node_id}' and '{tgt_node_id}' exists in graph '{graph_name}': {exists}."
+        message = f"✅ Edge between '{src_node_id}' and '{tgt_node_id}' exists in graph '{graph_name}': {exists}."
     except Exception as e:
-        result = f"❌ Failed to check edge between '{src_node_id}' and '{tgt_node_id}' in graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to check edge between '{src_node_id}' and '{tgt_node_id}' in graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

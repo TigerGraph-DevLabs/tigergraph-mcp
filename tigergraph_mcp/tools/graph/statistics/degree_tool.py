@@ -62,7 +62,7 @@ async def degree(
     try:
         graph = Graph.from_db(graph_name)
         deg = graph.degree(node_id, node_type=node_type, edge_types=edge_types)
-        result = f"📏 Degree of node '{node_id}' (Type: {node_type or 'default'}) in graph '{graph_name}' is {deg}."
+        message = f"📏 Degree of node '{node_id}' (Type: {node_type or 'default'}) in graph '{graph_name}' is {deg}."
     except Exception as e:
-        result = f"❌ Failed to compute degree for node '{node_id}' in graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to compute degree for node '{node_id}' in graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

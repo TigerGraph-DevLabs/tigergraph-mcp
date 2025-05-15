@@ -110,11 +110,11 @@ async def get_neighbors(
         )
         assert isinstance(neighbors, list)
         if not neighbors:
-            result = "⚠️ No neighbors found."
+            message = "⚠️ No neighbors found."
         else:
-            result = "✅ Retrieved neighbors:\n" + "\n".join(
+            message = "✅ Retrieved neighbors:\n" + "\n".join(
                 [str(n) for n in neighbors]
             )
     except Exception as e:
-        result = f"❌ Failed to retrieve neighbors from graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to retrieve neighbors from graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

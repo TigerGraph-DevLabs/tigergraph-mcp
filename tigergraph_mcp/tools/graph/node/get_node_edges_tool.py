@@ -61,10 +61,10 @@ async def get_node_edges(
         edges = graph.get_node_edges(node_id, node_type, edge_types)
 
         if not edges:
-            result = f"⚠️ No edges found for node '{node_id}' of type '{node_type or 'default'}' in graph '{graph_name}'."
+            message = f"⚠️ No edges found for node '{node_id}' of type '{node_type or 'default'}' in graph '{graph_name}'."
         else:
-            result = f"✅ Edges connected to node '{node_id}' in graph '{graph_name}': {edges}"
+            message = f"✅ Edges connected to node '{node_id}' in graph '{graph_name}': {edges}"
     except Exception as e:
-        result = f"❌ Failed to retrieve edges for node '{node_id}' in graph '{graph_name}': {str(e)}"
+        message = f"❌ Failed to retrieve edges for node '{node_id}' in graph '{graph_name}': {str(e)}"
 
-    return [TextContent(type="text", text=result)]
+    return [TextContent(type="text", text=message)]

@@ -55,12 +55,12 @@ async def get_node_data(
         graph = Graph.from_db(graph_name)
         node_data = graph.get_node_data(node_id, node_type)
         if node_data is None:
-            result = f"⚠️ Node '{node_id}' of type '{node_type or 'default'}' not found in graph '{graph_name}'."
+            message = f"⚠️ Node '{node_id}' of type '{node_type or 'default'}' not found in graph '{graph_name}'."
         else:
-            result = (
+            message = (
                 f"✅ Node data for '{node_id}' in graph '{graph_name}': {node_data}"
             )
     except Exception as e:
-        result = f"❌ Failed to retrieve node data in graph '{graph_name}': {str(e)}"
+        message = f"❌ Failed to retrieve node data in graph '{graph_name}': {str(e)}"
 
-    return [TextContent(type="text", text=result)]
+    return [TextContent(type="text", text=message)]

@@ -42,8 +42,8 @@ async def drop_graph(
     try:
         graph = Graph.from_db(graph_name)
         graph.drop_graph()
-        result = f"✅ Graph '{graph_name}' dropped successfully."
+        message = f"✅ Graph '{graph_name}' dropped successfully."
     except Exception as e:
-        result = f"❌ Graph drop failed: {str(e)}"
+        message = f"❌ Graph drop failed: {str(e)}"
 
-    return [TextContent(type="text", text=result)]
+    return [TextContent(type="text", text=message)]

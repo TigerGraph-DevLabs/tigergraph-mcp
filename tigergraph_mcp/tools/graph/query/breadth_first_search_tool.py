@@ -78,11 +78,11 @@ async def breadth_first_search(
         )
         assert isinstance(bfs_result, list)
         if not bfs_result:
-            result = "⚠️ No nodes found during BFS traversal."
+            message = "⚠️ No nodes found during BFS traversal."
         else:
-            result = "✅ BFS traversal results:\n" + "\n".join(
+            message = "✅ BFS traversal results:\n" + "\n".join(
                 [str(n) for n in bfs_result]
             )
     except Exception as e:
-        result = f"❌ Failed to perform BFS traversal on graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to perform BFS traversal on graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

@@ -90,7 +90,7 @@ async def load_data(
     try:
         graph = Graph.from_db(graph_name)
         graph.load_data(loading_job_config)
-        result = f"✅ Data loaded successfully into graph '{graph_name}'."
+        message = f"✅ Data loaded successfully into graph '{graph_name}'."
     except Exception as e:
-        result = f"❌ Failed to load data into graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to load data into graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

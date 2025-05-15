@@ -80,7 +80,7 @@ async def add_edge(
             tgt_node_type,
             **attributes,
         )
-        result = f"✅ Edge from '{src_node_id}' to '{tgt_node_id}' (EdgeType: {edge_type or 'default'}) added successfully to graph '{graph_name}'."
+        message = f"✅ Edge from '{src_node_id}' to '{tgt_node_id}' (EdgeType: {edge_type or 'default'}) added successfully to graph '{graph_name}'."
     except Exception as e:
-        result = f"❌ Failed to add edge from '{src_node_id}' to '{tgt_node_id}' in graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to add edge from '{src_node_id}' to '{tgt_node_id}' in graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

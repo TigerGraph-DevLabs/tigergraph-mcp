@@ -50,9 +50,9 @@ async def number_of_nodes(
     try:
         graph = Graph.from_db(graph_name)
         count = graph.number_of_nodes(node_type)
-        result = f"🔢 Graph '{graph_name}' has {count} node(s)" + (
+        message = f"🔢 Graph '{graph_name}' has {count} node(s)" + (
             f" of type '{node_type}'." if node_type else "."
         )
     except Exception as e:
-        result = f"❌ Failed to count nodes in graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to count nodes in graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

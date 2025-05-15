@@ -70,17 +70,17 @@ async def get_edge_data(
 ) -> list[TextContent]:
     try:
         graph = Graph.from_db(graph_name)
-        edge_data = graph.get_edge_data(
+        response = graph.get_edge_data(
             src_node_id=src_node_id,
             tgt_node_id=tgt_node_id,
             src_node_type=src_node_type,
             edge_type=edge_type,
             tgt_node_type=tgt_node_type,
         )
-        if edge_data is None:
-            result = f"⚠️ No edge found between '{src_node_id}' and '{tgt_node_id}' in graph '{graph_name}'."
+        if response is None:
+            message = f"⚠️ No edge found between '{src_node_id}' and '{tgt_node_id}' in graph '{graph_name}'."
         else:
-            result = f"✅ Edge data retrieved: {edge_data}"
+            message = f"✅ Edge data retrieved: {response}"
     except Exception as e:
-        result = f"❌ Failed to retrieve edge data from graph '{graph_name}': {str(e)}"
-    return [TextContent(type="text", text=result)]
+        message = f"❌ Failed to retrieve edge data from graph '{graph_name}': {str(e)}"
+    return [TextContent(type="text", text=message)]

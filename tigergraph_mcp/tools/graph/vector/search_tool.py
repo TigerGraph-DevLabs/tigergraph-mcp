@@ -75,11 +75,11 @@ async def search(
             candidate_ids=candidate_ids,
         )
         if not results:
-            result = f"⚠️ No similar nodes found in graph '{graph_name}'."
+            message = f"⚠️ No similar nodes found in graph '{graph_name}'."
         else:
             formatted = "\n".join(str(entry) for entry in results)
-            result = f"🔍 Search results:\n{formatted}"
+            message = f"🔍 Search results:\n{formatted}"
     except Exception as e:
-        result = f"❌ Failed to perform vector search on graph '{graph_name}': {str(e)}"
+        message = f"❌ Failed to perform vector search on graph '{graph_name}': {str(e)}"
 
-    return [TextContent(type="text", text=result)]
+    return [TextContent(type="text", text=message)]
