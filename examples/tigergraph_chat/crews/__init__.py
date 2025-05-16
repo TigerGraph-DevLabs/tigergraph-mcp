@@ -1,7 +1,7 @@
-from .tool_selector_crew import ToolSelectorCrew
+from .planner_crew import PlannerCrew
 from .tool_executor_crews import ToolExecutorCrews
 
 __all__ = [
-    "ToolSelectorCrew",
+    "PlannerCrew",
     "ToolExecutorCrews",
 ]

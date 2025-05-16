@@ -565,3 +565,56 @@ search_top_k_similar_nodes_task:
     A list of the top K nodes sorted by similarity score.
 
   agent: vector_agent
+
+# ------------------------------ Data Source Operations ------------------------------
+create_data_source_task:
+  description: >
+    Register a new data source in TigerGraph using the provided file or folder path.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom are the most relevant to the user’s current intent:
+    {conversation_history}
+
+    Based on the user’s intent, extract the target path and optional parameters like delimiter or recursive mode.
+
+  expected_output: >
+    Confirmation that the data source has been successfully created and is now available for inspection or loading.
+
+  agent: data_source_agent
+
+
+drop_data_source_task:
+  description: >
+    Drop an existing data source from the TigerGraph server.
+
+    Instructions
+    ------------
+    Use the conversation history to identify which data source the user wants to remove:
+    {conversation_history}
+
+    Confirm the name or path before performing the deletion.
+
+  expected_output: >
+    Confirmation that the specified data source has been dropped successfully.
+
+  agent: data_source_agent
+
+
+preview_sample_data_task:
+  description: >
+    Preview the contents of a data file or folder registered as a data source.
+
+    Instructions
+    ------------
+    Analyze the recent conversation to determine the file or path the user wants to preview:
+    {conversation_history}
+
+    Return the column headers and a sample of 5–10 rows to help guide the user in schema creation.
+
+  expected_output: >
+    A clean preview of the data file including headers and the first 5–10 rows.
+
+  agent: data_source_agent
+

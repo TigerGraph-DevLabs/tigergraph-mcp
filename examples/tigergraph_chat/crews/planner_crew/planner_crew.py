@@ -3,17 +3,17 @@ from crewai.project import CrewBase, agent, crew, task
 
 
 @CrewBase
-class ToolSelectorCrew:
+class PlannerCrew:
     @agent
-    def tool_selector_agent(self) -> Agent:
+    def planner_agent(self) -> Agent:
         return Agent(  # pyright: ignore
-            config=self.agents_config["tool_selector_agent"],  # pyright: ignore
+            config=self.agents_config["planner_agent"],  # pyright: ignore
         )
 
     @task
-    def select_tool_task(self) -> Task:
+    def planning_task(self) -> Task:
         return Task(
-            config=self.tasks_config["select_tool_task"],  # pyright: ignore
+            config=self.tasks_config["planning_task"],  # pyright: ignore
         )
 
     # ------------------------------ Crew ------------------------------

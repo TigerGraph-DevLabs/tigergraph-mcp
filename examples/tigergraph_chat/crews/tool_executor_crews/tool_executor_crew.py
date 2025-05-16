@@ -538,3 +538,63 @@ class ToolExecutorCrews:
             tasks=[self.search_top_k_similar_nodes_task()],
             verbose=True,
         )
+
+    # ------------------------------ Data Source Operations ------------------------------
+    @agent
+    def data_source_agent(self) -> Agent:
+        return Agent(  # pyright: ignore
+            config=self.agents_config["data_source_agent"],  # pyright: ignore
+            tools=[
+                self.tool_registry[TigerGraphToolName.CREATE_DATA_SOURCE],
+                self.tool_registry[TigerGraphToolName.DROP_DATA_SOURCE],
+                self.tool_registry[TigerGraphToolName.PREVIEW_SAMPLE_DATA],
+            ],
+        )
+
+    @task
+    def create_data_source_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["create_data_source_task"],  # pyright: ignore
+            # callback=print_output,
+            # human_input=True,
+        )
+
+    @crew
+    def create_data_source_crew(self) -> Crew:
+        return Crew(
+            agents=[self.data_source_agent()],
+            tasks=[self.create_data_source_task()],
+            verbose=True,
+        )
+
+    @task
+    def drop_data_source_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["drop_data_source_task"],  # pyright: ignore
+            # callback=print_output,
+            # human_input=True,
+        )
+
+    @crew
+    def drop_data_source_crew(self) -> Crew:
+        return Crew(
+            agents=[self.data_source_agent()],
+            tasks=[self.drop_data_source_task()],
+            verbose=True,
+        )
+
+    @task
+    def preview_sample_data_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["preview_sample_data_task"],  # pyright: ignore
+            # callback=print_output,
+            # human_input=True,
+        )
+
+    @crew
+    def preview_sample_data_crew(self) -> Crew:
+        return Crew(
+            agents=[self.data_source_agent()],
+            tasks=[self.preview_sample_data_task()],
+            verbose=True,
+        )

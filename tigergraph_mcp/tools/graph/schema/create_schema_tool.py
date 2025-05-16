@@ -34,7 +34,7 @@ graph_schema = {
         "Account": {
             "primary_key": "name",
             "attributes": {
-                "name": "STRING",
+                "name": "STRING", # Must include primary key here
                 "isBlocked": "BOOL",
             },
             "vector_attributes": {"emb1": 3},
@@ -42,13 +42,13 @@ graph_schema = {
         "City": {
             "primary_key": "name",
             "attributes": {
-                "name": "STRING",
+                "name": "STRING", # Must include primary key here
             },
         },
         "Phone": {
             "primary_key": "number",
             "attributes": {
-                "number": "STRING",
+                "number": "STRING", # Must include primary key here
                 "isBlocked": "BOOL",
             },
             "vector_attributes": {"emb1": 3},
@@ -77,6 +77,11 @@ graph_schema = {
         },
     },
 }
+
+Notes:
+
+* Supported data types include: "INT", "UINT", "FLOAT", "DOUBLE", "BOOL", "STRING", and "DATETIME"
+* Always include the primary key in the attributes dictionary so its type is explicitly known.
 ```
 """,
         inputSchema=CreateSchemaToolInput.model_json_schema(),

@@ -1,0 +1,31 @@
+planning_task:
+  description: >
+    Analyze the conversation history, focusing especially on the most recent entries:
+
+    "{conversation_history}"
+
+    The later entries in the list represent the most recent and relevant parts of the conversation between the user and the assistant,
+    and should be given higher priority when interpreting the user's intent, especially the last instruction from the user.
+
+    Consider the following available tools:
+    {tools}
+
+    Based on this, produce one of the following:
+
+    - The single most appropriate tool name from the list (as a quoted string).
+    - An ordered list of tool names representing a step-by-step plan (as a JSON array of quoted strings).
+    - The string None (without quotes) if no tools apply.
+
+    Output only the recommended tool name(s) or None — no extra explanation, quotes around None, or formatting.
+
+  expected_output: >
+    Either a single quoted tool name (e.g. "graph__create_schema"),
+    a JSON array of quoted tool names (e.g. ["graph__create_schema", "graph__load_data"]),
+    or None (without quotes).
+
+    Examples:
+    - "graph__create_schema"
+    - ["graph__create_schema", "graph__load_data"]
+    - None
+
+  agent: planner_agent
