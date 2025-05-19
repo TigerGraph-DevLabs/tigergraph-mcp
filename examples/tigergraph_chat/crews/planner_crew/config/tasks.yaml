@@ -5,27 +5,49 @@ planning_task:
     "{conversation_history}"
 
     The later entries in the list represent the most recent and relevant parts of the conversation between the user and the assistant,
-    and should be given higher priority when interpreting the user's intent, especially the last instruction from the user.
+    and should be given higher priority when interpreting the user's intent — especially the last clear instruction from the user.
 
     Consider the following available tools:
     {tools}
 
-    Based on this, produce one of the following:
+    Based on this, produce a structured plan in which **each step is a pair**:
+    - `tool_name`: the name of a tool to use (must match one of the provided tool names).
+    - `command`: a short instruction extracted or inferred from the user's request that explains what the tool should do.
 
-    - The single most appropriate tool name from the list (as a quoted string).
-    - An ordered list of tool names representing a step-by-step plan (as a JSON array of quoted strings).
-    - The string None (without quotes) if no tools apply.
+    When extracting the command:
 
-    Output only the recommended tool name(s) or None — no extra explanation, quotes around None, or formatting.
+    - Preserve any user-provided **code**, **URLs**, **file names**, **explicit strings**, and **formatting** exactly as they appear.
+    - Retain **newlines**, indentation, and paragraph breaks.
+    - If the user includes configuration values, quoted identifiers, or paths, **do not modify or summarize** them.
+    - If the user follows up or modifies their request, always prefer the **most recent** instruction.
+     **Treat any GSQL `CREATE QUERY` code blocks as valid input for the `create_query` tool, even if they include default parameters (`=`), empty strings (`""`), multi-line formatting, or nested types. Do not discard them or attempt to simplify.**
 
-  expected_output: >
-    Either a single quoted tool name (e.g. "graph__create_schema"),
-    a JSON array of quoted tool names (e.g. ["graph__create_schema", "graph__load_data"]),
-    or None (without quotes).
+    Format the output as a **JSON array** of objects with `tool_name` and `command` keys, in the order they should be executed.
+
+    If no tools apply to the request, return the value `None` (no quotes, no JSON).
 
     Examples:
-    - "graph__create_schema"
-    - ["graph__create_schema", "graph__load_data"]
-    - None
+    ```
+    [
+      {
+        "tool_name": "graph__create_schema",
+        "command": "Create a schema for a movie recommendation system"
+      },
+      {
+        "tool_name": "graph__load_data",
+        "command": "Load the movie and rating data from uploaded CSV files"
+      }
+    ]
+    ```
+
+    Or:
+    None
+
+  expected_output: >
+    A JSON array of tool plan steps, where each step includes:
+    - `"tool_name"`: (str) the name of a tool from the list.
+    - `"command"`: (str) the user instruction related to the tool.
+
+    Or the literal `None` (no quotes) if nothing matches.
 
   agent: planner_agent

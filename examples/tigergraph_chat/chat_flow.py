@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List
 from pydantic import BaseModel, Field
 import json
 
@@ -16,7 +16,9 @@ logger = logging.getLogger(__name__)
 class ChatSessionState(BaseModel):
     conversation_history: List[str] = Field(default_factory=list)
     tool_registry: Dict[str, BaseTool] = Field(default_factory=dict)
-    task_plan: List[str] = Field(default_factory=list)
+    task_plan: List[Dict[str, str]] = Field(
+        default_factory=list
+    )  # [{"tool_name": ..., "command": ...}]
     current_task_index: int = 0
 
 
@@ -25,8 +27,8 @@ class ChatFlow(Flow[ChatSessionState]):
     def initialize_session(self):
         logger.info("Session initialized.")
 
-    @listen(or_(initialize_session, "user_provided_followup"))
-    def match_tool_from_instructions(self):
+    @listen(or_(initialize_session, "awaiting_user_clarification"))
+    def identify_tools_from_input(self):
         logger.debug("Matching tool(s) from conversation...")
 
         inputs = {
@@ -39,52 +41,47 @@ class ChatFlow(Flow[ChatSessionState]):
         raw_output = output.raw.strip()
         logger.debug(f"Planner raw output: {raw_output}")
 
-        selected_tools = []
         try:
             parsed = json.loads(raw_output)
+            if isinstance(parsed, list) and all(
+                isinstance(step, dict) and "tool_name" in step and "command" in step
+                for step in parsed
+            ):
+                valid_steps = [
+                    step
+                    for step in parsed
+                    if step["tool_name"] in self.state.tool_registry
+                ]
+                self.state.task_plan = valid_steps
+                self.state.current_task_index = 0
+                logger.debug(
+                    f"Planner returned valid tool-command steps: {valid_steps}"
+                )
 
-            if isinstance(parsed, dict):
-                tools = parsed.get("tools") or [parsed.get("tool_name")]
-                if isinstance(tools, str):
-                    tools = [tools]
-                selected_tools = [t for t in tools if t in self.state.tool_registry]
-                # Optional: You can capture tool_arguments here if you plan to route with them
-                logger.debug(f"Planner returned tools: {selected_tools}")
-            elif isinstance(parsed, list):
-                selected_tools = [t for t in parsed if t in self.state.tool_registry]
-                logger.debug(f"Planner returned tool list: {selected_tools}")
-            elif isinstance(parsed, str) and parsed in self.state.tool_registry:
-                selected_tools = [parsed]
-                logger.debug(f"Planner returned single tool: {selected_tools}")
+            else:
+                logger.warning("Planner output did not match expected formats.")
+                self.state.task_plan = []
 
         except json.JSONDecodeError:
-            logger.warning("Planner output is not valid JSON, using fallback logic.")
-            if raw_output in self.state.tool_registry:
-                selected_tools = [raw_output]
-                logger.debug(f"Matched raw string to tool: {selected_tools}")
-
-        if selected_tools:
-            self.state.task_plan = selected_tools
-            self.state.current_task_index = 0
-        else:
             logger.warning("No valid tools matched.")
+            self.state.task_plan = []
 
-    @router(match_tool_from_instructions)
-    def route_tool_decision(self):
+    @router(identify_tools_from_input)
+    def route_based_on_tool_match(self):
         chat_session.chat_ui.send(
             f"🧭 Task plan: {str(self.state.task_plan)}",
             user="Assistant",
             respond=False,
         )
-        return "task_ready" if self.state.task_plan else "no_tool_matched"
+        return "task_ready" if self.state.task_plan else "tool_matching_failed"
 
-    @router("no_tool_matched")
-    def handle_no_tool_match(self):
+    @router("tool_matching_failed")
+    def prompt_for_clarification(self):
         help_message = self.get_help_message()
         chat_session.chat_ui.send(help_message, user="Assistant", respond=False)
         user_input = chat_session.wait_for_user_input()
         self.state.conversation_history.append(user_input)
-        return "user_provided_followup"
+        return "awaiting_user_clarification"
 
     def get_help_message(self) -> str:
         tool_list = "\n".join(
@@ -110,34 +107,31 @@ I'm here to help – just let me know what you'd like to do! 🚀
 """.strip()
 
     @router("task_ready")
-    def execute_task_plan_step(self):
-        task_list = self.state.task_plan
-        idx = self.state.current_task_index
+    def run_next_task_in_plan(self):
+        task_plan = self.state.task_plan
+        current_index = self.state.current_task_index
 
-        if idx >= len(task_list):
-            chat_session.chat_ui.send(
-                "✅ All tasks in your plan have been completed!",
-                user="Assistant",
-                respond=False,
-            )
+        if current_index >= len(task_plan):
             user_input = chat_session.wait_for_user_input()
             self.state.conversation_history.append(f"User: {user_input}")
             self.state.task_plan = []
             self.state.current_task_index = 0
-            return "user_provided_followup"
+            return "awaiting_user_clarification"
 
-        current_task = TigerGraphToolName.from_value(task_list[idx] or "")
-        if not current_task:
-            return "no_tool_matched"
+        task_step = task_plan[current_index]
+        tool_name_str = task_step.get("tool_name", "")
+        tool_enum = TigerGraphToolName.from_value(tool_name_str)
+        if not tool_enum:
+            return "tool_matching_failed"
 
         # Convert tool name to method name: "graph__create_schema" -> "create_schema_crew"
-        crew_method_name = current_task.name.lower() + "_crew"
+        crew_method_name = tool_enum.name.lower() + "_crew"
         crew_factory = ToolExecutorCrews(tools=self.state.tool_registry)
 
         if not hasattr(crew_factory, crew_method_name):
             available = [m for m in dir(crew_factory) if m.endswith("_crew")]
             chat_session.chat_ui.send(
-                f"🚫 Task `{current_task}` is not available. Available: {available}",
+                f"🚫 Task `{tool_enum}` is not available. Available: {available}",
                 user="Assistant",
                 respond=False,
             )
@@ -145,7 +139,10 @@ I'm here to help – just let me know what you'd like to do! 🚀
 
         crew = getattr(crew_factory, crew_method_name)()
         output = crew.kickoff(
-            inputs={"conversation_history": str(self.state.conversation_history)}
+            inputs={
+                "conversation_history": str(self.state.conversation_history),
+                "current_command": task_plan[current_index]["command"],
+            }
         )
         output_text = output.raw
 
@@ -153,33 +150,3 @@ I'm here to help – just let me know what you'd like to do! 🚀
         self.state.conversation_history.append(f"Assistant: {output_text}")
         self.state.current_task_index += 1
         return "task_ready"
-
-    # @router("tool_selected")
-    # def dispatch_tool(self):
-    #     task = TigerGraphToolName.from_value(self.state.matched_tool or "")
-    #     return self._handle_task(task) if task else "no_tool_matched"
-    #
-    # def _handle_task(self, task_name: TigerGraphToolName):
-    #     inputs = {
-    #         "conversation_history": str(self.state.conversation_history),
-    #     }
-    #
-    #     # Convert tool name to method name: "graph/create_schema" -> "create_schema_crew"
-    #     crew_method_name = task_name.name.lower() + "_crew"
-    #     crew_factory = ToolExecutorCrews(tools=self.state.tool_registry)
-    #
-    #     if not hasattr(crew_factory, crew_method_name):
-    #         available = [m for m in dir(crew_factory) if m.endswith("_crew")]
-    #         raise ValueError(
-    #             f"No crew found for task: {task_name}. Available: {available}"
-    #         )
-    #
-    #     crew = getattr(crew_factory, crew_method_name)()
-    #     output = crew.kickoff(inputs=inputs)
-    #     output_text = output.raw
-    #     chat_session.chat_ui.send(output_text, user="Assistant", respond=False)
-    #     self.state.conversation_history.append(f"Assistant: {output_text}")
-    #     user_input = chat_session.wait_for_user_input()
-    #     self.state.conversation_history.append(f"User: {user_input}")
-    #     self.state.matched_tool = None
-    #     return "user_provided_followup"

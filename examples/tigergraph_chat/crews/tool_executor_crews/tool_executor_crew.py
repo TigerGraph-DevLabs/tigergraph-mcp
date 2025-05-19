@@ -33,6 +33,7 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.GET_SCHEMA],
                 self.tool_registry[TigerGraphToolName.DROP_GRAPH],
             ],
+            llm="gpt-4o",
         )
 
     @task
@@ -92,6 +93,7 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.GET_SCHEMA],
                 self.tool_registry[TigerGraphToolName.LOAD_DATA],
             ],
+            llm="gpt-4o",
         )
 
     @task

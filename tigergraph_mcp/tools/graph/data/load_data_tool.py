@@ -47,7 +47,6 @@ loading_job_config = {
             "csv_parsing_options": {
                 "separator": ",",
                 "header": True,
-                "EOL": "\\n",
                 "quote": "DOUBLE",
             },
             "node_mappings": [
@@ -82,6 +81,7 @@ Notes:
 
 * Use `"file_path"` as the absolute path to a local file on the TigerGraph server, or in the form of `"$<data_source_name>:<s3_uri>"` for S3 paths.
 * Ensure the specified data source (`s1` in this case) is already created and accessible by TigerGraph.
+* The "quote" style can be either "DOUBLE" or "SINGLE", with "DOUBLE" being the most common.
 """,
         inputSchema=LoadDataToolInput.model_json_schema(),
     )

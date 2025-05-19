@@ -8,12 +8,20 @@ create_schema_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Based on the provided schema description, you will generate an appropriate graph schema that meets the user’s requirements. Ensure to ask for any missing details if necessary.
 
   expected_output: >
-    Confirmation that the schema has been successfully created in TigerGraph, including the graph name, but without displaying the details of the created graph schema.
+    Confirmation that the schema has been successfully created in TigerGraph, including the graph name. 
+    Also display the details of the created graph schema in markdown format.
 
   agent: schema_agent
 
@@ -26,8 +34,15 @@ get_schema_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Based on the provided graph name, you will retrieve and display the schema of the corresponding graph in TigerGraph. Ensure that the user has provided the correct graph name.
 
   expected_output: >
@@ -44,8 +59,15 @@ graph_drop_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Verify the provided graph name before proceeding.
 
   expected_output: >
@@ -63,8 +85,15 @@ load_data_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     First, analyze the file structure and user-provided details (such as CSV headers, file paths, and data mappings). Then, generate a valid loading job configuration and use the appropriate tool to load the data into the target graph.
 
   expected_output: >
@@ -82,8 +111,15 @@ add_node_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Given a node ID and optional node type, add the node to the graph along with any provided attributes. Ensure the node type is valid before proceeding.
 
   expected_output: >
@@ -100,8 +136,15 @@ add_nodes_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Given a list of node IDs and optional attributes, add them to the graph in bulk. Ensure efficient processing and handle missing or inconsistent data gracefully.
 
   expected_output: >
@@ -118,8 +161,15 @@ remove_node_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Given a node ID and optional node type, remove the node from the graph if it exists. Validate that the node exists before attempting removal.
 
   expected_output: >
@@ -136,8 +186,15 @@ has_node_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Given a node ID and optional node type, verify whether the node is present in the graph.
 
   expected_output: >
@@ -154,8 +211,15 @@ get_node_data_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Given a node ID and optional node type, fetch and return the node's attributes and properties.
 
   expected_output: >
@@ -172,8 +236,15 @@ get_node_edges_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Given a node ID, optional node type, and optional edge types, fetch all edges associated with the node.
 
   expected_output: >
@@ -190,8 +261,15 @@ clear_graph_data_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Clear all nodes from the graph while maintaining structural integrity.
 
   expected_output: >
@@ -209,8 +287,15 @@ add_edge_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Extract the source node, target node, edge type, and any edge attributes from the conversation. 
     Validate the edge type and ensure both nodes exist before adding the edge.
 
@@ -228,8 +313,15 @@ add_edges_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Extract a list of edge definitions (source, target, edge type, and optional attributes) from the user input. 
     Validate each edge against the schema and existing nodes before attempting to add them in bulk.
 
@@ -247,8 +339,15 @@ has_edge_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Extract the source node, target node, and edge type from the conversation. 
     Return whether the specified edge currently exists in the graph.
 
@@ -266,8 +365,15 @@ get_edge_data_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Extract the source node, target node, and edge type from the user’s instruction. 
     Query the graph and return all stored edge attributes if the edge exists.
 
@@ -286,8 +392,15 @@ degree_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Determine the degree (number of connected edges) for the specified node(s).
 
   expected_output: >
@@ -304,12 +417,19 @@ number_of_nodes_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Report the total number of nodes in the graph.
 
   expected_output: >
-    An integer indicating how many nodes are currently in the graph.
+    A sentence stating the total number of nodes currently in the graph, such as "There are 3,452 nodes in the graph."
 
   agent: statistics_agent
 
@@ -320,13 +440,21 @@ number_of_edges_task:
     Instructions
     ------------
     You are given a list representing a conversation history between the user and the assistant. 
-    The most recent entries at the bottom of the list are the most relevant to the user’s current intent:
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Report the total number of edges in the graph.
 
   expected_output: >
-    An integer indicating how many edges are currently in the graph.
+    A sentence stating the total number of edges currently in the graph, such as "There are 12,784 edges in the graph."
 
   agent: statistics_agent
 
@@ -340,8 +468,15 @@ create_query_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Extract the full GSQL query content from the conversation and use it to create the query.
 
   expected_output: >
@@ -358,8 +493,15 @@ install_query_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Extract the name of the query to be installed and install it on the graph.
 
   expected_output: >
@@ -376,8 +518,15 @@ run_query_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Extract the query name and any parameters required for execution, then run the query.
 
   expected_output: >
@@ -394,8 +543,15 @@ drop_query_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Identify the query to be dropped and remove it from the graph.
 
   expected_output: >
@@ -412,8 +568,15 @@ get_nodes_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Fetch all nodes of the specified type, optionally applying attribute filters.
 
   expected_output: >
@@ -430,8 +593,15 @@ get_neighbors_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Identify all direct neighbors of the specified node, optionally filtered by edge types.
 
   expected_output: >
@@ -448,8 +618,15 @@ breadth_first_search_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Perform BFS starting from the specified node(s) and return nodes found within the given hop range.
 
   expected_output: >
@@ -467,8 +644,15 @@ upsert_vector_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Use the provided node ID and vector to update or insert vector attributes in the graph.
 
   expected_output: >
@@ -485,8 +669,15 @@ fetch_node_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Fetch the full data and vector representation of the specified node.
 
   expected_output: >
@@ -503,8 +694,15 @@ fetch_nodes_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Fetch multiple nodes and include their vector fields in the response.
 
   expected_output: >
@@ -521,8 +719,15 @@ vector_search_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Use the given vector input to search for the most similar nodes in the graph.
 
   expected_output: >
@@ -539,8 +744,15 @@ search_multi_vector_attributes_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Use multiple vector attributes to search for nodes with the best combined similarity.
 
   expected_output: >
@@ -557,8 +769,15 @@ search_top_k_similar_nodes_task:
     You are given a list representing a conversation history between the user and the assistant. 
     The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
     so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Find and return the top K nodes most similar to the provided vector representation.
 
   expected_output: >
@@ -574,9 +793,17 @@ create_data_source_task:
     Instructions
     ------------
     You are given a list representing a conversation history between the user and the assistant. 
-    The most recent entries at the bottom are the most relevant to the user’s current intent:
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Based on the user’s intent, extract the target path and optional parameters like delimiter or recursive mode.
 
   expected_output: >
@@ -591,9 +818,18 @@ drop_data_source_task:
 
     Instructions
     ------------
-    Use the conversation history to identify which data source the user wants to remove:
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Confirm the name or path before performing the deletion.
 
   expected_output: >
@@ -608,13 +844,22 @@ preview_sample_data_task:
 
     Instructions
     ------------
-    Analyze the recent conversation to determine the file or path the user wants to preview:
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+
     {conversation_history}
 
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
     Return the column headers and a sample of 5–10 rows to help guide the user in schema creation.
 
   expected_output: >
-    A clean preview of the data file including headers and the first 5–10 rows.
+    A clean preview of the data file including headers and the first 5–10 rows in markdown table format.
 
   agent: data_source_agent
 

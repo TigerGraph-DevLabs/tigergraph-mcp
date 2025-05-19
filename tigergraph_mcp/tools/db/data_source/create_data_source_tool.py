@@ -42,15 +42,31 @@ tools = [
         name=TigerGraphToolName.CREATE_DATA_SOURCE,
         description="""Creates a new data source in TigerGraph using TigerGraphX.
 
-Example input:
+Supports both:
+1. Access Key and Secret Key authentication
+2. Anonymous Access via configuration
+
+Example 1: Access Key and Secret Key
 ```python
 name = "data_source_1"
 data_source_type = "s3"
 access_key = "your-access-key"
 secret_key = "your-secret-key"
-extra_config = {"region": "us-west-2"}
-graph = "MyGraph" # optional
+graph = "MyGraph"  # optional
 ````
+
+Example 2: Anonymous Access
+
+```python
+name = "data_source_1"
+data_source_type = "s3"
+access_key = None
+secret_key = None
+extra_config = {
+    "file.reader.settings.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
+}
+graph = "MyGraph"  # optional
+```
 
 """,
         inputSchema=CreateDataSourceToolInput.model_json_schema(),
