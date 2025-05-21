@@ -18,7 +18,7 @@ This project requires **Python 3.10, 3.11, or 3.12** and **TigerGraph 4.1 or lat
 TigerGraph **version 4.1 or higher** is required to run TigerGraph-MCP. You can set it up using one of the following methods:
 
 - **TigerGraph DB**: Install and configure a local instance.
-- **TigerGraph Cloud**: Use a managed TigerGraph instance.
+- **TigerGraph Savanna**: Use a managed TigerGraph instance in the cloud.
 - **TigerGraph Docker**: Run TigerGraph in a containerized environment.
 
 > ⚠️ **Minimum Required Version: TigerGraph 4.1**
