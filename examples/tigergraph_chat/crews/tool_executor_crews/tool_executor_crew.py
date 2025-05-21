@@ -2,16 +2,12 @@ from functools import cached_property
 
 from crewai import Agent, Crew, Task
 from crewai.project import CrewBase, agent, crew, task
-from crewai.tasks.task_output import TaskOutput
 from crewai.tools import BaseTool
 
 from tigergraph_mcp import TigerGraphToolName
-from chat_session_manager import chat_session
+from .human_input_tool import HumanInputTool
 
-
-def print_output(output: TaskOutput):
-    message = output.raw
-    chat_session.chat_ui.send(message, user=output.agent, respond=False)
+verbose = True
 
 
 @CrewBase
@@ -26,10 +22,9 @@ class ToolExecutorCrews:
     # ------------------------------ Schema Operations ------------------------------
     @agent
     def schema_agent(self) -> Agent:
-        return Agent(  # pyright: ignore
+        return Agent(
             config=self.agents_config["schema_agent"],  # pyright: ignore
             tools=[
-                self.tool_registry[TigerGraphToolName.CREATE_SCHEMA],
                 self.tool_registry[TigerGraphToolName.GET_SCHEMA],
                 self.tool_registry[TigerGraphToolName.DROP_GRAPH],
             ],
@@ -37,27 +32,45 @@ class ToolExecutorCrews:
         )
 
     @task
-    def create_schema_task(self) -> Task:
+    def analyze_and_propose_schema_task(self) -> Task:
         return Task(
-            config=self.tasks_config["create_schema_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
+            config=self.tasks_config["analyze_and_propose_schema_task"],  # pyright: ignore
+        )
+
+    @task
+    def confirm_or_edit_schema_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["confirm_or_edit_schema_task"],  # pyright: ignore
+            tools=[
+                HumanInputTool(),
+            ],
+        )
+
+    @task
+    def create_and_execute_schema_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["create_and_execute_schema_task"],  # pyright: ignore
+            tools=[
+                self.tool_registry[TigerGraphToolName.CREATE_SCHEMA],
+            ],
         )
 
     @crew
     def create_schema_crew(self) -> Crew:
         return Crew(
             agents=[self.schema_agent()],
-            tasks=[self.create_schema_task()],
-            verbose=True,
+            tasks=[
+                self.analyze_and_propose_schema_task(),
+                self.confirm_or_edit_schema_task(),
+                self.create_and_execute_schema_task(),
+            ],
+            verbose=verbose,
         )
 
     @task
     def get_schema_task(self) -> Task:
         return Task(
             config=self.tasks_config["get_schema_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -65,15 +78,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.schema_agent()],
             tasks=[self.get_schema_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
     def graph_drop_task(self) -> Task:
         return Task(
             config=self.tasks_config["graph_drop_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -81,7 +92,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.schema_agent()],
             tasks=[self.graph_drop_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     # ------------------------------ Data Loading Operations ------------------------------
@@ -100,8 +111,6 @@ class ToolExecutorCrews:
     def load_data_task(self) -> Task:
         return Task(
             config=self.tasks_config["load_data_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -109,7 +118,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.data_loader_agent()],
             tasks=[self.load_data_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     # ------------------------------ Node Operations ------------------------------
@@ -133,8 +142,6 @@ class ToolExecutorCrews:
     def add_node_task(self) -> Task:
         return Task(
             config=self.tasks_config["add_node_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -142,15 +149,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.add_node_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
     def add_nodes_task(self) -> Task:
         return Task(
             config=self.tasks_config["add_nodes_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -158,15 +163,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.add_nodes_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
     def remove_node_task(self) -> Task:
         return Task(
             config=self.tasks_config["remove_node_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -174,15 +177,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.remove_node_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
     def has_node_task(self) -> Task:
         return Task(
             config=self.tasks_config["has_node_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -190,15 +191,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.has_node_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
     def get_node_data_task(self) -> Task:
         return Task(
             config=self.tasks_config["get_node_data_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -206,15 +205,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.get_node_data_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
     def get_node_edges_task(self) -> Task:
         return Task(
             config=self.tasks_config["get_node_edges_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -222,15 +219,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.get_node_edges_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
     def clear_graph_data_task(self) -> Task:
         return Task(
             config=self.tasks_config["clear_graph_data_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -238,7 +233,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.clear_graph_data_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     # ------------------------------ Edge Operations ------------------------------
@@ -264,7 +259,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.edge_agent()],
             tasks=[self.add_edge_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -276,7 +271,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.edge_agent()],
             tasks=[self.add_edges_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -288,7 +283,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.edge_agent()],
             tasks=[self.has_edge_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -300,7 +295,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.edge_agent()],
             tasks=[self.get_edge_data_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     # ------------------------------ Statistics Operations ------------------------------
@@ -325,7 +320,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.statistics_agent()],
             tasks=[self.degree_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -337,7 +332,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.statistics_agent()],
             tasks=[self.number_of_nodes_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -349,7 +344,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.statistics_agent()],
             tasks=[self.number_of_edges_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     # ------------------------------ Query Operations ------------------------------
@@ -378,7 +373,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.create_query_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -390,7 +385,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.install_query_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -402,7 +397,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.run_query_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -414,7 +409,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.drop_query_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -426,7 +421,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.get_nodes_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -438,7 +433,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.get_neighbors_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -450,7 +445,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.breadth_first_search_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     # ------------------------------ Vector Operations ------------------------------
@@ -478,7 +473,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.vector_agent()],
             tasks=[self.upsert_vector_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -490,7 +485,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.vector_agent()],
             tasks=[self.fetch_node_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -502,7 +497,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.vector_agent()],
             tasks=[self.fetch_nodes_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -514,7 +509,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.vector_agent()],
             tasks=[self.vector_search_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -526,7 +521,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.vector_agent()],
             tasks=[self.search_multi_vector_attributes_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
@@ -538,7 +533,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.vector_agent()],
             tasks=[self.search_top_k_similar_nodes_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     # ------------------------------ Data Source Operations ------------------------------
@@ -557,8 +552,6 @@ class ToolExecutorCrews:
     def create_data_source_task(self) -> Task:
         return Task(
             config=self.tasks_config["create_data_source_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -566,15 +559,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.data_source_agent()],
             tasks=[self.create_data_source_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
     def drop_data_source_task(self) -> Task:
         return Task(
             config=self.tasks_config["drop_data_source_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -582,15 +573,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.data_source_agent()],
             tasks=[self.drop_data_source_task()],
-            verbose=True,
+            verbose=verbose,
         )
 
     @task
     def preview_sample_data_task(self) -> Task:
         return Task(
             config=self.tasks_config["preview_sample_data_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -598,5 +587,5 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.data_source_agent()],
             tasks=[self.preview_sample_data_task()],
-            verbose=True,
+            verbose=verbose,
         )

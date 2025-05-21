@@ -16,6 +16,7 @@ planning_task:
 
     When extracting the command:
 
+    - **Never introduce any steps that are not explicitly stated by the user.**
     - Preserve any user-provided **code**, **URLs**, **file names**, **explicit strings**, and **formatting** exactly as they appear.
     - Retain **newlines**, indentation, and paragraph breaks.
     - If the user includes configuration values, quoted identifiers, or paths, **do not modify or summarize** them.
