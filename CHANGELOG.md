@@ -1,6 +1,13 @@
 # Changelog
 
 ---
+### 0.1.3
+- feat: ensure MCP tools are VS Code and JSON schema compatible
+- refactor: organize tools into separate graph and database categories
+- feat: add MCP tools for data source management and previewing sample data, with integration tests
+- feat: support multi-step task execution with sequential tool orchestration
+- feat: support anonymous S3 access, enhance schema agent output, and improve multi-file schema creation and agent prompts
+- docs: add README instructions for installation and usage with CrewAI and Copilot Chat
 
 ## 0.1.2
 - feat: add example tigergraph_chat to demonstrate use CrewAI to call MCP tools
