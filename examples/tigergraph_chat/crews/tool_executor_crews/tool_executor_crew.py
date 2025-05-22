@@ -5,7 +5,6 @@ from crewai.project import CrewBase, agent, crew, task
 from crewai.tools import BaseTool
 
 from tigergraph_mcp import TigerGraphToolName
-from .human_input_tool import HumanInputTool
 
 verbose = True
 
@@ -21,50 +20,14 @@ class ToolExecutorCrews:
 
     # ------------------------------ Schema Operations ------------------------------
     @agent
-    def schema_agent(self) -> Agent:
+    def schema_admin_agent(self) -> Agent:
         return Agent(
-            config=self.agents_config["schema_agent"],  # pyright: ignore
+            config=self.agents_config["schema_admin_agent"],  # pyright: ignore
             tools=[
                 self.tool_registry[TigerGraphToolName.GET_SCHEMA],
                 self.tool_registry[TigerGraphToolName.DROP_GRAPH],
             ],
             llm="gpt-4o",
-        )
-
-    @task
-    def analyze_and_propose_schema_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["analyze_and_propose_schema_task"],  # pyright: ignore
-        )
-
-    @task
-    def confirm_or_edit_schema_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["confirm_or_edit_schema_task"],  # pyright: ignore
-            tools=[
-                HumanInputTool(),
-            ],
-        )
-
-    @task
-    def create_and_execute_schema_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["create_and_execute_schema_task"],  # pyright: ignore
-            tools=[
-                self.tool_registry[TigerGraphToolName.CREATE_SCHEMA],
-            ],
-        )
-
-    @crew
-    def create_schema_crew(self) -> Crew:
-        return Crew(
-            agents=[self.schema_agent()],
-            tasks=[
-                self.analyze_and_propose_schema_task(),
-                self.confirm_or_edit_schema_task(),
-                self.create_and_execute_schema_task(),
-            ],
-            verbose=verbose,
         )
 
     @task
@@ -76,7 +39,7 @@ class ToolExecutorCrews:
     @crew
     def get_schema_crew(self) -> Crew:
         return Crew(
-            agents=[self.schema_agent()],
+            agents=[self.schema_admin_agent()],
             tasks=[self.get_schema_task()],
             verbose=verbose,
         )
@@ -90,7 +53,7 @@ class ToolExecutorCrews:
     @crew
     def drop_graph_crew(self) -> Crew:
         return Crew(
-            agents=[self.schema_agent()],
+            agents=[self.schema_admin_agent()],
             tasks=[self.graph_drop_task()],
             verbose=verbose,
         )

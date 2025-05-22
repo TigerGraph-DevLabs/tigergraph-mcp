@@ -3,7 +3,6 @@ from pathlib import Path
 import panel as pn
 import threading
 
-from crewai.agents.agent_builder.base_agent_executor_mixin import CrewAgentExecutorMixin
 from mcp import StdioServerParameters
 from mcpadapt.core import MCPAdapt
 from mcpadapt.crewai_adapter import CrewAIAdapter
@@ -18,15 +17,9 @@ class TigerGraphChatApp:
     def __init__(self):
         load_dotenv(dotenv_path=self.dotenv_path)
         pn.extension(design="material")
-        CrewAgentExecutorMixin._ask_human_input = self.custom_ask_human_input  # pyright: ignore
         chat_session.chat_ui.callback = self.callback
         self.send_welcome_message()
         self.user_input_event = threading.Event()
-
-    def custom_ask_human_input(self, final_answer: dict) -> str:
-        """Handles user feedback when CrewAI requires additional input."""
-        chat_session.chat_ui.send(final_answer, user="Assistant", respond=False)
-        return chat_session.wait_for_user_input()
 
     def callback(self, contents: str):
         """Handles user messages and either starts a crew or records input."""

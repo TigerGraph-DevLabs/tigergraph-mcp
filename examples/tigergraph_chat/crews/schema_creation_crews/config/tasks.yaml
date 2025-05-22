@@ -1,0 +1,208 @@
+draft_schema_task:
+  description: >
+    Analyze the provided data tables to propose a graph schema using best practices.
+
+    ## Analyze Data and Propose Schema
+
+    Follow these steps:
+    1. Identify node types using primary keys.
+    2. For each column, classify it as attribute, reference, or new node.
+    3. Infer edges and directionality based on references or edge tables.
+    4. Output the schema proposal in **markdown** format for user review.
+
+    ## Schema Design Best Practices
+
+    ### Naming the Graph
+
+    When proposing a graph name, follow these guidelines:
+    - The name should be **related to the use case or data domain** (e.g., for employee/project data, a name like `WorkforceGraph` is appropriate).
+    - Use **PascalCase** formatting: capitalize the first letter of each word and do not use spaces or underscores (e.g., `SocialGraph`, `SupplyChainGraph`, `MedicalRecordsGraph`).
+
+    ### Example Tables
+
+    **Table 1: Employee Data (Node Table)**
+
+    | employee_id | email                                         | manager_id | department | location      |
+    | ----------- | --------------------------------------------- | ---------- | ---------- | ------------- |
+    | E001        | [alice@example.com](mailto:alice@example.com) | E005       | Sales      | New York      |
+    | E002        | [bob@example.com](mailto:bob@example.com)     | E005       | Sales      | New York      |
+    | E003        | [carol@example.com](mailto:carol@example.com) | E006       | Marketing  | San Francisco |
+
+    **Table 2: Employee_Project (Edge Table)**
+
+    | employee_id | project_id | role      | start_date |
+    | ----------- | ---------- | --------- | ---------- |
+    | E001        | P100       | Developer | 2023-01-01 |
+    | E002        | P101       | Tester    | 2023-02-15 |
+    | E003        | P100       | Analyst   | 2023-03-01 |
+
+    ### Step-by-Step Guide for Schema Design
+
+    1. **Identify node types and primary keys.**
+       - Every node table must define a unique identifier (primary key), which becomes the node's primary ID in the graph.
+       - From Table 1, `employee_id` is a unique identifier.
+       - Define a node type `Employee` with `employee_id` as the primary ID.
+
+    2. **Classify columns as attributes, references, or node types.**
+       - Repeated values → attributes.
+       - Unique identifiers → new node types.
+       - Self-references → edges.
+       - In `Employee`:
+         - Attributes: `department`, `location`
+         - Node: `Email` from `email`
+         - Reference: `manager_id` refers to another `employee_id`
+         - Create a directed edge `employee_manages_employee` from manager to employee.
+         - Create an undirected edge `employee_has_email` between `Employee` and `Email`.
+
+    3. **Identify edge tables and relationship attributes.**
+       - Table 2 connects `Employee` and `Project`.
+       - Create a node type `Project` using `project_id` as primary key.
+       - Relationship-specific attributes: `role`, `start_date`.
+
+    4. **Define edge types.**
+       - Edge `employee_works_on_project` from `Employee` to `Project` with attributes `role`, `start_date`.
+
+    5. **Determine edge directionality.**
+       - Directed: same node types (e.g., manager to employee)
+       - Undirected: different node types unless semantics imply direction.
+
+    6. **Validate schema consistency.**
+       - Ensure all node types have primary keys.
+       - Ensure all edges reference valid nodes.
+       - Ensure all attributes and names are meaningful.
+
+    Output the schema proposal in markdown format, including:
+    - Graph Name
+    - Node Types with primary IDs and attributes
+    - Edge Types with directionality and attributes
+
+    Supported attribute types: INT, UINT, FLOAT, DOUBLE, BOOL, STRING, DATETIME.
+
+    ## Inputs
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+
+    {conversation_history}
+
+    You are also provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+  expected_output: >
+    Provide a clear, user-friendly message with three parts: a short introduction, a Markdown schema proposal, and a confirmation request. 
+    Only show the results—**do not include any process or reasoning!**
+
+    Follow this structure:
+
+    1. Short introduction  
+    2. Markdown schema proposal (include graph name, node types with primary IDs and attributes, and edge types)  
+    3. Clear confirmation request
+
+    Example:
+
+    Here is the schema I desgined based on your input.
+
+    ### Graph Name
+    EmployeeGraph
+
+    ### Node Types
+    - **employee** (primary_id: id)
+      - id: STRING
+      - name: STRING
+      - email: STRING
+
+    - **department** (primary_id: dept_id)
+      - dept_id: STRING
+      - name: STRING
+
+    ### Edge Types
+    - works_for (FROM: employee, TO: department, undirected)
+      - since: DATETIME
+
+    - manages (FROM: employee, TO: employee, directed)
+      - level: STRING
+
+    Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok". Or tell me if you want to make any changes.
+
+  agent: draft_schema_agent
+
+edit_schema_task:
+  description: >
+    Refine the proposed TigerGraph schema based on a single round of user feedback.
+
+    ## Instructions
+
+    - Receive the initial schema proposal along with the user's comments or change requests.
+    - Apply the requested changes accurately and completely.
+    - Use TigerGraph best practices to ensure structural consistency—for example, when adding a new node type,
+      consider whether related edge types should also be introduced, if logically implied by the context.
+    - Avoid overreaching: only make logical inferences that enhance schema coherence, not speculative or structural overhauls.
+
+    ⚠️ This task is **single-pass only** — do not ask follow-up questions or prompt the user for clarification.
+    Validation, iteration, and confirmation will occur in downstream steps.
+
+    - Output the revised schema in well-formatted Markdown.
+
+    ## Inputs
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+
+    {conversation_history}
+
+  expected_output: >
+    Provide a clear, user-friendly message with three parts: a short introduction, a Markdown schema proposal, and a confirmation request. 
+    Only show the results—**do not include any process or reasoning!**
+
+    Follow this structure:
+
+    1. Short introduction  
+    2. Markdown schema proposal (include graph name, node types with primary IDs and attributes, and edge types)  
+    3. Clear confirmation request
+
+    Example:
+
+    Here is the schema I desgined based on your input.
+
+    ### Graph Name
+    EmployeeGraph
+
+    ### Node Types
+    - **employee** (primary_id: id)
+      - id: STRING
+      - name: STRING
+      - email: STRING
+
+    - **department** (primary_id: dept_id)
+      - dept_id: STRING
+      - name: STRING
+
+    ### Edge Types
+    - works_for (FROM: employee, TO: department, undirected)
+      - since: DATE
+
+    - manages (FROM: employee, TO: employee, directed)
+      - level: STRING
+
+    Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok". Or tell me if you want to make any changes.
+
+  agent: edit_schema_agent
+
+create_schema_task:
+  description: >
+    Use the **final confirmed schema** to call the TigerGraph `CREATE_SCHEMA` tool.
+    Ensure the schema format is valid and matches tool expectations exactly.
+
+    If the tool call fails, allow retry with updated input.
+
+    ## Inputs
+    The final, validated schema to be applied:
+
+    {final_schema}
+
+  expected_output: >
+    A confirmation message indicating that the schema was successfully created.
+
+  agent: create_schema_agent

@@ -1,14 +1,18 @@
 from typing import Dict, List
 from pydantic import BaseModel, Field
 import json
+import logging
 
 from crewai.flow.flow import Flow, listen, or_, router, start
 from crewai.tools import BaseTool
 from tigergraph_mcp import TigerGraphToolName
 
 from chat_session_manager import chat_session
-from crews import PlannerCrew, ToolExecutorCrews
-import logging
+from crews import (
+    PlannerCrew,
+    SchemaCreationCrews,
+    ToolExecutorCrews,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +24,10 @@ class ChatSessionState(BaseModel):
         default_factory=list
     )  # [{"tool_name": ..., "command": ...}]
     current_task_index: int = 0
+
+    # Schema creation flow control
+    schema_flow_stage: str = "draft"  # Can be "draft", "edit", or "create"
+    schema_draft: str = ""  # Current schema draft text
 
 
 class ChatFlow(Flow[ChatSessionState]):
@@ -68,19 +76,13 @@ class ChatFlow(Flow[ChatSessionState]):
 
     @router(identify_tools_from_input)
     def route_based_on_tool_match(self):
-        chat_session.chat_ui.send(
-            f"🧭 Task plan: {str(self.state.task_plan)}",
-            user="Assistant",
-            respond=False,
-        )
+        self._send_message(f"🧭 Task plan: {str(self.state.task_plan)}")
         return "task_ready" if self.state.task_plan else "tool_matching_failed"
 
     @router("tool_matching_failed")
     def prompt_for_clarification(self):
-        help_message = self.get_help_message()
-        chat_session.chat_ui.send(help_message, user="Assistant", respond=False)
-        user_input = chat_session.wait_for_user_input()
-        self.state.conversation_history.append(user_input)
+        self._send_message(self.get_help_message())
+        self._wait_for_user_input()
         return "awaiting_user_clarification"
 
     def get_help_message(self) -> str:
@@ -112,8 +114,7 @@ I'm here to help – just let me know what you'd like to do! 🚀
         current_index = self.state.current_task_index
 
         if current_index >= len(task_plan):
-            user_input = chat_session.wait_for_user_input()
-            self.state.conversation_history.append(f"User: {user_input}")
+            self._wait_for_user_input()
             self.state.task_plan = []
             self.state.current_task_index = 0
             return "awaiting_user_clarification"
@@ -124,29 +125,85 @@ I'm here to help – just let me know what you'd like to do! 🚀
         if not tool_enum:
             return "tool_matching_failed"
 
-        # Convert tool name to method name: "graph__create_schema" -> "create_schema_crew"
-        crew_method_name = tool_enum.name.lower() + "_crew"
-        crew_factory = ToolExecutorCrews(tools=self.state.tool_registry)
+        if tool_enum == TigerGraphToolName.CREATE_SCHEMA:
+            crew_factory = SchemaCreationCrews(tools=self.state.tool_registry)
 
-        if not hasattr(crew_factory, crew_method_name):
-            available = [m for m in dir(crew_factory) if m.endswith("_crew")]
-            chat_session.chat_ui.send(
-                f"🚫 Task `{tool_enum}` is not available. Available: {available}",
-                user="Assistant",
-                respond=False,
+            if self.state.schema_flow_stage == "draft":
+                crew = crew_factory.draft_schema_crew()
+                output = crew.kickoff(
+                    inputs={
+                        "conversation_history": str(self.state.conversation_history),
+                        "current_command": task_step["command"],
+                    }
+                )
+                self.state.schema_draft = output.raw
+                self._send_message(self.state.schema_draft)
+                self.state.schema_flow_stage = "edit"
+                return "task_ready"
+
+            elif self.state.schema_flow_stage == "edit":
+                user_input = self._wait_for_user_input()
+
+                if any(
+                    kw in user_input.lower()
+                    for kw in [
+                        "confirmed",
+                        "approved",
+                        "go ahead",
+                        "ok",
+                    ]
+                ):
+                    self.state.schema_flow_stage = "create"
+                    return "task_ready"
+
+                crew = crew_factory.edit_schema_crew()
+                output = crew.kickoff(
+                    inputs={
+                        "conversation_history": str(self.state.conversation_history),
+                    }
+                )
+                self.state.schema_draft = output.raw
+                self._send_message(self.state.schema_draft)
+                return "task_ready"
+
+            elif self.state.schema_flow_stage == "create":
+                crew = crew_factory.create_schema_crew()
+                output = crew.kickoff(inputs={"final_schema": self.state.schema_draft})
+                self._send_message(output.raw)
+
+                # Cleanup
+                self.state.schema_flow_stage = "draft"
+                self.state.schema_draft = ""
+
+        else:
+            # Convert tool name to method name: "graph__create_schema" -> "create_schema_crew"
+            crew_method_name = tool_enum.name.lower() + "_crew"
+            crew_factory = ToolExecutorCrews(tools=self.state.tool_registry)
+
+            if not hasattr(crew_factory, crew_method_name):
+                available = [m for m in dir(crew_factory) if m.endswith("_crew")]
+                self._send_message(
+                    f"🚫 Task `{tool_enum}` is not available. Available: {available}",
+                )
+                return
+
+            crew = getattr(crew_factory, crew_method_name)()
+            output = crew.kickoff(
+                inputs={
+                    "conversation_history": str(self.state.conversation_history),
+                    "current_command": task_step["command"],
+                }
             )
-            return
+            self._send_message(output.raw)
 
-        crew = getattr(crew_factory, crew_method_name)()
-        output = crew.kickoff(
-            inputs={
-                "conversation_history": str(self.state.conversation_history),
-                "current_command": task_plan[current_index]["command"],
-            }
-        )
-        output_text = output.raw
-
-        chat_session.chat_ui.send(output_text, user="Assistant", respond=False)
-        self.state.conversation_history.append(f"Assistant: {output_text}")
         self.state.current_task_index += 1
         return "task_ready"
+
+    def _wait_for_user_input(self):
+        user_input = chat_session.wait_for_user_input()
+        self.state.conversation_history.append(f"User: {user_input}")
+        return user_input
+
+    def _send_message(self, message: str):
+        chat_session.chat_ui.send(message, user="Assistant", respond=False)
+        self.state.conversation_history.append(f"Assistant: {message}")

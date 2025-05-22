@@ -6,7 +6,7 @@ from crewai.project import CrewBase, agent, crew, task
 class PlannerCrew:
     @agent
     def planner_agent(self) -> Agent:
-        return Agent(  # pyright: ignore
+        return Agent(
             config=self.agents_config["planner_agent"],  # pyright: ignore
         )
 
