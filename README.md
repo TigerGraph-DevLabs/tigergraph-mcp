@@ -104,7 +104,6 @@ poetry show --with dev
 
 This ensures all required dependencies (including optional ones) are successfully installed.
 
-
 #### Activate the Virtual Environment
 
 Activate the environment using:
@@ -235,3 +234,44 @@ Poe => panel serve examples/tigergraph_chat/main.py
 ```
 
 Open `http://localhost:5006/main` in your browser to start chatting with the AI agents.
+
+## Core MCP Features
+
+TigerGraph-MCP currently supports **34 MCP tools** that cover a broad spectrum of functionalities, including:
+
+#### Graph Operations
+- Manage schemas
+- Handle data loading and clearing
+- Manipulate nodes and edges
+- Access graph data
+- Execute queries such as breadth-first search and neighbor retrieval
+
+#### Vector Operations
+- Perform vector upserts and fetches
+- Conduct multi-attribute similarity searches
+- Retrieve top-k similar nodes
+
+#### Database Operations
+- Manage external data sources by creating, dropping, and previewing sample data
+
+## Roadmap
+
+We are continuously working on enhancing our features. Our upcoming improvements include:
+
+#### Enhanced API Support
+- Expand API coverage to include comprehensive database-level functionalities
+
+#### Schema Management
+- Support dynamic schema updates
+- Implement keyword validation
+- Enable real-time schema refresh
+
+#### Data Loading
+- Facilitate data ingestion from local files
+- Offer granular control over loading job creation and execution
+
+#### NetworkX Compatibility
+- Extend node, edge, and neighbor operations to closely mirror the NetworkX interface
+
+#### Graph Algorithms
+- Integrate commonly used graph algorithms for built-in analytics
