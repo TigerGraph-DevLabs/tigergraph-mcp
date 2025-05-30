@@ -9,7 +9,7 @@ from tigergraph_mcp import TigerGraphToolName
 
 class TestDataSourceTools(BaseFixture):
     @pytest.mark.asyncio
-    async def test_preview_sample_data(self):
+    async def test_data_source_tools(self):
         SAMPLE_PATH = "s3a://tigergraph-solution-kits/connected_customer/customer_360/data/Session.csv"  # Replace with actual path
 
         async with stdio_client(self.server_params) as (read, write):
@@ -32,6 +32,16 @@ class TestDataSourceTools(BaseFixture):
                 assert "✅ Successfully created data source" in str(create_result)
 
                 try:
+                    # Get the data source
+                    get_result = await session.call_tool(
+                        TigerGraphToolName.GET_DATA_SOURCE,
+                        arguments={
+                            "name": "data_source_1",
+                        },
+                    )
+                    get_result_text = str(get_result)
+                    assert "✅ Successfully retrieved configuration for data source" in get_result_text
+
                     # Preview sample data
                     preview_result = await session.call_tool(
                         TigerGraphToolName.PREVIEW_SAMPLE_DATA,

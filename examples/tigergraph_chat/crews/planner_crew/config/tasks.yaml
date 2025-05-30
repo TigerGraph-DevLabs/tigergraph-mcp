@@ -1,11 +1,16 @@
 planning_task:
   description: >
+    Given a conversation between a user and an assistant, identify and extract a structured, step-by-step tool execution plan based on the user's latest instructions. Each step should include the tool name and a concise command derived from the user's input. Prioritize the most recent instructions and preserve formatting for any quoted values, code, or paths.
+
     Analyze the conversation history, focusing especially on the most recent entries:
 
-    "{conversation_history}"
+    {conversation_history}
 
     The later entries in the list represent the most recent and relevant parts of the conversation between the user and the assistant,
     and should be given higher priority when interpreting the user's intent — especially the last clear instruction from the user.
+
+    The user's most recent command is:
+    {last_command}
 
     Consider the following available tools:
     {tools}
@@ -43,6 +48,13 @@ planning_task:
 
     Or:
     None
+
+    ### Special Cases:
+    If the **user's most recent message** includes something like "help", "can you help me?", "what can you do?", or "show me examples",  
+    return: help (no quotes, no JSON).
+
+    If the **user's most recent message** includes something like "onboarding", "guide me", "get started", "walk me through", etc.,  
+    return: onboarding (no quotes, no JSON).
 
   expected_output: >
     A JSON array of tool plan steps, where each step includes:

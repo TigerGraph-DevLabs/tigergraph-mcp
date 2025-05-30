@@ -4,8 +4,7 @@ import panel as pn
 import threading
 
 from mcp import StdioServerParameters
-from mcpadapt.core import MCPAdapt
-from mcpadapt.crewai_adapter import CrewAIAdapter
+from crewai_tools import MCPServerAdapter
 
 from chat_flow import ChatFlow
 from chat_session_manager import chat_session
@@ -36,9 +35,8 @@ class TigerGraphChatApp:
             env_dict: dict = dotenv_values(
                 dotenv_path=self.dotenv_path.expanduser().resolve()
             )
-            with MCPAdapt(
+            with MCPServerAdapter(
                 StdioServerParameters(command="tigergraph-mcp", env=env_dict),
-                CrewAIAdapter(),
             ) as tools:
                 tool_registry = {tool.name: tool for tool in tools}
                 flow = ChatFlow(
@@ -55,7 +53,7 @@ class TigerGraphChatApp:
     def send_welcome_message(self):
         """Sends the initial welcome message."""
         chat_session.chat_ui.send(
-            "**Welcome!** I'm your **TigerGraph Assistant**, here to help with all things **TigerGraph**—from designing graph schemas and loading data to running queries and performing vector searches. How can I assist you today? 🚀",
+            "**Welcome!** I'm your **TigerGraph Assistant**—here to help you design schemas, load and explore data, run queries, and more. Type what you'd like to do, or say **'onboarding'** to get started or **'help'** to see what I can do. 🚀",
             user="Assistant",
             respond=False,
         )

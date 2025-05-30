@@ -6,13 +6,12 @@ from crewai.tools import BaseTool
 
 from tigergraph_mcp import TigerGraphToolName
 
-verbose = True
-
 
 @CrewBase
 class SchemaCreationCrews:
-    def __init__(self, tools: dict[str, BaseTool]):
+    def __init__(self, tools: dict[str, BaseTool], verbose=False):
         self._tool_registry = tools
+        self.verbose = verbose
 
     @cached_property
     def tool_registry(self) -> dict[str, BaseTool]:
@@ -40,7 +39,7 @@ class SchemaCreationCrews:
             tasks=[
                 self.draft_schema_task(),
             ],
-            verbose=verbose,
+            verbose=self.verbose,
         )
 
     @agent
@@ -65,7 +64,7 @@ class SchemaCreationCrews:
             tasks=[
                 self.edit_schema_task(),
             ],
-            verbose=verbose,
+            verbose=self.verbose,
         )
 
     @agent
@@ -91,5 +90,5 @@ class SchemaCreationCrews:
             tasks=[
                 self.create_schema_task(),
             ],
-            verbose=verbose,
+            verbose=self.verbose,
         )

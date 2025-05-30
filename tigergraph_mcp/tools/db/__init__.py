@@ -7,6 +7,7 @@
 
 from .data_source import (
     create_data_source,
+    get_data_source,
     drop_data_source,
     preview_sample_data,
 )
@@ -14,6 +15,7 @@ from .data_source import (
 __all__ = [
     # Tools for Data Source Operations
     "create_data_source",
+    "get_data_source",
     "drop_data_source",
     "preview_sample_data",
 ]

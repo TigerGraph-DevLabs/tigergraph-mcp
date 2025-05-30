@@ -4,6 +4,9 @@ from crewai.project import CrewBase, agent, crew, task
 
 @CrewBase
 class PlannerCrew:
+    def __init__(self, verbose=False):
+        self.verbose = verbose
+
     @agent
     def planner_agent(self) -> Agent:
         return Agent(
@@ -23,4 +26,5 @@ class PlannerCrew:
         return Crew(
             agents=self.agents,  # pyright: ignore
             tasks=self.tasks,  # pyright: ignore
+            verbose=self.verbose,
         )

@@ -21,12 +21,9 @@ class LoadDataToolInput(BaseModel):
     graph_name: str = Field(
         ..., description="The name of the graph where data will be loaded."
     )
-    loading_job_config: Dict | str = Field(
+    loading_job_config: Dict = Field(
         ...,
-        description=(
-            "The loading job configuration used to load data into the graph.\n"
-            "This can be a dictionary or a JSON file path."
-        ),
+        description=("The loading job configuration used to load data into the graph."),
     )
 
 
@@ -43,7 +40,7 @@ loading_job_config = {
     "files": [
         {
             "file_alias": "f_person",
-            "file_path": "/data/files/person_data.csv",  # Local file example
+            "file_path": "/data/files/person_data.csv",
             "csv_parsing_options": {
                 "separator": ",",
                 "header": True,
@@ -58,31 +55,18 @@ loading_job_config = {
                     },
                 }
             ],
-        },
-        {
-            "file_alias": "f_friendship",
-            "file_path": "$s1:s3://bucket-name/path/to/friendship_data.csv",  # S3 file example with data source prefix
-            "edge_mappings": [
-                {
-                    "target_name": "Friendship",
-                    "source_node_column": "source",
-                    "target_node_column": "target",
-                    "attribute_column_mappings": {
-                        "closeness": "closeness",
-                    },
-                }
-            ],
-        },
+        }
     ],
 }
-```
+````
 
 Notes:
 
 * Use `"file_path"` as the absolute path to a local file on the TigerGraph server, or in the form of `"$<data_source_name>:<s3_uri>"` for S3 paths.
 * Ensure the specified data source (`s1` in this case) is already created and accessible by TigerGraph.
 * The "quote" style can be either "DOUBLE" or "SINGLE", with "DOUBLE" being the most common.
-""",
+* In `"attribute_column_mappings"`, the **key** is the attribute name in the **graph schema**, and the **value** is the corresponding column name in the **data file**.
+  """,
         inputSchema=LoadDataToolInput.model_json_schema(),
     )
 ]

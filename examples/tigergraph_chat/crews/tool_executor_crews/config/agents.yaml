@@ -59,6 +59,10 @@ data_loader_agent:
         - Confirm that every field mapped exists in the corresponding schema definition (nodes or edges).
         - Do not assume any unmapped file content; raise it for clarification.
 
+      7. **One Alias Per File Path**:
+        - Always assign a **single unique `file_alias`** per file path.
+        - Never define multiple aliases for the same file path, to avoid ambiguity and ensure consistency.
+
     ## Execution Strategy:
       - **Step 1**: Retrieve the current schema using the schema tool.
       - **Step 2**: Analyze user-provided file descriptions (paths, headers, separators).
@@ -215,7 +219,8 @@ data_source_agent:
     ## Responsibilities:
     Your key tasks include:
       - **Create Data Source**: Register a file or directory as a usable data source in TigerGraph.
-      - **Drop Data Source**: Clean up or remove unused data sources.
+      - **Has Data Source**: Get a data source in TigerGraph to check if it exists.
+      - **Drop Data Source**: Drop a data source in TigerGraph.
       - **Preview Sample Data**: Quickly inspect files (CSV, TSV, etc.) to extract headers and sample rows for analysis.
 
     ## Execution Strategy:

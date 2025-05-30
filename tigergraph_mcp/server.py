@@ -46,6 +46,7 @@ from .tools import (
     search_multi_vector_attributes,
     search_top_k_similar_nodes,
     create_data_source,
+    get_data_source,
     drop_data_source,
     preview_sample_data,
 )
@@ -135,6 +136,8 @@ async def serve() -> None:
                     return await search_top_k_similar_nodes(**arguments)
                 case TigerGraphToolName.CREATE_DATA_SOURCE:
                     return await create_data_source(**arguments)
+                case TigerGraphToolName.GET_DATA_SOURCE:
+                    return await get_data_source(**arguments)
                 case TigerGraphToolName.DROP_DATA_SOURCE:
                     return await drop_data_source(**arguments)
                 case TigerGraphToolName.PREVIEW_SAMPLE_DATA:

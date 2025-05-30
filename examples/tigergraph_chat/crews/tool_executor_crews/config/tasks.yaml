@@ -785,6 +785,30 @@ create_data_source_task:
 
   agent: data_source_agent
 
+has_data_source_task:
+  description: >
+    Check whether a specific data source exists in TigerGraph.
+
+    Instructions
+    ------------
+    You are given a list representing a conversation history between the user and the assistant. 
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
+    so prioritize those when interpreting the instructions:
+
+    {conversation_history}
+
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
+    Based on this information, identify the expected data source name and determine whether it currently exists in the system.
+
+  expected_output: >
+    A boolean value indicating whether the specified data source exists in TigerGraph.
+
+  agent: data_source_agent
 
 drop_data_source_task:
   description: >

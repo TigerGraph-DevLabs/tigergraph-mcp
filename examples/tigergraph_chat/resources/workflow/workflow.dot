@@ -1,0 +1,113 @@
+digraph ChatFlow {
+    rankdir=TB;
+    ranksep=0.65;
+    pad=0.5;
+
+    // Default node style
+    node [shape=box, style=rounded];
+
+    // Task nodes
+    initialize_session;
+    wait_for_user_input;
+    request_clarification;
+    execute_general_tool [label="execute_general_tool\n(Run crew for general tool)"];
+    proceed_to_next_task;
+
+    // Route/decision nodes
+    node [shape=diamond, style=""];
+    analyze_and_evaluate_plan;
+    check_task_plan_progress;
+    evaluate_task_type;
+    check_schema_origin;
+
+    // ---------------------------
+    // Create Schema Subgraph
+    // ---------------------------
+    subgraph cluster_create_schema {
+        label = "Create Schema Flow";
+        style = dashed;
+        color = red;
+        rank = same;
+
+        node [shape=box, style=rounded];
+        draft_schema [label="draft_schema\n(Call Crew)"];
+        edit_schema [label="edit_schema\n(Call Crew)"];
+        create_schema [label="create_schema\n(Call Crew)"];
+
+        node [shape=diamond, style=""];
+        handle_user_confirmation;
+
+        draft_schema -> handle_user_confirmation [label="on_schema_drafted"];
+        handle_user_confirmation -> edit_schema [label="user_requested_changes"];
+        handle_user_confirmation -> create_schema [label="user_confirmed_schema"];
+        edit_schema -> handle_user_confirmation [label="on_schema_edited"];
+        create_schema -> check_schema_origin [label="on_schema_created"];
+    }
+
+    // ---------------------------
+    // Onboarding Subgraph
+    // ---------------------------
+    subgraph cluster_onboarding {
+        label = "Onboarding Flow";
+        style = dashed;
+        color = blue;
+        rank = same;
+
+        node [shape=box, style=rounded];
+
+        prepare_data_source_and_prompt;
+        prompt_file_paths_retry [label="prompt_file_paths_retry"];
+        wait_and_preview_sample_data [label="wait_and_preview_sample_data\n(Wait for input → Call Crew)"];
+        load_data [label="load_data\n(Call Crew)"];
+
+        draft_schema;
+        edit_schema;
+        create_schema;
+        handle_user_confirmation;
+
+        node [shape=diamond, style=""];
+        evaluate_preview_result;
+
+        prepare_data_source_and_prompt -> wait_and_preview_sample_data [label="on_prompt_displayed"];
+        prompt_file_paths_retry -> wait_and_preview_sample_data [label="on_retry_prompt_displayed"];
+        wait_and_preview_sample_data -> evaluate_preview_result [label="on_data_previewed"];
+        evaluate_preview_result -> prompt_file_paths_retry [label="preview_failed"];
+        evaluate_preview_result -> draft_schema [label="preview_successful"];
+    }
+
+    // Edge to return after onboarding completes
+    load_data -> wait_for_user_input [label="on_onboarding_completed"];
+
+    // ---------------------------
+    // Main Workflow
+    // ---------------------------
+    initialize_session -> analyze_and_evaluate_plan [label="on_session_started"];
+
+    analyze_and_evaluate_plan -> request_clarification [label="tool_matching_failed"];
+    analyze_and_evaluate_plan -> prepare_data_source_and_prompt [label="onboarding_required"];
+    analyze_and_evaluate_plan -> check_task_plan_progress [label="task_plan_ready"];
+
+    request_clarification -> analyze_and_evaluate_plan [label="on_user_input_updated"];
+
+    check_task_plan_progress -> evaluate_task_type [label="more_tasks_remaining"];
+    check_task_plan_progress -> wait_for_user_input [label="no_tasks_remaining"];
+
+    evaluate_task_type -> execute_general_tool [label="task_type_general_tool"];
+    evaluate_task_type -> draft_schema [label="task_type_create_schema"];
+    evaluate_task_type -> request_clarification [label="task_type_unclear"];
+
+    execute_general_tool -> proceed_to_next_task [label="on_tool_executed"];
+    check_schema_origin -> load_data [label="schema_from_onboarding"];
+    check_schema_origin -> proceed_to_next_task [label="schema_standalone"];
+
+    proceed_to_next_task -> check_task_plan_progress [label="on_task_completed"];
+    wait_for_user_input -> analyze_and_evaluate_plan [label="on_user_command_received"];
+
+    // Layout assistance with invisible edges to enforce left-to-right order of clusters
+    execute_general_tool -> draft_schema [style=invis];
+    draft_schema -> prepare_data_source_and_prompt [style=invis];
+    evaluate_task_type -> prepare_data_source_and_prompt [style=invis];
+    analyze_and_evaluate_plan -> evaluate_task_type [style=invis];
+    prompt_file_paths_retry -> load_data [style=invis];
+}
+

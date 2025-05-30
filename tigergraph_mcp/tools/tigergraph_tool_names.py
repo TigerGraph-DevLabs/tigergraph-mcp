@@ -46,6 +46,7 @@ class TigerGraphToolName(str, Enum):
     # -------------------- Database Operations --------------------
     # Data Source Operations
     CREATE_DATA_SOURCE = "db__create_data_source"
+    GET_DATA_SOURCE = "db__get_data_source"
     DROP_DATA_SOURCE = "db__drop_data_source"
     PREVIEW_SAMPLE_DATA = "db__preview_sample_data"
 
