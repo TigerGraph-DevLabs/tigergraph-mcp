@@ -55,7 +55,35 @@ loading_job_config = {
                     },
                 }
             ],
-        }
+        },
+        {
+            "file_alias": "f_friendship",
+            "file_path": "$s1:s3://bucket-name/path/to/friendship_data.csv",  # S3 file example with data source prefix
+            "node_mappings": [
+                {
+                    "target_name": "Person",
+                    "attribute_column_mappings": {
+                        "name": "source",
+                    },
+                },
+                {
+                    "target_name": "Person",
+                    "attribute_column_mappings": {
+                        "name": "target",
+                    },
+                }
+            ],
+            "edge_mappings": [
+                {
+                    "target_name": "Friendship",
+                    "source_node_column": "source",
+                    "target_node_column": "target",
+                    "attribute_column_mappings": {
+                        "closeness": "closeness",
+                    },
+                }
+            ],
+        },
     ],
 }
 ````

@@ -9,9 +9,10 @@ from tigergraph_mcp import TigerGraphToolName
 
 @CrewBase
 class ToolExecutorCrews:
-    def __init__(self, tools: dict[str, BaseTool], verbose=False):
+    def __init__(self, tools: dict[str, BaseTool], llm="gpt-4o", verbose=False):
         self._tool_registry = tools
         self.verbose = verbose
+        self.llm = llm
 
     @cached_property
     def tool_registry(self) -> dict[str, BaseTool]:
@@ -26,7 +27,7 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.GET_SCHEMA],
                 self.tool_registry[TigerGraphToolName.DROP_GRAPH],
             ],
-            llm="gpt-4o",
+            llm=self.llm,
         )
 
     @task
@@ -57,32 +58,6 @@ class ToolExecutorCrews:
             verbose=self.verbose,
         )
 
-    # ------------------------------ Data Loading Operations ------------------------------
-    @agent
-    def data_loader_agent(self) -> Agent:
-        return Agent(  # pyright: ignore
-            config=self.agents_config["data_loader_agent"],  # pyright: ignore
-            tools=[
-                self.tool_registry[TigerGraphToolName.GET_SCHEMA],
-                self.tool_registry[TigerGraphToolName.LOAD_DATA],
-            ],
-            llm="gpt-4o",
-        )
-
-    @task
-    def load_data_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["load_data_task"],  # pyright: ignore
-        )
-
-    @crew
-    def load_data_crew(self) -> Crew:
-        return Crew(
-            agents=[self.data_loader_agent()],
-            tasks=[self.load_data_task()],
-            verbose=self.verbose,
-        )
-
     # ------------------------------ Node Operations ------------------------------
     @agent
     def node_agent(self) -> Agent:
@@ -98,6 +73,7 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.HAS_NODE],
                 self.tool_registry[TigerGraphToolName.REMOVE_NODE],
             ],
+            llm=self.llm,
         )
 
     @task
@@ -210,6 +186,7 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.HAS_EDGE],
                 self.tool_registry[TigerGraphToolName.GET_EDGE_DATA],
             ],
+            llm=self.llm,
         )
 
     @task
@@ -271,6 +248,7 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.NUMBER_OF_NODES],
                 self.tool_registry[TigerGraphToolName.NUMBER_OF_EDGES],
             ],
+            llm=self.llm,
         )
 
     @task
@@ -324,6 +302,7 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.GET_NEIGHBORS],
                 self.tool_registry[TigerGraphToolName.BREADTH_FIRST_SEARCH],
             ],
+            llm=self.llm,
         )
 
     @task
@@ -424,6 +403,7 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.SEARCH_MULTI_VECTOR_ATTRIBUTES],
                 self.tool_registry[TigerGraphToolName.SEARCH_TOP_K_SIMILAR_NODES],
             ],
+            llm=self.llm,
         )
 
     @task
@@ -509,6 +489,7 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.DROP_DATA_SOURCE],
                 self.tool_registry[TigerGraphToolName.PREVIEW_SAMPLE_DATA],
             ],
+            llm=self.llm,
         )
 
     @task

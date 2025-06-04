@@ -53,7 +53,6 @@ class TestDataSourceTools(BaseFixture):
                             "size": 5,
                             "has_header": True,
                             "separator": ",",
-                            "eol": "\\n",
                             "quote": '"',
                         },
                     )

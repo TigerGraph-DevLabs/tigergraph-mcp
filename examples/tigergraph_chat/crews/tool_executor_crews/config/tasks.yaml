@@ -49,32 +49,6 @@ graph_drop_task:
 
   agent: schema_admin_agent
 
-# ------------------------------ Data Loading Operations ------------------------------
-load_data_task:
-  description: >
-    Load data into a TigerGraph graph using a user-provided description of the data files.
-
-    Instructions
-    ------------
-    You are given a list representing a conversation history between the user and the assistant. 
-    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
-    so prioritize those when interpreting the instructions:
-
-    {conversation_history}
-
-    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a 
-    refined version extracted by the system:
-
-    {current_command}
-
-    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
-    First, analyze the file structure and user-provided details (such as CSV headers, file paths, and data mappings). Then, generate a valid loading job configuration and use the appropriate tool to load the data into the target graph.
-
-  expected_output: >
-    Confirmation that the data has been successfully loaded into the specified graph, including the graph name, or a meaningful error message if the process fails.
-
-  agent: data_loader_agent
-
 # ------------------------------ Node Operations ------------------------------
 add_node_task:
   description: >
@@ -838,7 +812,7 @@ drop_data_source_task:
 
 preview_sample_data_task:
   description: >
-    Preview the contents of a data file or folder registered as a data source.
+    Preview the contents of one or more data files or folders registered as a data source.
 
     Instructions
     ------------
@@ -854,10 +828,12 @@ preview_sample_data_task:
     {current_command}
 
     Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
-    Return the column headers and a sample of 5–10 rows to help guide the user in schema creation.
+    
+    If multiple file paths are given, generate a separate preview for each file.
+    Return the column headers and a sample of 5–10 rows per file to help guide the user in schema creation.
 
   expected_output: >
-    A clean preview of the data file including headers and the first 5–10 rows in markdown table format.
+    A clean preview of each file, including headers and the first 5–10 rows in markdown table format, 
+    with filenames or file aliases clearly indicated.
 
   agent: data_source_agent
-

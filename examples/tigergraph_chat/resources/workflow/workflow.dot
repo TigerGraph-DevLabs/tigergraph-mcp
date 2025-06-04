@@ -19,6 +19,7 @@ digraph ChatFlow {
     check_task_plan_progress;
     evaluate_task_type;
     check_schema_origin;
+    check_load_data_origin;
 
     // ---------------------------
     // Create Schema Subgraph
@@ -45,6 +46,34 @@ digraph ChatFlow {
     }
 
     // ---------------------------
+    // Load Data Subgraph
+    // ---------------------------
+    subgraph cluster_load_data {
+        label = "Load Data Flow";
+        style = dashed;
+        color = green;
+        rank = same;
+
+        node [shape=box, style=rounded];
+        draft_loading_job [label="draft_loading_job\n(Call Crew)"];
+        edit_loading_job [label="edit_loading_job\n(Call Crew)"];
+        run_loading_job [label="run_loading_job\n(Call Crew)"];
+
+        node [shape=diamond, style=""];
+        confirm_loading_job;
+
+        draft_loading_job -> confirm_loading_job [label="on_job_drafted"];
+        confirm_loading_job -> edit_loading_job [label="user_requested_job_changes"];
+        confirm_loading_job -> run_loading_job [label="user_confirmed_job"];
+        edit_loading_job -> confirm_loading_job [label="on_job_edited"];
+        run_loading_job -> check_load_data_origin [label="on_job_completed"];
+    }
+
+    // Outside load cluster
+    check_load_data_origin -> wait_for_user_input [label="load_from_onboarding"];
+    check_load_data_origin -> proceed_to_next_task [label="load_standalone"];
+
+    // ---------------------------
     // Onboarding Subgraph
     // ---------------------------
     subgraph cluster_onboarding {
@@ -58,7 +87,6 @@ digraph ChatFlow {
         prepare_data_source_and_prompt;
         prompt_file_paths_retry [label="prompt_file_paths_retry"];
         wait_and_preview_sample_data [label="wait_and_preview_sample_data\n(Wait for input → Call Crew)"];
-        load_data [label="load_data\n(Call Crew)"];
 
         draft_schema;
         edit_schema;
@@ -74,9 +102,6 @@ digraph ChatFlow {
         evaluate_preview_result -> prompt_file_paths_retry [label="preview_failed"];
         evaluate_preview_result -> draft_schema [label="preview_successful"];
     }
-
-    // Edge to return after onboarding completes
-    load_data -> wait_for_user_input [label="on_onboarding_completed"];
 
     // ---------------------------
     // Main Workflow
@@ -94,20 +119,19 @@ digraph ChatFlow {
 
     evaluate_task_type -> execute_general_tool [label="task_type_general_tool"];
     evaluate_task_type -> draft_schema [label="task_type_create_schema"];
+    evaluate_task_type -> draft_loading_job [label="task_type_load_data"];
     evaluate_task_type -> request_clarification [label="task_type_unclear"];
 
     execute_general_tool -> proceed_to_next_task [label="on_tool_executed"];
-    check_schema_origin -> load_data [label="schema_from_onboarding"];
+    check_schema_origin -> draft_loading_job [label="schema_from_onboarding"];
     check_schema_origin -> proceed_to_next_task [label="schema_standalone"];
 
     proceed_to_next_task -> check_task_plan_progress [label="on_task_completed"];
     wait_for_user_input -> analyze_and_evaluate_plan [label="on_user_command_received"];
 
     // Layout assistance with invisible edges to enforce left-to-right order of clusters
+    evaluate_task_type -> prepare_data_source_and_prompt [style=invis];
+    execute_general_tool -> prepare_data_source_and_prompt [style=invis];
     execute_general_tool -> draft_schema [style=invis];
     draft_schema -> prepare_data_source_and_prompt [style=invis];
-    evaluate_task_type -> prepare_data_source_and_prompt [style=invis];
-    analyze_and_evaluate_plan -> evaluate_task_type [style=invis];
-    prompt_file_paths_retry -> load_data [style=invis];
 }
-

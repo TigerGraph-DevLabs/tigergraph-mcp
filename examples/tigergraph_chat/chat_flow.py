@@ -12,12 +12,13 @@ from chat_session_manager import chat_session
 from crews import (
     PlannerCrew,
     SchemaCreationCrews,
+    DataLoadingCrews,
     ToolExecutorCrews,
 )
 
 logger = logging.getLogger(__name__)
 verbose = False
-S3_ANONYMOUS_SOURCE_NAME = "__s3_anonymous_source"
+S3_ANONYMOUS_SOURCE_NAME = "s3_anonymous_source"
 
 
 class ChatSessionState(BaseModel):
@@ -31,15 +32,18 @@ class ChatSessionState(BaseModel):
     current_tool_name: str = ""  # Tool name of the currently executing task
     current_command: str = ""  # Command of the currently executing task
 
-    # Schema Creation State
-    current_schema_draft: str = ""  # Latest schema draft (editable by user)
-    is_schema_from_onboarding: bool = (
-        False  # Set to True if schema was generated during onboarding
-    )
-
     # Onboarding Data Preview
     last_user_file_input: str = ""
     last_data_preview: str = ""  # Output from the most recent data preview
+    is_from_onboarding: bool = (
+        False  # Set to True if it was generated during onboarding
+    )
+
+    # Schema Creation State
+    current_schema_draft: str = ""  # Latest schema draft
+
+    # Loading Job State
+    current_loading_job_draft: str = ""  # Latest loading job draft
 
 
 class ChatFlow(Flow[ChatSessionState]):
@@ -65,15 +69,18 @@ class ChatFlow(Flow[ChatSessionState]):
             "tools": str(self.state.tool_registry.keys()),
         }
 
-        crew = PlannerCrew(verbose=verbose).crew()
+        crew = PlannerCrew(verbose=verbose).onboarding_detector_crew()
         output = crew.kickoff(inputs=inputs)
         raw_output = output.raw.strip()
-        logger.debug(f"Planner raw output: {raw_output}")
+        logger.debug(f"Onboarding detector raw output: {raw_output}")
 
         if raw_output == "onboarding":
             return "onboarding_required"
-        if raw_output == "help":
-            return "tool_matching_failed"
+
+        crew = PlannerCrew(verbose=verbose).planning_crew()
+        output = crew.kickoff(inputs=inputs)
+        raw_output = output.raw.strip()
+        logger.debug(f"Planner raw output: {raw_output}")
 
         try:
             parsed = json.loads(raw_output)
@@ -126,6 +133,8 @@ class ChatFlow(Flow[ChatSessionState]):
             return "task_type_unclear"
         if tool_enum == TigerGraphToolName.CREATE_SCHEMA:
             return "task_type_create_schema"
+        if tool_enum == TigerGraphToolName.LOAD_DATA:
+            return "task_type_load_data"
         else:
             return "task_type_general_tool"
 
@@ -158,7 +167,7 @@ class ChatFlow(Flow[ChatSessionState]):
         self._update_message(chat_message, output.raw)
         return "on_tool_executed"
 
-    @router(or_("on_tool_executed", "schema_standalone"))
+    @router(or_("on_tool_executed", "schema_standalone", "load_standalone"))
     def proceed_to_next_task(self):
         self.state.current_task_index += 1
         return "on_task_completed"
@@ -180,40 +189,24 @@ class ChatFlow(Flow[ChatSessionState]):
         chat_message = self._send_message(
             "🔍 Checking data source existence...", record_history=False
         )
-        crew_factory = ToolExecutorCrews(
-            tools=self.state.tool_registry, verbose=verbose
-        )
-        crew = crew_factory.has_data_source_crew()
-        current_command = (
-            f"Please get the data source named `{S3_ANONYMOUS_SOURCE_NAME}`."
-        )
-        output = crew.kickoff(
-            inputs={
-                "conversation_history": str(self.state.conversation_history),
-                "current_command": current_command,
-            }
-        )
-        # Create the data source
-        if output.raw.lower() != "true":
+        from tigergraphx.core import TigerGraphAPI
+        from tigergraphx.config import TigerGraphConnectionConfig
+
+        config = TigerGraphConnectionConfig()
+        api = TigerGraphAPI(config)
+        try:
+            api.get_data_source(S3_ANONYMOUS_SOURCE_NAME)
+        except Exception:
             self._update_message(
                 chat_message, "🔧 Creating S3 data source...", record_history=False
             )
-            crew_factory = ToolExecutorCrews(
-                tools=self.state.tool_registry, verbose=verbose
+            api.create_data_source(
+                S3_ANONYMOUS_SOURCE_NAME,
+                data_source_type="s3",
+                extra_config={
+                    "file.reader.settings.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
+                },
             )
-            crew = crew_factory.create_data_source_crew()
-            current_command = (
-                f"Create a new data source named `{S3_ANONYMOUS_SOURCE_NAME}` of "
-                "type `s3` using anonymous access."
-            )
-            output = crew.kickoff(
-                inputs={
-                    "conversation_history": str(self.state.conversation_history),
-                    "current_command": current_command,
-                }
-            )
-            self._update_message(chat_message, output.raw, record_history=False)
-
         self._update_message(
             chat_message,
             "Please provide the S3 path(s) to your data file(s) to get started. Only S3 paths with anonymous access are supported.",
@@ -250,7 +243,7 @@ class ChatFlow(Flow[ChatSessionState]):
     def evaluate_preview_result(self):
         if "❌ Error previewing sample data from" in self.state.last_data_preview:
             return "preview_failed"
-        self.state.is_schema_from_onboarding = True
+        self.state.is_from_onboarding = True
         self.state.current_command = (
             "Please generate a graph schema based on the previewed data files."
         )
@@ -263,26 +256,6 @@ class ChatFlow(Flow[ChatSessionState]):
             "is correct and publicly accessible, then try again."
         )
         return "on_retry_prompt_displayed"
-
-    @router("schema_from_onboarding")
-    def load_data(self):
-        chat_message = self._send_message("📥 Loading data...", record_history=False)
-        crew_factory = ToolExecutorCrews(tools=self.state.tool_registry, verbose=True)
-        crew = crew_factory.load_data_crew()
-        current_command = (
-            "Load the data into TigerGraph using the data source"
-            f"named '{S3_ANONYMOUS_SOURCE_NAME}'."
-        )
-        output = crew.kickoff(
-            inputs={
-                "conversation_history": str(self.state.conversation_history),
-                "current_command": current_command,
-            },
-        )
-        self._update_message(chat_message, output.raw)
-
-        self.state.is_schema_from_onboarding = False
-        return "on_onboarding_completed"
 
     # ------------------------------ Schema Creation Workflow ------------------------------
     @router(or_("task_type_create_schema", "preview_successful"))
@@ -346,10 +319,82 @@ class ChatFlow(Flow[ChatSessionState]):
 
     @router("on_schema_created")
     def check_schema_origin(self):
+        if self.state.is_from_onboarding:
+            self.state.current_command = (
+                "Load the data into TigerGraph using the data source"
+                f"named '{S3_ANONYMOUS_SOURCE_NAME}'."
+            )
+            return "schema_from_onboarding"
+        return "schema_standalone"
+
+    # ------------------------------ Load Data Workflow ------------------------------
+    @router(or_("task_type_load_data", "schema_from_onboarding"))
+    def draft_loading_job(self):
+        chat_message = self._send_message(
+            "🧾 Drafting loading config...", record_history=False
+        )
+        crew_factory = DataLoadingCrews(tools=self.state.tool_registry)
+        crew = crew_factory.draft_loading_job_crew()
+        output = crew.kickoff(
+            inputs={
+                "conversation_history": str(self.state.conversation_history),
+                "current_command": self.state.current_command,
+            }
+        )
+        self.state.current_loading_job_draft = output.raw
+        self._update_message(chat_message, self.state.current_loading_job_draft)
+        return "on_job_drafted"
+
+    @router(or_("on_job_drafted", "on_job_edited"))
+    def confirm_loading_job(self):
+        user_input = self._wait_for_user_input()
+        if any(
+            kw in user_input.lower()
+            for kw in [
+                "confirmed",
+                "approved",
+                "go ahead",
+                "ok",
+            ]
+        ):
+            return "user_confirmed_job"
+        return "user_requested_job_changes"
+
+    @router("user_requested_job_changes")
+    def edit_loading_job(self):
+        chat_message = self._send_message(
+            "✏️ Editing loading config...", record_history=False
+        )
+        crew_factory = DataLoadingCrews(tools=self.state.tool_registry)
+        crew = crew_factory.edit_loading_job_crew()
+        output = crew.kickoff(
+            inputs={
+                "conversation_history": str(self.state.conversation_history),
+            }
+        )
+        self.state.current_loading_job_draft = output.raw
+        self._update_message(chat_message, self.state.current_loading_job_draft)
+        return "on_job_edited"
+
+    @router("user_confirmed_job")
+    def run_loading_job(self):
+        chat_message = self._send_message("📥 Loading data...", record_history=False)
+        crew_factory = DataLoadingCrews(tools=self.state.tool_registry)
+        crew = crew_factory.run_loading_job_crew()
+        output = crew.kickoff(
+            inputs={"final_loading_job_config": self.state.current_loading_job_draft}
+        )
+        self._update_message(chat_message, output.raw)
+
+        self.state.current_loading_job_draft = ""
+        return "on_job_completed"
+
+    @router("on_job_completed")
+    def check_load_data_origin(self):
         return (
-            "schema_from_onboarding"
-            if self.state.is_schema_from_onboarding
-            else "schema_standalone"
+            "load_from_onboarding"
+            if self.state.is_from_onboarding
+            else "load_standalone"
         )
 
     # ------------------------------ Utility Functions ------------------------------

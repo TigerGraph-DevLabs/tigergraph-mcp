@@ -1,0 +1,223 @@
+draft_loading_job_task:
+  description: >
+    You are given a list representing a conversation history between the user and the assistant.
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent,
+    so prioritize those when interpreting the instructions:
+
+    {conversation_history}
+
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a
+    refined version extracted by the system:
+
+    {current_command}
+
+    Always treat `current_command` as a highly relevant input — it typically reflects the latest user-provided intent or follow-up.
+
+    First, analyze the file structure and user-provided details (such as CSV headers, file paths, and data mappings).
+    Then, generate a valid and complete loading job configuration in Python syntax that covers all nodes and edges in the current graph schema.
+
+    Do NOT execute or load the data. Your sole responsibility is to produce the full loading job config draft,
+    following best practices and ensuring correctness with respect to the schema and provided file info.
+
+  expected_output: >
+    Provide a clear, user-friendly message with three parts: a short introduction, a Python loading job config (inside a Markdown code block), and a confirmation request. 
+    Only show the results — **do not include any process or reasoning!**
+
+    Follow this structure:
+
+    1. Short introduction  
+    2. Python loading job config inside a Markdown code block  
+    3. Clear confirmation request
+
+    Example:
+
+    Here is a draft loading job config based on your schema and file structure.
+
+    ```python
+    graph_name = "Social"
+    loading_job_config = {
+        "loading_job_name": "loading_job_Social",
+        "files": [
+            {
+                "file_alias": "f_person",
+                "file_path": "/data/files/person_data.csv",
+                "csv_parsing_options": {
+                    "separator": ",",
+                    "header": True,
+                    "quote": "DOUBLE",
+                },
+                "node_mappings": [
+                    {
+                        "target_name": "Person",
+                        "attribute_column_mappings": {
+                            "id": "name",
+                            "age": "age",
+                            "gender": "gender",
+                            "city": "city",
+                        },
+                    }
+                ],
+            },
+            {
+                "file_alias": "f_friendship",
+                "file_path": "$s1:s3://bucket-name/path/to/friendship_data.csv",
+                "csv_parsing_options": {
+                    "separator": ",",
+                    "header": True,
+                    "quote": "DOUBLE",
+                },
+                "node_mappings": [
+                    {
+                        "target_name": "Person",
+                        "attribute_column_mappings": {
+                            "id": "from_name",
+                        },
+                    },
+                    {
+                        "target_name": "Person",
+                        "attribute_column_mappings": {
+                            "id": "to_name",
+                        },
+                    }
+                ],
+                "edge_mappings": [
+                    {
+                        "target_name": "Friendship",
+                        "source_node_column": "from_name",
+                        "target_node_column": "to_name",
+                        "attribute_column_mappings": {
+                            "since": "since",
+                            "closeness": "closeness",
+                        },
+                    }
+                ],
+            },
+        ],
+    }
+    ```
+
+    Please confirm if this config looks good by replying with "confirmed", "approved", or by suggesting any changes you'd like me to make.
+
+  agent: draft_loading_job_agent
+
+edit_loading_job_task:
+  description: >
+    Refine the proposed TigerGraph loading job configuration based on a single round of user feedback.
+
+    ## Instructions
+
+    - Receive the current loading job configuration draft and the user's comments or change requests.
+    - Apply the requested changes fully and accurately.
+    - Follow TigerGraph loading best practices, ensuring mappings are consistent with the graph schema and data file contents.
+    - Do not add speculative changes beyond what the user requested.
+    - This task is **single-pass only** — do not ask for clarifications or initiate iterative feedback.
+    - Output the revised loading job configuration in Python syntax, properly formatted and ready for review or execution.
+
+    ## Inputs
+    You are given a list representing a conversation history between the user and the assistant.
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent,
+    so prioritize those when interpreting the instructions:
+
+    {conversation_history}
+
+  expected_output: >
+    Provide a clear, user-friendly message with three parts: a short update message, the revised loading job config in Python syntax, and a confirmation request. 
+    Only show the results — **do not include any process or reasoning!**
+
+    Follow this structure:
+
+    1. Short update message  
+    2. Python code block showing the revised config  
+    3. Clear confirmation request
+
+    Example:
+
+    I've updated the loading job config based on your feedback.
+
+    ```python
+    graph_name = "Social"
+    loading_job_config = {
+        "loading_job_name": "loading_job_Social",
+        "files": [
+            {
+                "file_alias": "f_person",
+                "file_path": "/data/files/person_data.csv",
+                "csv_parsing_options": {
+                    "separator": ",",
+                    "header": True,
+                    "quote": "DOUBLE",
+                },
+                "node_mappings": [
+                    {
+                        "target_name": "Person",
+                        "attribute_column_mappings": {
+                            "id": "name",
+                            "age": "age",
+                            "gender": "gender",
+                            "city": "city",
+                        },
+                    }
+                ],
+            },
+            {
+                "file_alias": "f_friendship",
+                "file_path": "$s1:s3://bucket-name/path/to/friendship_data.csv",
+                "csv_parsing_options": {
+                    "separator": ",",
+                    "header": True,
+                    "quote": "DOUBLE",
+                },
+                "node_mappings": [
+                    {
+                        "target_name": "Person",
+                        "attribute_column_mappings": {
+                            "id": "from_name",
+                        },
+                    },
+                    {
+                        "target_name": "Person",
+                        "attribute_column_mappings": {
+                            "id": "to_name",
+                        },
+                    }
+                ],
+                "edge_mappings": [
+                    {
+                        "target_name": "Friendship",
+                        "source_node_column": "from_name",
+                        "target_node_column": "to_name",
+                        "attribute_column_mappings": {
+                            "since": "since",
+                            "closeness": "closeness",
+                        },
+                    }
+                ],
+            },
+        ],
+    }
+    ```
+
+    Let me know if this looks correct or if you'd like to make additional edits.
+
+  agent: edit_loading_job_agent
+
+run_loading_job_task:
+  description: >
+    Execute the finalized and confirmed TigerGraph data loading job configuration.
+
+    ## Instructions
+
+    - Use the given, validated loading job config exactly as provided.
+    - Call the TigerGraph loading tool to ingest data according to the config.
+    - If the load fails, report the error clearly and allow retry with updated config.
+
+    ## Inputs
+    The final, validated loading job configuration:
+
+    {final_loading_job_config}
+
+  expected_output: >
+    A clear confirmation message indicating that the data loading job completed successfully,
+    or an error message detailing any failure during execution.
+
+  agent: run_loading_job_agent

@@ -38,9 +38,6 @@ class PreviewSampleDataInput(BaseModel):
     separator: Optional[str] = Field(
         default=",", description="Field separator used in the file."
     )
-    eol: Optional[str] = Field(
-        default="\\n", description="End-of-line character used in the file."
-    )
     quote: Optional[Literal["'", '"']] = Field(
         default='"', description="Quote character used in the file."
     )
@@ -62,7 +59,6 @@ data_format = "csv"
 size = 5
 has_header = True
 separator = ","
-eol = "\\n"
 quote = '"'
 ````
 
@@ -80,7 +76,6 @@ async def preview_sample_data(
     size: Optional[int] = 10,
     has_header: bool = True,
     separator: Optional[str] = ",",
-    eol: Optional[str] = "\\n",
     quote: Optional[Literal["'", '"']] = '"',
 ) -> List[TextContent]:
     try:
@@ -95,7 +90,6 @@ async def preview_sample_data(
             size=size,
             has_header=has_header,
             separator=separator,
-            eol=eol,
             quote=quote,
         )
 

@@ -9,9 +9,10 @@ from tigergraph_mcp import TigerGraphToolName
 
 @CrewBase
 class SchemaCreationCrews:
-    def __init__(self, tools: dict[str, BaseTool], verbose=False):
+    def __init__(self, tools: dict[str, BaseTool], llm="gpt-4o", verbose=False):
         self._tool_registry = tools
         self.verbose = verbose
+        self.llm = llm
 
     @cached_property
     def tool_registry(self) -> dict[str, BaseTool]:
@@ -21,7 +22,7 @@ class SchemaCreationCrews:
     def draft_schema_agent(self) -> Agent:
         return Agent(
             config=self.agents_config["draft_schema_agent"],  # pyright: ignore
-            llm="gpt-4o",
+            llm=self.llm,
         )
 
     @task
@@ -46,7 +47,7 @@ class SchemaCreationCrews:
     def edit_schema_agent(self) -> Agent:
         return Agent(
             config=self.agents_config["edit_schema_agent"],  # pyright: ignore
-            llm="gpt-4o",
+            llm=self.llm,
         )
 
     @task
@@ -72,7 +73,7 @@ class SchemaCreationCrews:
         return Agent(
             config=self.agents_config["create_schema_agent"],  # pyright: ignore
             tools=[self.tool_registry[TigerGraphToolName.CREATE_SCHEMA]],
-            llm="gpt-4o",
+            llm=self.llm,
         )
 
     @task
