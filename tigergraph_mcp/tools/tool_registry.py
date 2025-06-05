@@ -52,6 +52,7 @@ from .graph.vector import (
 )
 from .db.data_source import (
     create_data_source_tool,
+    get_data_source_tool,
     drop_data_source_tool,
     preview_sample_data_tool,
 )
@@ -98,6 +99,7 @@ def get_all_tools() -> list[Tool]:
         + search_top_k_similar_nodes_tool.tools
         # Tools for Data Source Operations
         + create_data_source_tool.tools
+        + get_data_source_tool.tools
         + drop_data_source_tool.tools
         + preview_sample_data_tool.tools
     )

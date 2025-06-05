@@ -6,12 +6,14 @@
 # under the License. The software is provided "AS IS", without warranty.
 
 from .create_data_source_tool import create_data_source
+from .get_data_source_tool import get_data_source
 from .drop_data_source_tool import drop_data_source
 from .preview_sample_data_tool import preview_sample_data
 
 
 __all__ = [
     "create_data_source",
+    "get_data_source",
     "drop_data_source",
     "preview_sample_data",
 ]

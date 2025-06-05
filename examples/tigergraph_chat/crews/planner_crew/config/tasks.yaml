@@ -1,11 +1,44 @@
+onboarding_detector_task:
+  description: >
+    Analyze the user's most recent command (`last_command`) to determine if they
+    are explicitly requesting onboarding.
+
+    Instructions
+    ------------
+    You are given the last user command as `{last_command}`.
+
+    Return:
+    - onboarding (no quotes) only if the user explicitly uses the word "onboarding" or similar variations
+      like "start onboarding", "walk me through", "get started", "guide me", or "how do I begin".
+    - Otherwise, return None.
+
+    Examples:
+    ---------
+    - "please help create a schema from this CSV" → return: None
+    - "onboarding" → return: onboarding
+    - "onboard" → return: onboarding
+    - "I want to get started" → return: onboarding
+    - "walk me through the process" → return: onboarding
+    - "how do I begin using this tool?" → return: onboarding
+
+  expected_output: >
+    The string onboarding or None (no quotes).
+
+  agent: onboarding_detector_agent
+
 planning_task:
   description: >
+    Given a conversation between a user and an assistant, identify and extract a structured, step-by-step tool execution plan based on the user's latest instructions. Each step should include the tool name and a concise command derived from the user's input. Prioritize the most recent instructions and preserve formatting for any quoted values, code, or paths.
+
     Analyze the conversation history, focusing especially on the most recent entries:
 
-    "{conversation_history}"
+    {conversation_history}
 
     The later entries in the list represent the most recent and relevant parts of the conversation between the user and the assistant,
     and should be given higher priority when interpreting the user's intent — especially the last clear instruction from the user.
+
+    The user's most recent command is:
+    {last_command}
 
     Consider the following available tools:
     {tools}
@@ -14,15 +47,22 @@ planning_task:
     - `tool_name`: the name of a tool to use (must match one of the provided tool names).
     - `command`: a short instruction extracted or inferred from the user's request that explains what the tool should do.
 
-    When extracting the command:
-
+    Extraction rules:
+    -----------------
+    - **Never introduce any steps that are not explicitly stated by the user.**
     - Preserve any user-provided **code**, **URLs**, **file names**, **explicit strings**, and **formatting** exactly as they appear.
     - Retain **newlines**, indentation, and paragraph breaks.
     - If the user includes configuration values, quoted identifiers, or paths, **do not modify or summarize** them.
     - If the user follows up or modifies their request, always prefer the **most recent** instruction.
-     **Treat any GSQL `CREATE QUERY` code blocks as valid input for the `create_query` tool, even if they include default parameters (`=`), empty strings (`""`), multi-line formatting, or nested types. Do not discard them or attempt to simplify.**
+    - **Treat any GSQL `CREATE QUERY` code blocks as valid input for the `create_query` tool**, even if they include default parameters (`=`), empty strings (`""`), multi-line formatting, or nested types. Do not discard them or attempt to simplify.
+    - When the same tool needs to be applied to multiple distinct inputs (e.g., previewing several files, loading several datasets), generate one step per input, even if the tool name is repeated.
 
+    Output format:
+    --------------
     Format the output as a **JSON array** of objects with `tool_name` and `command` keys, in the order they should be executed.
+
+    Do **not** include any markdown formatting such as triple backticks (` ```json ` or ` ``` `).
+    The output must be a raw JSON array only, not wrapped in markdown blocks.
 
     If no tools apply to the request, return the value `None` (no quotes, no JSON).
 
@@ -34,8 +74,16 @@ planning_task:
         "command": "Create a schema for a movie recommendation system"
       },
       {
+        "tool_name": "data__preview_file",
+        "command": "Preview file `users.csv`"
+      },
+      {
+        "tool_name": "data__preview_file",
+        "command": "Preview file `movies.csv`"
+      },
+      {
         "tool_name": "graph__load_data",
-        "command": "Load the movie and rating data from uploaded CSV files"
+        "command": "Load the movie and  data from uploaded CSV files"
       }
     ]
     ```

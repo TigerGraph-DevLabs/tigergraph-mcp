@@ -2,22 +2,17 @@ from functools import cached_property
 
 from crewai import Agent, Crew, Task
 from crewai.project import CrewBase, agent, crew, task
-from crewai.tasks.task_output import TaskOutput
 from crewai.tools import BaseTool
 
 from tigergraph_mcp import TigerGraphToolName
-from chat_session_manager import chat_session
-
-
-def print_output(output: TaskOutput):
-    message = output.raw
-    chat_session.chat_ui.send(message, user=output.agent, respond=False)
 
 
 @CrewBase
 class ToolExecutorCrews:
-    def __init__(self, tools: dict[str, BaseTool]):
+    def __init__(self, tools: dict[str, BaseTool], llm="gpt-4o", verbose=False):
         self._tool_registry = tools
+        self.verbose = verbose
+        self.llm = llm
 
     @cached_property
     def tool_registry(self) -> dict[str, BaseTool]:
@@ -25,91 +20,42 @@ class ToolExecutorCrews:
 
     # ------------------------------ Schema Operations ------------------------------
     @agent
-    def schema_agent(self) -> Agent:
-        return Agent(  # pyright: ignore
-            config=self.agents_config["schema_agent"],  # pyright: ignore
+    def schema_admin_agent(self) -> Agent:
+        return Agent(
+            config=self.agents_config["schema_admin_agent"],  # pyright: ignore
             tools=[
-                self.tool_registry[TigerGraphToolName.CREATE_SCHEMA],
                 self.tool_registry[TigerGraphToolName.GET_SCHEMA],
                 self.tool_registry[TigerGraphToolName.DROP_GRAPH],
             ],
-            llm="gpt-4o",
-        )
-
-    @task
-    def create_schema_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["create_schema_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
-        )
-
-    @crew
-    def create_schema_crew(self) -> Crew:
-        return Crew(
-            agents=[self.schema_agent()],
-            tasks=[self.create_schema_task()],
-            verbose=True,
+            llm=self.llm,
         )
 
     @task
     def get_schema_task(self) -> Task:
         return Task(
             config=self.tasks_config["get_schema_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
     def get_schema_crew(self) -> Crew:
         return Crew(
-            agents=[self.schema_agent()],
+            agents=[self.schema_admin_agent()],
             tasks=[self.get_schema_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
     def graph_drop_task(self) -> Task:
         return Task(
             config=self.tasks_config["graph_drop_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
     def drop_graph_crew(self) -> Crew:
         return Crew(
-            agents=[self.schema_agent()],
+            agents=[self.schema_admin_agent()],
             tasks=[self.graph_drop_task()],
-            verbose=True,
-        )
-
-    # ------------------------------ Data Loading Operations ------------------------------
-    @agent
-    def data_loader_agent(self) -> Agent:
-        return Agent(  # pyright: ignore
-            config=self.agents_config["data_loader_agent"],  # pyright: ignore
-            tools=[
-                self.tool_registry[TigerGraphToolName.GET_SCHEMA],
-                self.tool_registry[TigerGraphToolName.LOAD_DATA],
-            ],
-            llm="gpt-4o",
-        )
-
-    @task
-    def load_data_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["load_data_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
-        )
-
-    @crew
-    def load_data_crew(self) -> Crew:
-        return Crew(
-            agents=[self.data_loader_agent()],
-            tasks=[self.load_data_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     # ------------------------------ Node Operations ------------------------------
@@ -127,14 +73,13 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.HAS_NODE],
                 self.tool_registry[TigerGraphToolName.REMOVE_NODE],
             ],
+            llm=self.llm,
         )
 
     @task
     def add_node_task(self) -> Task:
         return Task(
             config=self.tasks_config["add_node_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -142,15 +87,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.add_node_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
     def add_nodes_task(self) -> Task:
         return Task(
             config=self.tasks_config["add_nodes_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -158,15 +101,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.add_nodes_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
     def remove_node_task(self) -> Task:
         return Task(
             config=self.tasks_config["remove_node_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -174,15 +115,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.remove_node_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
     def has_node_task(self) -> Task:
         return Task(
             config=self.tasks_config["has_node_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -190,15 +129,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.has_node_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
     def get_node_data_task(self) -> Task:
         return Task(
             config=self.tasks_config["get_node_data_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -206,15 +143,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.get_node_data_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
     def get_node_edges_task(self) -> Task:
         return Task(
             config=self.tasks_config["get_node_edges_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -222,15 +157,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.get_node_edges_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
     def clear_graph_data_task(self) -> Task:
         return Task(
             config=self.tasks_config["clear_graph_data_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -238,7 +171,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.node_agent()],
             tasks=[self.clear_graph_data_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     # ------------------------------ Edge Operations ------------------------------
@@ -253,6 +186,7 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.HAS_EDGE],
                 self.tool_registry[TigerGraphToolName.GET_EDGE_DATA],
             ],
+            llm=self.llm,
         )
 
     @task
@@ -264,7 +198,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.edge_agent()],
             tasks=[self.add_edge_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -276,7 +210,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.edge_agent()],
             tasks=[self.add_edges_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -288,7 +222,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.edge_agent()],
             tasks=[self.has_edge_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -300,7 +234,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.edge_agent()],
             tasks=[self.get_edge_data_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     # ------------------------------ Statistics Operations ------------------------------
@@ -314,6 +248,7 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.NUMBER_OF_NODES],
                 self.tool_registry[TigerGraphToolName.NUMBER_OF_EDGES],
             ],
+            llm=self.llm,
         )
 
     @task
@@ -325,7 +260,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.statistics_agent()],
             tasks=[self.degree_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -337,7 +272,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.statistics_agent()],
             tasks=[self.number_of_nodes_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -349,7 +284,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.statistics_agent()],
             tasks=[self.number_of_edges_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     # ------------------------------ Query Operations ------------------------------
@@ -367,6 +302,7 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.GET_NEIGHBORS],
                 self.tool_registry[TigerGraphToolName.BREADTH_FIRST_SEARCH],
             ],
+            llm=self.llm,
         )
 
     @task
@@ -378,7 +314,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.create_query_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -390,7 +326,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.install_query_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -402,7 +338,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.run_query_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -414,7 +350,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.drop_query_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -426,7 +362,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.get_nodes_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -438,7 +374,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.get_neighbors_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -450,7 +386,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.query_agent()],
             tasks=[self.breadth_first_search_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     # ------------------------------ Vector Operations ------------------------------
@@ -467,6 +403,7 @@ class ToolExecutorCrews:
                 self.tool_registry[TigerGraphToolName.SEARCH_MULTI_VECTOR_ATTRIBUTES],
                 self.tool_registry[TigerGraphToolName.SEARCH_TOP_K_SIMILAR_NODES],
             ],
+            llm=self.llm,
         )
 
     @task
@@ -478,7 +415,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.vector_agent()],
             tasks=[self.upsert_vector_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -490,7 +427,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.vector_agent()],
             tasks=[self.fetch_node_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -502,7 +439,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.vector_agent()],
             tasks=[self.fetch_nodes_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -514,7 +451,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.vector_agent()],
             tasks=[self.vector_search_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -526,7 +463,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.vector_agent()],
             tasks=[self.search_multi_vector_attributes_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
@@ -538,7 +475,7 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.vector_agent()],
             tasks=[self.search_top_k_similar_nodes_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     # ------------------------------ Data Source Operations ------------------------------
@@ -548,17 +485,17 @@ class ToolExecutorCrews:
             config=self.agents_config["data_source_agent"],  # pyright: ignore
             tools=[
                 self.tool_registry[TigerGraphToolName.CREATE_DATA_SOURCE],
+                self.tool_registry[TigerGraphToolName.GET_DATA_SOURCE],
                 self.tool_registry[TigerGraphToolName.DROP_DATA_SOURCE],
                 self.tool_registry[TigerGraphToolName.PREVIEW_SAMPLE_DATA],
             ],
+            llm=self.llm,
         )
 
     @task
     def create_data_source_task(self) -> Task:
         return Task(
             config=self.tasks_config["create_data_source_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -566,15 +503,27 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.data_source_agent()],
             tasks=[self.create_data_source_task()],
-            verbose=True,
+            verbose=self.verbose,
+        )
+
+    @task
+    def has_data_source_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["has_data_source_task"],  # pyright: ignore
+        )
+
+    @crew
+    def has_data_source_crew(self) -> Crew:
+        return Crew(
+            agents=[self.data_source_agent()],
+            tasks=[self.has_data_source_task()],
+            verbose=self.verbose,
         )
 
     @task
     def drop_data_source_task(self) -> Task:
         return Task(
             config=self.tasks_config["drop_data_source_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -582,15 +531,13 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.data_source_agent()],
             tasks=[self.drop_data_source_task()],
-            verbose=True,
+            verbose=self.verbose,
         )
 
     @task
     def preview_sample_data_task(self) -> Task:
         return Task(
             config=self.tasks_config["preview_sample_data_task"],  # pyright: ignore
-            # callback=print_output,
-            # human_input=True,
         )
 
     @crew
@@ -598,5 +545,5 @@ class ToolExecutorCrews:
         return Crew(
             agents=[self.data_source_agent()],
             tasks=[self.preview_sample_data_task()],
-            verbose=True,
+            verbose=self.verbose,
         )

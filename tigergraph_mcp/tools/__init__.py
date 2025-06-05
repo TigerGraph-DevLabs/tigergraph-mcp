@@ -42,6 +42,7 @@ from .graph import (
 )
 from .db import (
     create_data_source,
+    get_data_source,
     drop_data_source,
     preview_sample_data,
 )
@@ -92,6 +93,7 @@ __all__ = [
     "search_top_k_similar_nodes",
     # Tools for Data Source Operations
     "create_data_source",
+    "get_data_source",
     "drop_data_source",
     "preview_sample_data",
 ]

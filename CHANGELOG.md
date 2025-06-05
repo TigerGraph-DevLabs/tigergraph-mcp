@@ -1,6 +1,12 @@
 # Changelog
 
 ---
+### 0.1.4
+- feat: enable multi-turn human-in-the-loop schema confirmation for iterative refinement
+- feat: enable multi-turn human-in-the-loop loading job confirmation for iterative refinement
+- feat: support onboarding in chat flow
+- feat: split schema drafting into modular tasks for column classification and schema generation
+
 ### 0.1.3
 - feat: ensure MCP tools are VS Code and JSON schema compatible
 - refactor: organize tools into separate graph and database categories
