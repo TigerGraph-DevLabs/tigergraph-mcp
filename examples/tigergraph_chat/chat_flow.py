@@ -18,6 +18,7 @@ from crews import (
 
 logger = logging.getLogger(__name__)
 verbose = False
+llm = "gpt-4o"
 S3_ANONYMOUS_SOURCE_NAME = "s3_anonymous_source"
 
 
@@ -69,7 +70,8 @@ class ChatFlow(Flow[ChatSessionState]):
             "tools": str(self.state.tool_registry.keys()),
         }
 
-        crew = PlannerCrew(verbose=verbose).onboarding_detector_crew()
+        crew_factory = PlannerCrew(verbose=verbose, llm=llm)
+        crew = crew_factory.onboarding_detector_crew()
         output = crew.kickoff(inputs=inputs)
         raw_output = output.raw.strip()
         logger.debug(f"Onboarding detector raw output: {raw_output}")
@@ -77,7 +79,7 @@ class ChatFlow(Flow[ChatSessionState]):
         if raw_output == "onboarding":
             return "onboarding_required"
 
-        crew = PlannerCrew(verbose=verbose).planning_crew()
+        crew = crew_factory.planning_crew()
         output = crew.kickoff(inputs=inputs)
         raw_output = output.raw.strip()
         logger.debug(f"Planner raw output: {raw_output}")
@@ -146,7 +148,7 @@ class ChatFlow(Flow[ChatSessionState]):
             return "task_type_unclear"
         crew_method_name = tool_enum.name.lower() + "_crew"
         crew_factory = ToolExecutorCrews(
-            tools=self.state.tool_registry, verbose=verbose
+            tools=self.state.tool_registry, verbose=verbose, llm=llm
         )
 
         if not hasattr(crew_factory, crew_method_name):
@@ -222,7 +224,7 @@ class ChatFlow(Flow[ChatSessionState]):
             "📄 Previewing sample data...", record_history=False
         )
         crew_factory = ToolExecutorCrews(
-            tools=self.state.tool_registry, verbose=verbose
+            tools=self.state.tool_registry, verbose=verbose, llm=llm
         )
         crew = crew_factory.preview_sample_data_crew()
         current_command = (
@@ -262,7 +264,7 @@ class ChatFlow(Flow[ChatSessionState]):
     def draft_schema(self):
         chat_message = self._send_message("Drafting schema...", record_history=False)
         crew_factory = SchemaCreationCrews(
-            tools=self.state.tool_registry, verbose=verbose
+            tools=self.state.tool_registry, verbose=verbose, llm=llm
         )
         crew = crew_factory.draft_schema_crew()
         output = crew.kickoff(
@@ -294,7 +296,9 @@ class ChatFlow(Flow[ChatSessionState]):
     @router("user_requested_changes")
     def edit_schema(self):
         chat_message = self._send_message("✏️ Editing schema...", record_history=False)
-        crew_factory = SchemaCreationCrews(tools=self.state.tool_registry)
+        crew_factory = SchemaCreationCrews(
+            tools=self.state.tool_registry, verbose=verbose, llm=llm
+        )
         crew = crew_factory.edit_schema_crew()
         output = crew.kickoff(
             inputs={
@@ -308,7 +312,9 @@ class ChatFlow(Flow[ChatSessionState]):
     @router("user_confirmed_schema")
     def create_schema(self):
         chat_message = self._send_message("🛠️ Creating schema...", record_history=False)
-        crew_factory = SchemaCreationCrews(tools=self.state.tool_registry)
+        crew_factory = SchemaCreationCrews(
+            tools=self.state.tool_registry, verbose=verbose, llm=llm
+        )
         crew = crew_factory.create_schema_crew()
         output = crew.kickoff(inputs={"final_schema": self.state.current_schema_draft})
         self._update_message(chat_message, output.raw)
@@ -321,7 +327,7 @@ class ChatFlow(Flow[ChatSessionState]):
     def check_schema_origin(self):
         if self.state.is_from_onboarding:
             self.state.current_command = (
-                "Load the data into TigerGraph using the data source"
+                "Now load the data into TigerGraph using the data source "
                 f"named '{S3_ANONYMOUS_SOURCE_NAME}'."
             )
             return "schema_from_onboarding"
@@ -333,7 +339,9 @@ class ChatFlow(Flow[ChatSessionState]):
         chat_message = self._send_message(
             "🧾 Drafting loading config...", record_history=False
         )
-        crew_factory = DataLoadingCrews(tools=self.state.tool_registry)
+        crew_factory = DataLoadingCrews(
+            tools=self.state.tool_registry, verbose=verbose, llm=llm
+        )
         crew = crew_factory.draft_loading_job_crew()
         output = crew.kickoff(
             inputs={
@@ -365,7 +373,9 @@ class ChatFlow(Flow[ChatSessionState]):
         chat_message = self._send_message(
             "✏️ Editing loading config...", record_history=False
         )
-        crew_factory = DataLoadingCrews(tools=self.state.tool_registry)
+        crew_factory = DataLoadingCrews(
+            tools=self.state.tool_registry, verbose=verbose, llm=llm
+        )
         crew = crew_factory.edit_loading_job_crew()
         output = crew.kickoff(
             inputs={
@@ -379,7 +389,9 @@ class ChatFlow(Flow[ChatSessionState]):
     @router("user_confirmed_job")
     def run_loading_job(self):
         chat_message = self._send_message("📥 Loading data...", record_history=False)
-        crew_factory = DataLoadingCrews(tools=self.state.tool_registry)
+        crew_factory = DataLoadingCrews(
+            tools=self.state.tool_registry, verbose=verbose, llm=llm
+        )
         crew = crew_factory.run_loading_job_crew()
         output = crew.kickoff(
             inputs={"final_loading_job_config": self.state.current_loading_job_draft}

@@ -19,10 +19,23 @@ class SchemaCreationCrews:
         return self._tool_registry
 
     @agent
+    def classify_columns_agent(self) -> Agent:
+        return Agent(
+            config=self.agents_config["classify_columns_agent"],  # pyright: ignore
+            llm=self.llm,
+        )
+
+    @agent
     def draft_schema_agent(self) -> Agent:
         return Agent(
             config=self.agents_config["draft_schema_agent"],  # pyright: ignore
             llm=self.llm,
+        )
+
+    @task
+    def classify_columns_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["classify_columns_task"],  # pyright: ignore
         )
 
     @task
@@ -35,9 +48,11 @@ class SchemaCreationCrews:
     def draft_schema_crew(self) -> Crew:
         return Crew(
             agents=[
+                self.classify_columns_agent(),
                 self.draft_schema_agent(),
             ],
             tasks=[
+                self.classify_columns_task(),
                 self.draft_schema_task(),
             ],
             verbose=self.verbose,

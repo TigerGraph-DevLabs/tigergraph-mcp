@@ -833,7 +833,7 @@ preview_sample_data_task:
     Return the column headers and a sample of 5–10 rows per file to help guide the user in schema creation.
 
   expected_output: >
-    A clean preview of each file, including headers and the first 5–10 rows in markdown table format, 
+    A clean preview of each file, including headers and the first 5 rows in markdown table format, 
     with filenames or file aliases clearly indicated.
 
   agent: data_source_agent

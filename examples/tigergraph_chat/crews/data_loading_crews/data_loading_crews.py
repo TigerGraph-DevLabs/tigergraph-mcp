@@ -19,27 +19,58 @@ class DataLoadingCrews:
         return self._tool_registry
 
     @agent
-    def draft_loading_job_agent(self) -> Agent:
+    def load_config_file_agent(self) -> Agent:
         return Agent(
-            config=self.agents_config["draft_loading_job_agent"],  # pyright: ignore
+            config=self.agents_config["load_config_file_agent"],  # pyright: ignore
+            llm=self.llm,
+        )
+
+    @agent
+    def load_config_node_mapping_agent(self) -> Agent:
+        return Agent(
+            config=self.agents_config["load_config_node_mapping_agent"],  # pyright: ignore
+            tools=[self.tool_registry[TigerGraphToolName.GET_SCHEMA]],
+            llm=self.llm,
+        )
+
+    @agent
+    def load_config_edge_mapping_agent(self) -> Agent:
+        return Agent(
+            config=self.agents_config["load_config_edge_mapping_agent"],  # pyright: ignore
             tools=[self.tool_registry[TigerGraphToolName.GET_SCHEMA]],
             llm=self.llm,
         )
 
     @task
-    def draft_loading_job_task(self) -> Task:
+    def load_config_file_task(self) -> Task:
         return Task(
-            config=self.tasks_config["draft_loading_job_task"],  # pyright: ignore
+            config=self.tasks_config["load_config_file_task"],  # pyright: ignore
+        )
+
+    @task
+    def load_config_node_mapping_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["load_config_node_mapping_task"],  # pyright: ignore
+        )
+
+    @task
+    def load_config_edge_mapping_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["load_config_edge_mapping_task"],  # pyright: ignore
         )
 
     @crew
     def draft_loading_job_crew(self) -> Crew:
         return Crew(
             agents=[
-                self.draft_loading_job_agent(),
+                self.load_config_file_agent(),
+                self.load_config_node_mapping_agent(),
+                self.load_config_edge_mapping_agent(),
             ],
             tasks=[
-                self.draft_loading_job_task(),
+                self.load_config_file_task(),
+                self.load_config_node_mapping_task(),
+                self.load_config_edge_mapping_task(),
             ],
             verbose=self.verbose,
         )

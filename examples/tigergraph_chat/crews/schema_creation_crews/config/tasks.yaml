@@ -1,34 +1,95 @@
-draft_schema_task:
+classify_columns_task:
   description: >
-    Analyze the provided data tables to propose a graph schema using best practices.
+    Analyze the provided data tables and classify each column as one of: `primary_id`, `node`, or `attribute`. Also infer the data type.
 
-    ## Analyze Data and Propose Schema
+    > **Note:** Do not define node types or edge types at this stage. This step focuses only on per-column classification and type inference.
+    > The output should be structured per file and include every column except headers and null-only columns.
 
-    Follow these steps:
-    1. Identify node types using primary keys.
-    2. For each column, classify it as attribute, reference, or new node.
-    3. Infer edges and directionality based on references or edge tables.
-    4. Output the schema proposal in **markdown** format for user review.
+    ## Inputs
 
-    ## Schema Design Best Practices
+    You are given a list representing a conversation history between the user and the assistant.
+    The most recent entries at the bottom of the list are the most relevant to the user’s current intent,
+    so prioritize those when interpreting the instructions:
 
-    ### Naming the Graph
+    {conversation_history}
 
-    When proposing a graph name, follow these guidelines:
-    - The name should be **related to the use case or data domain** (e.g., for employee/project data, a name like `WorkforceGraph` is appropriate).
-    - Use **PascalCase** formatting: capitalize the first letter of each word and do not use spaces or underscores (e.g., `SocialGraph`, `SupplyChainGraph`, `MedicalRecordsGraph`).
+    Additionally, you are provided with `current_command`, which may be part of the user's latest instruction or a
+    refined version extracted by the system:
 
-    ### Example Tables
+    {current_command}
 
-    **Table 1: Employee Data (Node Table)**
+    ## Goals
 
-    | employee_id | email                                         | manager_id | department | location      |
-    | ----------- | --------------------------------------------- | ---------- | ---------- | ------------- |
-    | E001        | [alice@example.com](mailto:alice@example.com) | E005       | Sales      | New York      |
-    | E002        | [bob@example.com](mailto:bob@example.com)     | E005       | Sales      | New York      |
-    | E003        | [carol@example.com](mailto:carol@example.com) | E006       | Marketing  | San Francisco |
+    1. Automatically infer the data type of each column.
+    2. Identify primary keys (columns with unique values) and mark them as `primary_id`.
+    3. For non-primary ID columns:
+       - If the column is a reference to another row or table → mark as `node`.
+       - If the column contains a small number of repeated values or is not STRING/INT/UINT → mark as `attribute`.
 
-    **Table 2: Employee_Project (Edge Table)**
+    ## Column Classification Strategy
+
+    - **Step 1: Infer data type**
+      - Allowable types: `STRING`, `INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `DATETIME`.
+      - Default to `STRING` unless clearly numeric or datetime.
+
+    - **Step 2: Detect primary_id**
+      - If a column has unique values across all rows → classify as `primary_id`.
+
+    - **Step 3: For remaining columns, classify as `node` or `attribute`**
+
+      **Heuristic-Based Rule**  
+      - Use a combination of data type, value variety, row coverage, and data format characteristics to decide if a column represents a separate entity (`node`) or a property (`attribute`).
+
+      **Type Constraint**  
+      - Only consider columns with type `STRING`, `INT`, or `UINT` as potential `node` candidates.
+
+      **Node Classification Heuristics**  
+      - Classify a column as `node` if:
+        - It has a moderate to high variety of values (roughly estimated ≥10% unique values based on sample or distribution),
+        - It appears in most or all rows (i.e., column is not sparse or mostly null),
+        - It shows consistent formatting or length patterns typical of entity identifiers (e.g., IDs),
+        - And it is not already marked as a `primary_id`.
+
+      **Attribute Defaults**  
+      - If a column has:
+        - Low uniqueness (many repeated values),
+        - Or a data type not suitable for nodes (e.g. `FLOAT`, `DOUBLE`, `DATETIME`, `BOOL`),
+        - Or sparse or inconsistent population,
+        → classify it as `attribute`.
+
+      **Avoid Bias by Column Name**  
+      - Do not use column names directly to influence classification; rely only on structural and content heuristics.
+
+      **Practical Examples**  
+      - Columns like `email`, `device_id` with moderate to high uniqueness and consistent format should be classified as `node`.
+      - Columns like `country`, `state`, or `department` with low uniqueness should be classified as `attribute`.
+
+    ## Output Format
+
+    Provide the column classification in this format:
+
+    ```
+    - file_name1:
+      - column1: primary_id, STRING
+      - column2: node, STRING
+      - column3: attribute, INT
+    - file_name2:
+      - column4: primary_id, STRING
+      - column5: attribute, STRING
+      - column6: attribute, INT
+    ```
+
+    ## Example Tables
+
+    **Table 1: Employee Data**
+
+    | employee_id | email              | manager_id | department | location      |
+    | ----------- | ------------------ | ---------- | ---------- | ------------- |
+    | E001        | alice@example.com  | E005       | Sales      | New York      |
+    | E002        | bob@example.com    | E005       | Sales      | New York      |
+    | E003        | carol@example.com  | E006       | Marketing  | San Francisco |
+
+    **Table 2: Employee_Project**
 
     | employee_id | project_id | role      | start_date |
     | ----------- | ---------- | --------- | ---------- |
@@ -36,95 +97,190 @@ draft_schema_task:
     | E002        | P101       | Tester    | 2023-02-15 |
     | E003        | P100       | Analyst   | 2023-03-01 |
 
-    ### Step-by-Step Guide for Schema Design
+    ## Example Output
 
-    1. **Identify node types and primary keys.**
-       - Every node table must define a unique identifier (primary key), which becomes the node's primary ID in the graph.
-       - From Table 1, `employee_id` is a unique identifier.
-       - Define a node type `Employee` with `employee_id` as the primary ID.
+    ```
+    - Employee:
+      - employee_id: primary_id, STRING
+      - email: node, STRING
+      - manager_id: node, STRING
+      - department: attribute, STRING
+      - location: attribute, STRING
 
-    2. **Classify columns as attributes, references, or node types.**
-       - Repeated values → attributes.
-       - Unique identifiers → new node types.
-       - Self-references → edges.
-       - In `Employee`:
-         - Attributes: `department`, `location`
-         - Node: `Email` from `email`
-         - Reference: `manager_id` refers to another `employee_id`
-         - Create a directed edge `employee_manages_employee` from manager to employee.
-         - Create an undirected edge `employee_has_email` between `Employee` and `Email`.
-
-    3. **Identify edge tables and relationship attributes.**
-       - Table 2 connects `Employee` and `Project`.
-       - Create a node type `Project` using `project_id` as primary key.
-       - Relationship-specific attributes: `role`, `start_date`.
-
-    4. **Define edge types.**
-       - Edge `employee_works_on_project` from `Employee` to `Project` with attributes `role`, `start_date`.
-
-    5. **Determine edge directionality.**
-       - Directed: same node types (e.g., manager to employee)
-       - Undirected: different node types unless semantics imply direction.
-
-    6. **Validate schema consistency.**
-       - Ensure all node types have primary keys.
-       - Ensure all edges reference valid nodes.
-       - Ensure all attributes and names are meaningful.
-
-    Output the schema proposal in markdown format, including:
-    - Graph Name
-    - Node Types with primary IDs and attributes
-    - Edge Types with directionality and attributes
-
-    Supported attribute types: INT, UINT, FLOAT, DOUBLE, BOOL, STRING, DATETIME.
-
-    ## Inputs
-    You are given a list representing a conversation history between the user and the assistant. 
-    The most recent entries at the bottom of the list are the most relevant to the user’s current intent, 
-    so prioritize those when interpreting the instructions:
-
-    {conversation_history}
-
-    You are also provided with `current_command`, which may be part of the user's latest instruction or a 
-    refined version extracted by the system:
-
-    {current_command}
+    - Employee_Project:
+      - employee_id: node, STRING
+      - project_id: node, STRING
+      - role: attribute, STRING
+      - start_date: attribute, DATETIME
+    ```
 
   expected_output: >
-    Provide a clear, user-friendly message with three parts: a short introduction, a Markdown schema proposal, and a confirmation request. 
+    Provide a Markdown code block that shows:
+    - Each file name as a bullet entry.
+    - Under each file, list all data columns (except header-only or empty ones).
+    - For each column, provide:
+      - The classification: one of `primary_id`, `node`, or `attribute`
+      - The inferred data type: one of `STRING`, `INT`, `UINT`, `FLOAT`, `DOUBLE`, `BOOL`, `DATETIME`
+
+    Follow this format exactly:
+
+    ```
+    - FileName1:
+      - columnA: primary_id, STRING
+      - columnB: node, STRING
+      - columnC: attribute, INT
+    - FileName2:
+      - columnD: primary_id, STRING
+      - columnE: attribute, STRING
+      - columnF: attribute, BOOL
+    ```
+
+    Be thorough and conservative:
+    - Always include the inferred type.
+    - Do not guess edges or node types.
+    - Do not infer graph structure yet.
+
+  agent: classify_columns_agent
+
+draft_schema_task:
+  description: >
+    Using classified columns and table data, draft a complete TigerGraph schema including graph name, node types, and edge types following best practices.
+
+    ## Example Tables
+
+    Assume the user previously provided the following data tables:
+
+    **Table 1: Employee**
+
+    | employee_id | email              | manager_id | department | location      |
+    | ----------- | ------------------ | ---------- | ---------- | ------------- |
+    | E001        | alice@example.com  | E005       | Sales      | New York      |
+    | E002        | bob@example.com    | E005       | Sales      | New York      |
+    | E003        | carol@example.com  | E006       | Marketing  | San Francisco |
+
+    **Table 2: Employee_Project**
+
+    | employee_id | project_id | role      | start_date |
+    | ----------- | ---------- | --------- | ---------- |
+    | E001        | P100       | Developer | 2023-01-01 |
+    | E002        | P101       | Tester    | 2023-02-15 |
+    | E003        | P100       | Analyst   | 2023-03-01 |
+
+    ## Example Column Classification
+
+    Assume columns have been classified earlier as primary_id, node, or attribute with data types, for example:
+
+    - Employee:
+      - employee_id: primary_id, STRING
+      - email: node, STRING
+      - manager_id: node, STRING
+      - department: attribute, STRING
+      - location: attribute, STRING
+
+    - Employee_Project:
+      - employee_id: node, STRING
+      - project_id: node, STRING
+      - role: attribute, STRING
+      - start_date: attribute, DATETIME
+
+    ## Your Responsibilities
+
+    Your task is to:
+    1. Define node types with primary IDs and attributes based on classified columns and their originating tables.
+    2. Define edge types using table relationships and classified nodes.
+    3. Include all relationship-specific attributes.
+    4. Specify edge directionality.
+    5. Propose a graph name.
+    6. Output the complete schema in Markdown format.
+
+    ## Best Practices (Demonstrated with Example)
+
+    ### Node Types
+
+    - Nodes should have a unique primary ID, usually the primary_id column or inferred node column used as ID.
+    - Include the primary ID as part of the node’s attributes with its data type.
+    - Attributes come only from columns in the node’s own table (the one defining the primary ID).
+    - If a column is classified as a separate node, define it accordingly.
+
+    ### Edge Inference
+
+    - **Reference columns** (e.g., `manager_id` in the Employee table) imply an edge between two nodes of the same type:
+      - `manages` from `Employee` → `Employee` is a **directed** edge.
+
+    - **Join tables** (e.g., `Employee_Project`) imply edges between two different node types:
+      - `works_on_project` from `Employee` ↔ `Project` is an **undirected** edge with `role`, `start_date`.
+
+    - **Attribute columns linked to unique fields** (e.g., `email`) imply a connection to another node:
+      - `has_email` from `Employee` ↔ `Email` is an **undirected** edge.
+
+    ### Edge Naming
+
+    - Use **snake_case** for edge names:
+      - ✅ `works_on_project`
+      - ✅ `has_email`
+      - ❌ `WorksOnProject`
+
+    - Include FROM, TO, directionality, and attributes where applicable.
+
+    ### Directionality
+
+    - **Directed**:
+      - Only apply directionality when the source and target are the **same node type** and the relationship is hierarchical or asymmetric.
+      - Example: `Employee → Employee` via `manager_id` → use a **directed** edge (`manages`).
+
+    - For edges between **different node types**, do **not specify direction** unless the relationship explicitly implies a flow of control or hierarchy.
+      - Example: `Employee` ↔ `Project` via `works_on_project` is **undirected**.
+
+    ### Graph Naming
+
+    - Choose a name related to the domain:
+      - Example: `WorkforceGraph` for employee and project data.
+
+    - Use **PascalCase** (no spaces or underscores).
+
+  inputs:
+    - conversation_history: List of conversation entries relevant to the user’s latest instructions.
+    - current_command: The latest refined user instruction or context.
+
+  expected_output: >
+    Provide a clear, user-friendly message with three parts: a short introduction, a Markdown schema proposal, and a confirmation request.  
     Only show the results—**do not include any process or reasoning!**
 
     Follow this structure:
 
     1. Short introduction  
-    2. Markdown schema proposal (include graph name, node types with primary IDs and attributes, and edge types)  
+    2. Markdown schema proposal (include graph name, all node types with primary IDs and attributes, and edge types)  
     3. Clear confirmation request
 
     Example:
 
-    Here is the schema I desgined based on your input.
+    Here is the updated schema including proposed node types, edge types, and graph name.
 
     ### Graph Name
-    EmployeeGraph
+    WorkforceGraph
 
     ### Node Types
-    - **employee** (primary_id: id)
-      - id: STRING
-      - name: STRING
+    - **Employee** (primary_id: employee_id)
+      - employee_id: STRING
+      - department: STRING
+      - location: STRING
+
+    - **Project** (primary_id: project_id)
+      - project_id: STRING
+
+    - **Email** (primary_id: email)
       - email: STRING
 
-    - **department** (primary_id: dept_id)
-      - dept_id: STRING
-      - name: STRING
-
     ### Edge Types
-    - works_for (FROM: employee, TO: department, undirected)
-      - since: DATETIME
+    - **manages** (FROM: Employee, TO: Employee, directed)
 
-    - manages (FROM: employee, TO: employee, directed)
-      - level: STRING
+    - **works_on_project** (FROM: Employee, TO: Project, undirected)
+      - role: STRING
+      - start_date: DATETIME
 
-    Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok". Or tell me if you want to make any changes.
+    - **has_email** (FROM: Employee, TO: Email, undirected)
+
+    Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok". Or let me know if you'd like to revise anything.
 
   agent: draft_schema_agent
 
