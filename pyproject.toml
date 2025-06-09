@@ -25,6 +25,7 @@ pytest-html = "^4.1.1"
 # Agentic AI
 panel = "^1.6.2"
 crewai-tools = {extras = ["mcp"], version = "^0.46.0"}
+langgraph = "^0.4.8"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -41,4 +42,5 @@ start_mcp_server = "python -m tigergraph_mcp.main"
 integration_test = {cmd = "pytest -vs ./tests/integration --html=htmlcov/it-report.html", env = {PYTHONDONTWRITEBYTECODE = "1"}}
 
 # Agentic AI
-tigergraph_chat = "panel serve examples/tigergraph_chat/main.py"
+chatbot_langgraph = "python examples/chatbot_langgraph/main.py"
+chatbot_crewai = "panel serve examples/chatbot_crewai/main.py"
