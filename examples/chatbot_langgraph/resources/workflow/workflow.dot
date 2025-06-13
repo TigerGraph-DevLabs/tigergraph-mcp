@@ -1,0 +1,144 @@
+digraph ChatFlow {
+    rankdir=TB;
+    ranksep=0.65;
+    pad=0.5;
+
+    node [shape=box, style=rounded];
+    START;
+    send_welcome_message;
+    analyze_task_plan;
+    evaluate_next_task;
+    execute_general_tool;
+    proceed_to_next_task;
+    wait_for_user_input;
+    request_clarification;
+
+    node [shape=diamond, style=""];
+    route_task_plan_status;
+    route_next_task_type;
+    check_schema_origin;
+    check_load_data_origin;
+
+    // ---------------------------
+    // Create Schema Subgraph
+    // ---------------------------
+    subgraph cluster_create_schema {
+        label = "Create Schema Flow";
+        style = dashed;
+        color = red;
+        rank = same;
+
+        node [shape=box, style=rounded];
+        classify_columns;
+        draft_schema;
+        wait_for_user_review_schema;
+        edit_schema;
+        create_schema;
+
+        node [shape=diamond, style=""];
+        handle_user_confirmation;
+
+        classify_columns -> draft_schema;
+        draft_schema -> wait_for_user_review_schema;
+        wait_for_user_review_schema -> handle_user_confirmation;
+        handle_user_confirmation -> edit_schema [label="user_requested_schema_changes"];
+        handle_user_confirmation -> create_schema [label="user_confirmed_schema"];
+        edit_schema -> wait_for_user_review_schema;
+        create_schema -> check_schema_origin;
+    }
+
+    // ---------------------------
+    // Load Data Subgraph
+    // ---------------------------
+    subgraph cluster_load_data {
+        label = "Load Data Flow";
+        style = dashed;
+        color = green;
+        rank = same;
+
+        node [shape=box, style=rounded];
+        draft_loading_job;
+        wait_for_user_review_job;
+        edit_loading_job;
+        run_loading_job;
+
+        node [shape=diamond, style=""];
+        confirm_loading_job;
+
+        draft_loading_job -> wait_for_user_review_job;
+        wait_for_user_review_job -> confirm_loading_job;
+        confirm_loading_job -> edit_loading_job [label="user_requested_job_changes"];
+        confirm_loading_job -> run_loading_job [label="user_confirmed_job"];
+        edit_loading_job -> wait_for_user_review_job;
+        run_loading_job -> check_load_data_origin;
+    }
+
+    check_load_data_origin -> wait_for_user_input [label="load_from_onboarding"];
+    check_load_data_origin -> proceed_to_next_task [label="load_standalone"];
+
+    // ---------------------------
+    // Onboarding Subgraph
+    // ---------------------------
+    subgraph cluster_onboarding {
+        label = "Onboarding Flow";
+        style = dashed;
+        color = blue;
+        rank = same;
+
+        node [shape=box, style=rounded];
+
+        prepare_data_source_and_prompt;
+        prompt_file_paths_retry [label="prompt_file_paths_retry"];
+        wait_and_preview_sample_data;
+
+        draft_schema;
+        edit_schema;
+        create_schema;
+        handle_user_confirmation;
+
+        node [shape=diamond, style=""];
+        evaluate_preview_result;
+
+        prepare_data_source_and_prompt -> wait_and_preview_sample_data;
+        prompt_file_paths_retry -> wait_and_preview_sample_data;
+        wait_and_preview_sample_data -> evaluate_preview_result;
+        evaluate_preview_result -> prompt_file_paths_retry [label="preview_failed"];
+        evaluate_preview_result -> classify_columns [label="preview_successful"];
+    }
+
+    // ---------------------------
+    // Main Workflow
+    // ---------------------------
+    START -> send_welcome_message;
+    send_welcome_message -> wait_for_user_input;
+    wait_for_user_input -> analyze_task_plan;
+    analyze_task_plan -> route_task_plan_status;
+
+    route_task_plan_status -> request_clarification [label="tool_matching_failed"];
+    route_task_plan_status -> prepare_data_source_and_prompt [label="onboarding_required"];
+    route_task_plan_status -> evaluate_next_task [label="task_plan_ready"];
+
+    evaluate_next_task -> route_next_task_type;
+
+    request_clarification -> wait_for_user_input;
+
+    route_next_task_type -> wait_for_user_input [label="no_tasks_remaining"];
+    route_next_task_type -> execute_general_tool [label="task_type_general_tool"];
+    route_next_task_type -> classify_columns [label="task_type_create_schema"];
+    route_next_task_type -> draft_loading_job [label="task_type_load_data"];
+    route_next_task_type -> request_clarification [label="task_type_unclear"];
+
+    execute_general_tool -> proceed_to_next_task;
+    check_schema_origin -> draft_loading_job [label="schema_from_onboarding"];
+    check_schema_origin -> proceed_to_next_task [label="schema_standalone"];
+
+    proceed_to_next_task -> evaluate_next_task;
+
+    // Layout assistance with invisible edges
+    wait_for_user_input -> route_task_plan_status [style=invis];
+    wait_for_user_input -> evaluate_next_task [style=invis];
+    evaluate_next_task -> prepare_data_source_and_prompt [style=invis];
+    execute_general_tool -> prepare_data_source_and_prompt [style=invis];
+    execute_general_tool -> classify_columns [style=invis];
+    prepare_data_source_and_prompt -> classify_columns [style=invis];
+}
