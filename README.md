@@ -218,9 +218,9 @@ To run the demo:
 3. Run the chat interface using either of the following commands:
 
 ```bash
-tigergraph_chat
+poe chatbot_crewai
 # or
-panel serve examples/tigergraph_chat/main.py
+panel serve examples/chatbot_crewai/main.py
 ```
 
 You should see output similar to:
