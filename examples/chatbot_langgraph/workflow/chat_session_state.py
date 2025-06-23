@@ -1,5 +1,5 @@
-from typing import Annotated, Dict, List, Optional
-from pydantic import BaseModel, Field
+from typing import Annotated, List, Optional
+from pydantic import BaseModel
 from enum import Enum
 
 from langchain_core.messages import BaseMessage
@@ -7,15 +7,18 @@ from langgraph.graph.message import add_messages
 
 
 class FlowStatus(str, Enum):
-    TASK_PLAN_READY = "task_plan_ready"
-    TOOL_MATCHING_FAILED = "tool_matching_failed"
+    # Main workflow
+    TOOL_EXECUTION_READY = "tool_execution_ready"
+    HELP_REQUESTED = "help_requested"
     ONBOARDING_REQUIRED = "onboarding_required"
 
-    NO_TASKS_REMAINING = "no_tasks_remaining"
-    TASK_TYPE_GENERAL_TOOL = "task_type_general_tool"
-    TASK_TYPE_CREATE_SCHEMA = "task_type_create_schema"
-    TASK_TYPE_LOAD_DATA = "task_type_load_data"
-    TASK_TYPE_UNCLEAR = "task_type_unclear"
+    # Task execution subgraph
+    TASK_PLAN_IN_PROGRESS = "task_plan_in_progress"
+    TASK_PLAN_COMPLETED = "task_plan_completed"
+
+    TRIGGER_SCHEMA_SUBGRAPH = "trigger_schema_subgraph"
+    TRIGGER_LOADING_SUBGRAPH = "trigger_loading_subgraph"
+    PROCEED_TO_NEXT_TASK = "proceed_to_next_task"
 
     # Onboarding subgraph
     PREVIEW_SUCCESSFUL = "preview_successful"
@@ -39,14 +42,6 @@ class ChatSessionState(BaseModel):
 
     # Workflow control
     flow_status: Optional[FlowStatus] = None
-
-    # # Task Management
-    # task_plan: List[Dict[str, str]] = Field(
-    #     default_factory=list
-    # )  # e.g., [{"tool_name": ..., "command": ...}]
-    # current_task_index: int = 0  # Index of the currently executing task
-    # current_tool_name: str = ""  # Tool name of the currently executing task
-    # current_command: str = ""  # Command of the currently executing task
 
     # Schema Creation State
     current_schema_draft: str = ""  # Latest schema draft

@@ -18,7 +18,7 @@ from prompts import (
 )
 
 
-async def generate_data_loading_subgraph(llm, tool_executor_agent):
+async def generate_data_loading_subgraph(llm, load_data_agent):
     builder = StateGraph(ChatSessionState)
 
     async def load_config_file(state: ChatSessionState) -> ChatSessionState:
@@ -29,7 +29,7 @@ async def generate_data_loading_subgraph(llm, tool_executor_agent):
         get_schema_message = HumanMessage(
             content="Get the graph schema of the created graph."
         )
-        response = await tool_executor_agent.ainvoke(
+        response = await load_data_agent.ainvoke(
             {
                 "messages": [
                     SystemMessage(content=GET_SCHEMA_PROMPT),
@@ -136,7 +136,7 @@ async def generate_data_loading_subgraph(llm, tool_executor_agent):
         writer({"status": "📥 Loading data..."})
 
         try:
-            response = await tool_executor_agent.ainvoke(
+            response = await load_data_agent.ainvoke(
                 {
                     "messages": [
                         SystemMessage(content=RUN_LOADING_JOB_PROMPT),

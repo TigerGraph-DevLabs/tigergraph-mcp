@@ -22,7 +22,9 @@ DATA_PREVIEW_ERROR_MESSAGE = (
 )
 
 
-async def generate_onboarding_subgraph(llm, tool_executor_agent):
+async def generate_onboarding_subgraph(
+    llm, create_schema_agent, load_data_agent, preview_sample_data_agent
+):
     builder = StateGraph(ChatSessionState)
 
     def prepare_data_source_and_prompt(state: ChatSessionState) -> ChatSessionState:
@@ -67,7 +69,7 @@ async def generate_onboarding_subgraph(llm, tool_executor_agent):
         writer = get_stream_writer()
         writer({"status": "📄 Previewing sample data..."})
 
-        response = await tool_executor_agent.ainvoke(
+        response = await preview_sample_data_agent.ainvoke(
             {
                 "messages": [
                     SystemMessage(content=PREVIEW_SAMPLE_DATA_PROMPT),
@@ -109,11 +111,11 @@ async def generate_onboarding_subgraph(llm, tool_executor_agent):
         return state
 
     call_schema_creation_subgraph = await generate_schema_creation_subgraph(
-        llm, tool_executor_agent
+        llm, create_schema_agent
     )
 
     call_data_loading_subgraph = await generate_data_loading_subgraph(
-        llm, tool_executor_agent
+        llm, load_data_agent
     )
 
     async def route_schema_creation_status(state: ChatSessionState) -> FlowStatus:

@@ -1,6 +1,9 @@
 # Changelog
 
 ---
+### 0.1.5
+- feat: add example using LangGraph LLM and agents to call TigerGraph-MCP
+
 ### 0.1.4
 - feat: enable multi-turn human-in-the-loop schema confirmation for iterative refinement
 - feat: enable multi-turn human-in-the-loop loading job confirmation for iterative refinement

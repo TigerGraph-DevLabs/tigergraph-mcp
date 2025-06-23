@@ -1,6 +1,6 @@
 [project]
 name = "tigergraph-mcp"
-version = "0.1.4"
+version = "0.1.5"
 description = ""
 authors = [
     {name = "xunalei.lin",email = "xuanlei.lin@tigergraph.com"}
