@@ -43,6 +43,9 @@ class ChatSessionState(BaseModel):
     # Workflow control
     flow_status: Optional[FlowStatus] = None
 
+    # Onboarding
+    previewed_sample_data: str = ""
+
     # Schema Creation State
     current_schema_draft: str = ""  # Latest schema draft
 

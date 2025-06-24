@@ -3,6 +3,7 @@
 ---
 ### 0.1.5
 - feat: add example using LangGraph LLM and agents to call TigerGraph-MCP
+- feat: upgrade TigerGraphX to v0.2.9 with new TigerGraphDatabase class integration
 
 ### 0.1.4
 - feat: enable multi-turn human-in-the-loop schema confirmation for iterative refinement

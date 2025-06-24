@@ -95,6 +95,7 @@ async def generate_onboarding_subgraph(
             state.flow_status = FlowStatus.PREVIEW_SUCCESSFUL
             state.messages.append(latest_message)
             writer({"message": latest_message})
+            state.previewed_sample_data = str(latest_message.content)
         return state
 
     async def evaluate_preview_result(state: ChatSessionState) -> FlowStatus:

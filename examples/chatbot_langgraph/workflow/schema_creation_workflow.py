@@ -25,7 +25,8 @@ async def generate_schema_creation_subgraph(llm, create_schema_agent):
 
         human_message = HumanMessage(
             content="Analyze the provided data tables and classify each column as one of: "
-            "`primary_id`, `node`, or `attribute`. Also infer the data type. "
+            "`primary_id`, `node`, or `attribute`. Also infer the data type. \n"
+            f"{state.previewed_sample_data}"
         )
         message = await llm.ainvoke(
             [
