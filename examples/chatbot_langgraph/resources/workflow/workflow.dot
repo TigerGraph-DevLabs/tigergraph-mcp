@@ -87,20 +87,30 @@ digraph ChatFlow {
         run_loading_job -> check_load_data_origin;
     }
 
-    check_load_data_origin -> wait_for_user_input [label="load_from_onboarding"];
-    check_load_data_origin -> execute_next_task [label="load_standalone"];
-    check_schema_origin -> draft_loading_job [label="schema_from_onboarding"];
-    check_schema_origin -> execute_next_task [label="schema_standalone"];
+    // ---------------------------
+    // Run Algorithms Subgraph
+    // ---------------------------
+    subgraph cluster_run_algorithms {
+        label = "Run Algorithms";
+        style = dashed;
+        color = orange;
+        rank = same;
 
-    execute_next_task -> route_task_plan_status;
-    route_task_plan_status -> execute_tool_call [label="task_plan_in_progress"];
-    route_task_plan_status -> wait_for_user_input [label="task_plan_completed"];
+        node [shape=box, style=rounded];
+        suggest_algorithms;
+        wait_for_user_review_algos;
+        edit_algorithm_selection;
+        run_algorithms;
 
-    execute_tool_call -> route_tool_completion;
+        node [shape=diamond, style=""];
+        confirm_algorithm_selection;
 
-    route_tool_completion -> classify_columns [label="trigger_schema_subgraph"];
-    route_tool_completion -> draft_loading_job [label="trigger_loading_subgraph"];
-    route_tool_completion -> execute_next_task [label="proceed_to_next_task"];
+        suggest_algorithms -> wait_for_user_review_algos;
+        wait_for_user_review_algos -> confirm_algorithm_selection;
+        confirm_algorithm_selection -> run_algorithms [label="user_confirmed_algorithms"];
+        confirm_algorithm_selection -> edit_algorithm_selection [label="user_requested_algo_changes"];
+        edit_algorithm_selection -> wait_for_user_review_algos;
+    }
 
     // ---------------------------
     // Onboarding Subgraph
@@ -133,6 +143,27 @@ digraph ChatFlow {
     }
 
     // ---------------------------
+    // Routing Logic & Flow Control
+    // ---------------------------
+    check_schema_origin -> draft_loading_job [label="schema_from_onboarding"];
+    check_schema_origin -> execute_next_task [label="schema_standalone"];
+
+    check_load_data_origin -> suggest_algorithms [label="load_from_onboarding"];
+    check_load_data_origin -> execute_next_task [label="load_standalone"];
+
+    run_algorithms -> wait_for_user_input;
+
+    execute_next_task -> route_task_plan_status;
+    route_task_plan_status -> execute_tool_call [label="task_plan_in_progress"];
+    route_task_plan_status -> wait_for_user_input [label="task_plan_completed"];
+
+    execute_tool_call -> route_tool_completion;
+
+    route_tool_completion -> classify_columns [label="trigger_schema_subgraph"];
+    route_tool_completion -> draft_loading_job [label="trigger_loading_subgraph"];
+    route_tool_completion -> execute_next_task [label="proceed_to_next_task"];
+
+    // ---------------------------
     // Main Workflow
     // ---------------------------
     START -> send_welcome_message;
@@ -154,4 +185,5 @@ digraph ChatFlow {
     prepare_data_source_and_prompt -> route_tool_completion [style=invis];
     route_tool_completion -> handle_user_confirmation [style=invis];
     route_tool_completion -> draft_loading_job [style=invis];
+    run_loading_job -> suggest_algorithms [style=invis];
 }

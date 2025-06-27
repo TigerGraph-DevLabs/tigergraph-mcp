@@ -28,12 +28,19 @@ class FlowStatus(str, Enum):
     USER_CONFIRMED_SCHEMA = "user_confirmed_schema"
     USER_REQUESTED_SCHEMA_CHANGES = "user_requested_schema_changes"
 
-    SCHEMA_CREATED_SUCCESSFUL = "SCHEMA_CREATED_SUCCESSFUL"
+    SCHEMA_CREATED_SUCCESSFUL = "schema_created_successful"
     SCHEMA_CREATED_FAILED = "schema_created_failed"
+
+    DATA_LOADED_SUCCESSFUL = "data_loaded_successful"
+    DATA_LOADED_FAILED = "data_loaded_failed"
 
     # Data loading subgraph
     USER_CONFIRMED_JOB = "user_confirmed_job"
     USER_REQUESTED_JOB_CHANGES = "user_requested_job_changes"
+
+    # Run algorithm subgraph
+    USER_CONFIRMED_ALGORITHMS = "user_confirmed_algorithms"
+    USER_REQUESTED_ALGO_CHANGES = "user_requested_algo_changes"
 
 
 class ChatSessionState(BaseModel):
@@ -51,6 +58,7 @@ class ChatSessionState(BaseModel):
 
     # Loading Job State
     current_loading_job_draft: str = ""  # Latest loading job draft
+
 
 class ToolCallResult(BaseModel):
     success: bool

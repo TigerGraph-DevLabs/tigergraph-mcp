@@ -14,6 +14,7 @@ from prompts import PREVIEW_SAMPLE_DATA_PROMPT
 from workflow.chat_session_state import ChatSessionState, FlowStatus
 from workflow.schema_creation_workflow import generate_schema_creation_subgraph
 from workflow.data_loading_workflow import generate_data_loading_subgraph
+from workflow.run_algorithms_workflow import generate_run_algorithms_subgraph
 
 S3_ANONYMOUS_SOURCE_NAME = "s3_anonymous_source"
 DATA_PREVIEW_ERROR_MESSAGE = (
@@ -23,7 +24,11 @@ DATA_PREVIEW_ERROR_MESSAGE = (
 
 
 async def generate_onboarding_subgraph(
-    llm, create_schema_agent, load_data_agent, preview_sample_data_agent
+    llm,
+    create_schema_agent,
+    load_data_agent,
+    run_algorithms_agent,
+    preview_sample_data_agent,
 ):
     builder = StateGraph(ChatSessionState)
 
@@ -119,11 +124,19 @@ async def generate_onboarding_subgraph(
         llm, load_data_agent
     )
 
+    call_run_algorithms_subgraph = await generate_run_algorithms_subgraph(
+        llm, run_algorithms_agent
+    )
+
     async def route_schema_creation_status(state: ChatSessionState) -> FlowStatus:
-        if state.flow_status == FlowStatus.SCHEMA_CREATED_FAILED:
-            return FlowStatus.SCHEMA_CREATED_FAILED
-        else:
+        if state.flow_status == FlowStatus.SCHEMA_CREATED_SUCCESSFUL:
             return FlowStatus.SCHEMA_CREATED_SUCCESSFUL
+        return FlowStatus.SCHEMA_CREATED_FAILED
+
+    async def route_data_loading_status(state: ChatSessionState) -> FlowStatus:
+        if state.flow_status == FlowStatus.DATA_LOADED_SUCCESSFUL:
+            return FlowStatus.DATA_LOADED_SUCCESSFUL
+        return FlowStatus.DATA_LOADED_FAILED
 
     # Add nodes
     builder.add_node(prepare_data_source_and_prompt)
@@ -131,6 +144,7 @@ async def generate_onboarding_subgraph(
     builder.add_node(prompt_file_paths_retry)
     builder.add_node("call_schema_creation_subgraph", call_schema_creation_subgraph)
     builder.add_node("call_data_loading_subgraph", call_data_loading_subgraph)
+    builder.add_node("call_run_algorithms_subgraph", call_run_algorithms_subgraph)
 
     # Add edges
     builder.add_edge(START, "prepare_data_source_and_prompt")
@@ -152,6 +166,14 @@ async def generate_onboarding_subgraph(
             FlowStatus.SCHEMA_CREATED_SUCCESSFUL: "call_data_loading_subgraph",
         },
     )
-    builder.add_edge("call_data_loading_subgraph", END)
+    builder.add_conditional_edges(
+        "call_data_loading_subgraph",
+        route_data_loading_status,
+        {
+            FlowStatus.DATA_LOADED_FAILED: END,
+            FlowStatus.DATA_LOADED_SUCCESSFUL: "call_run_algorithms_subgraph",
+        },
+    )
+    builder.add_edge("call_run_algorithms_subgraph", END)
 
     return builder.compile(checkpointer=True)

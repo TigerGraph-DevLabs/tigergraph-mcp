@@ -135,6 +135,7 @@ async def generate_data_loading_subgraph(llm, load_data_agent):
         writer = get_stream_writer()
         writer({"status": "📥 Loading data..."})
 
+        state.flow_status = FlowStatus.DATA_LOADED_FAILED
         try:
             response = await load_data_agent.ainvoke(
                 {
@@ -151,6 +152,8 @@ async def generate_data_loading_subgraph(llm, load_data_agent):
                 message = AIMessage(content=structured_response.message)
                 state.messages.append(message)
                 writer({"message": message})
+                if structured_response.success:
+                    state.flow_status = FlowStatus.DATA_LOADED_SUCCESSFUL
         except Exception as e:
             message = AIMessage(content=f"\n[Error] {type(e).__name__}: {str(e)}")
             writer({"message": message})

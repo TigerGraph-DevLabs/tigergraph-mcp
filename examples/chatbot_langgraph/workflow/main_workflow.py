@@ -51,6 +51,7 @@ async def build_graph(
     # Categorize tools
     schema_tools = []
     load_data_tools = []
+    run_algorithms_tools = []
     general_tools = []
     preview_sample_data_tools = []
     for tool in tools:
@@ -59,8 +60,15 @@ async def build_graph(
             schema_tools.append(tool)
         elif tool_enum == TigerGraphToolName.LOAD_DATA:
             load_data_tools.append(tool)
+        elif tool_enum in [
+            TigerGraphToolName.CREATE_QUERY,
+            TigerGraphToolName.INSTALL_QUERY,
+            TigerGraphToolName.RUN_QUERY,
+        ]:
+            run_algorithms_tools.append(tool)
         elif tool_enum == TigerGraphToolName.GET_SCHEMA:
             load_data_tools.append(tool)
+            run_algorithms_tools.append(tool)
             general_tools.append(tool)
         elif tool_enum == TigerGraphToolName.PREVIEW_SAMPLE_DATA:
             preview_sample_data_tools.append(tool)
@@ -78,6 +86,9 @@ async def build_graph(
     )
     load_data_agent = create_react_agent(
         model=model, tools=load_data_tools, response_format=ToolCallResult
+    )
+    run_algorithms_agent = create_react_agent(
+        model=model, tools=run_algorithms_tools, response_format=ToolCallResult
     )
     preview_sample_data_agent = create_react_agent(
         model=model, tools=preview_sample_data_tools
@@ -140,7 +151,11 @@ async def build_graph(
     builder.add_node(detect_user_intent)
     builder.add_node(handle_help_request)
     call_onboarding_subgraph = await generate_onboarding_subgraph(
-        llm, create_schema_agent, load_data_agent, preview_sample_data_agent
+        llm,
+        create_schema_agent,
+        load_data_agent,
+        run_algorithms_agent,
+        preview_sample_data_agent,
     )
     builder.add_node("call_onboarding_subgraph", call_onboarding_subgraph)
     call_task_execution_subgraph = await generate_task_execution_subgraph(
