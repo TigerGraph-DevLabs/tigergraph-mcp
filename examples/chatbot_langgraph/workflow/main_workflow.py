@@ -8,15 +8,17 @@ from langchain_core.messages import (
     AIMessage,
     SystemMessage,
 )
-from langgraph.graph import StateGraph, START, END
+from langgraph.graph import StateGraph, START
 from langgraph.types import interrupt
-from langgraph.config import get_stream_writer
-from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.prebuilt import create_react_agent
+from langchain_mcp_adapters.client import MultiServerMCPClient
+from langgraph.config import get_stream_writer
 
+from tigergraph_mcp import TigerGraphToolName
 from prompts import ONBOARDING_DETECTOR_PROMPT
 from workflow.chat_session_state import ChatSessionState, FlowStatus, ToolCallResult
 from workflow.onboarding_workflow import generate_onboarding_subgraph
+from workflow.task_execution_workflow import generate_task_execution_subgraph
 
 
 WELCOME_MESSAGE = (
@@ -46,11 +48,50 @@ async def build_graph(
     )
     tools = await client.get_tools()
 
-    # Initialize LLM and agent
+    # Categorize tools
+    schema_tools = []
+    load_data_tools = []
+    run_algorithms_tools = []
+    general_tools = []
+    preview_sample_data_tools = []
+    for tool in tools:
+        tool_enum = TigerGraphToolName.from_value(tool.name)
+        if tool_enum == TigerGraphToolName.CREATE_SCHEMA:
+            schema_tools.append(tool)
+        elif tool_enum == TigerGraphToolName.LOAD_DATA:
+            load_data_tools.append(tool)
+        elif tool_enum in [
+            TigerGraphToolName.CREATE_QUERY,
+            TigerGraphToolName.INSTALL_QUERY,
+            TigerGraphToolName.RUN_QUERY,
+        ]:
+            run_algorithms_tools.append(tool)
+        elif tool_enum == TigerGraphToolName.GET_SCHEMA:
+            load_data_tools.append(tool)
+            run_algorithms_tools.append(tool)
+            general_tools.append(tool)
+        elif tool_enum == TigerGraphToolName.PREVIEW_SAMPLE_DATA:
+            preview_sample_data_tools.append(tool)
+            general_tools.append(tool)
+        else:
+            general_tools.append(tool)
+
+    # Load environment and initialize model
     load_dotenv(dotenv_path=dotenv_path)
     llm = init_chat_model(model=model, temperature=temperature)
-    tool_executor_agent = create_react_agent(
-        "openai:gpt-4.1-mini-2025-04-14", tools=tools, response_format=ToolCallResult
+
+    # Create category-specific agents
+    create_schema_agent = create_react_agent(
+        model=model, tools=schema_tools, response_format=ToolCallResult
+    )
+    load_data_agent = create_react_agent(
+        model=model, tools=load_data_tools, response_format=ToolCallResult
+    )
+    run_algorithms_agent = create_react_agent(
+        model=model, tools=run_algorithms_tools, response_format=ToolCallResult
+    )
+    preview_sample_data_agent = create_react_agent(
+        model=model, tools=preview_sample_data_tools
     )
 
     async def send_welcome_message(state: ChatSessionState) -> ChatSessionState:
@@ -65,15 +106,14 @@ async def build_graph(
         state.messages.append(HumanMessage(content=human_review))
         return state
 
-    async def analyze_task_plan(state: ChatSessionState) -> ChatSessionState:
-        print("analyze_task_plan...")
+    async def detect_user_intent(state: ChatSessionState) -> ChatSessionState:
         last_command = state.messages[len(state.messages) - 1].content
         if last_command == "onboarding":
             state.flow_status = FlowStatus.ONBOARDING_REQUIRED
             return state
 
         if last_command == "help":
-            state.flow_status = FlowStatus.TOOL_MATCHING_FAILED
+            state.flow_status = FlowStatus.HELP_REQUESTED
             return state
 
         response = await llm.ainvoke(
@@ -85,42 +125,18 @@ async def build_graph(
         if str(response.content).strip().lower() == "true":
             state.flow_status = FlowStatus.ONBOARDING_REQUIRED
             return state
-        state.flow_status = FlowStatus.TOOL_MATCHING_FAILED
+        state.flow_status = FlowStatus.TOOL_EXECUTION_READY
         return state
 
-    async def route_task_plan_status(state: ChatSessionState) -> FlowStatus:
-        print("route_task_plan_status...")
-        if state.flow_status == FlowStatus.TASK_PLAN_READY:
-            return FlowStatus.TASK_PLAN_READY
+    async def route_user_intent(state: ChatSessionState) -> FlowStatus:
+        if state.flow_status == FlowStatus.TOOL_EXECUTION_READY:
+            return FlowStatus.TOOL_EXECUTION_READY
         elif state.flow_status == FlowStatus.ONBOARDING_REQUIRED:
             return FlowStatus.ONBOARDING_REQUIRED
         else:
-            return FlowStatus.TOOL_MATCHING_FAILED
+            return FlowStatus.HELP_REQUESTED
 
-    async def evaluate_next_task(state: ChatSessionState):
-        print("evaluate_next_task...")
-
-    async def route_next_task_type(state: ChatSessionState) -> FlowStatus:
-        print("route_next_task_type...")
-        if state.flow_status == FlowStatus.NO_TASKS_REMAINING:
-            return FlowStatus.NO_TASKS_REMAINING
-        elif state.flow_status == FlowStatus.TASK_TYPE_GENERAL_TOOL:
-            return FlowStatus.TASK_TYPE_GENERAL_TOOL
-        elif state.flow_status == FlowStatus.TASK_TYPE_CREATE_SCHEMA:
-            return FlowStatus.TASK_TYPE_CREATE_SCHEMA
-        elif state.flow_status == FlowStatus.TASK_TYPE_LOAD_DATA:
-            return FlowStatus.TASK_TYPE_LOAD_DATA
-        else:
-            return FlowStatus.TASK_TYPE_UNCLEAR
-
-    async def execute_general_tool(state: ChatSessionState):
-        print("execute_general_tool...")
-
-    async def proceed_to_next_task(state: ChatSessionState):
-        print("proceed_to_next_task...")
-
-    async def request_clarification(state: ChatSessionState) -> ChatSessionState:
-        print("request_clarification...")
+    async def handle_help_request(state: ChatSessionState) -> ChatSessionState:
         message = AIMessage(content=_get_help_message(tools))
         state.messages.append(message)
         writer = get_stream_writer()
@@ -132,45 +148,37 @@ async def build_graph(
     # Add nodes
     builder.add_node(send_welcome_message)
     builder.add_node(wait_for_user_input)
-    builder.add_node(analyze_task_plan)
-    builder.add_node(evaluate_next_task)
-    builder.add_node(execute_general_tool)
-    builder.add_node(proceed_to_next_task)
-    builder.add_node(request_clarification)
+    builder.add_node(detect_user_intent)
+    builder.add_node(handle_help_request)
     call_onboarding_subgraph = await generate_onboarding_subgraph(
-        llm, tool_executor_agent
+        llm,
+        create_schema_agent,
+        load_data_agent,
+        run_algorithms_agent,
+        preview_sample_data_agent,
     )
     builder.add_node("call_onboarding_subgraph", call_onboarding_subgraph)
+    call_task_execution_subgraph = await generate_task_execution_subgraph(
+        llm, general_tools, create_schema_agent, load_data_agent
+    )
+    builder.add_node("call_task_execution_subgraph", call_task_execution_subgraph)
 
     # Add edges
     builder.add_edge(START, "send_welcome_message")
     builder.add_edge("send_welcome_message", "wait_for_user_input")
-    builder.add_edge("wait_for_user_input", "analyze_task_plan")
+    builder.add_edge("wait_for_user_input", "detect_user_intent")
     builder.add_conditional_edges(
-        "analyze_task_plan",
-        route_task_plan_status,
+        "detect_user_intent",
+        route_user_intent,
         {
-            FlowStatus.TASK_PLAN_READY: "evaluate_next_task",
+            FlowStatus.TOOL_EXECUTION_READY: "call_task_execution_subgraph",
             FlowStatus.ONBOARDING_REQUIRED: "call_onboarding_subgraph",
-            FlowStatus.TOOL_MATCHING_FAILED: "request_clarification",
+            FlowStatus.HELP_REQUESTED: "handle_help_request",
         },
     )
-    builder.add_conditional_edges(
-        "evaluate_next_task",
-        route_next_task_type,
-        {
-            FlowStatus.NO_TASKS_REMAINING: "wait_for_user_input",
-            FlowStatus.TASK_TYPE_GENERAL_TOOL: "execute_general_tool",
-            FlowStatus.TASK_TYPE_CREATE_SCHEMA: END,
-            FlowStatus.TASK_TYPE_LOAD_DATA: END,
-            FlowStatus.TASK_TYPE_UNCLEAR: "request_clarification",
-        },
-    )
-    builder.add_edge("execute_general_tool", "proceed_to_next_task")
-    builder.add_edge("proceed_to_next_task", "evaluate_next_task")
-    builder.add_edge("request_clarification", "wait_for_user_input")
-    builder.add_edge("wait_for_user_input", "analyze_task_plan")
+    builder.add_edge("call_task_execution_subgraph", "wait_for_user_input")
     builder.add_edge("call_onboarding_subgraph", "wait_for_user_input")
+    builder.add_edge("handle_help_request", "wait_for_user_input")
 
     return builder.compile(checkpointer=MemorySaver())
 

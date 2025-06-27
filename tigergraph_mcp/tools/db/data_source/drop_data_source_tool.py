@@ -9,8 +9,7 @@ from typing import Optional, List
 from pydantic import Field, BaseModel
 from mcp.types import Tool, TextContent
 
-from tigergraphx.core import TigerGraphAPI
-from tigergraphx.config import TigerGraphConnectionConfig
+from tigergraphx import TigerGraphDatabase
 from tigergraph_mcp.tools import TigerGraphToolName
 
 
@@ -41,17 +40,15 @@ graph = "MyGraph"  # optional
 ]
 
 
-async def drop_data_source(name: str, graph: Optional[str] = None) -> List[TextContent]:
+async def drop_data_source(
+    name: str, graph_name: Optional[str] = None
+) -> List[TextContent]:
     try:
-        config = TigerGraphConnectionConfig()
-        api = TigerGraphAPI(config)
+        db = TigerGraphDatabase()
 
-        response = api.drop_data_source(name=name, graph=graph)
+        response = db.drop_data_source(name=name, graph_name=graph_name)
 
-        if (
-            isinstance(response, str)
-            and f"Data source {name} is dropped" in response
-        ):
+        if isinstance(response, str) and f"Data source {name} is dropped" in response:
             message = f"✅ Successfully dropped data source '{name}'.\n\nTigerGraph response:\n{response}"
         else:
             message = f"⚠️ Attempted to drop data source '{name}', but received an unexpected response:\n{response}"

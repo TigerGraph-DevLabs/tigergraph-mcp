@@ -41,9 +41,14 @@ from .graph import (
     search_top_k_similar_nodes,
 )
 from .db import (
+    gsql,
+    list_metadata,
     create_data_source,
+    update_data_source,
     get_data_source,
     drop_data_source,
+    get_all_data_sources,
+    drop_all_data_sources,
     preview_sample_data,
 )
 
@@ -91,9 +96,15 @@ __all__ = [
     "search",
     "search_multi_vector_attributes",
     "search_top_k_similar_nodes",
+    # Tools for GSQL Operations
+    "gsql",
+    "list_metadata",
     # Tools for Data Source Operations
     "create_data_source",
+    "update_data_source",
     "get_data_source",
     "drop_data_source",
+    "get_all_data_sources",
+    "drop_all_data_sources",
     "preview_sample_data",
 ]

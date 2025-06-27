@@ -9,8 +9,7 @@ from typing import List
 from pydantic import Field, BaseModel
 from mcp.types import Tool, TextContent
 
-from tigergraphx.core import TigerGraphAPI
-from tigergraphx.config import TigerGraphConnectionConfig
+from tigergraphx import TigerGraphDatabase
 from tigergraph_mcp.tools import TigerGraphToolName
 
 
@@ -36,10 +35,9 @@ name = "data_source_1"
 
 async def get_data_source(name: str) -> List[TextContent]:
     try:
-        config = TigerGraphConnectionConfig()
-        api = TigerGraphAPI(config)
+        db = TigerGraphDatabase()
 
-        result = api.get_data_source(name)
+        result = db.get_data_source(name)
 
         message = f"✅ Successfully retrieved configuration for data source '{name}':\n{result}"
 

@@ -45,9 +45,14 @@ from .tools import (
     search,
     search_multi_vector_attributes,
     search_top_k_similar_nodes,
+    gsql,
+    list_metadata,
     create_data_source,
+    update_data_source,
     get_data_source,
     drop_data_source,
+    get_all_data_sources,
+    drop_all_data_sources,
     preview_sample_data,
 )
 
@@ -134,12 +139,22 @@ async def serve() -> None:
                     return await search_multi_vector_attributes(**arguments)
                 case TigerGraphToolName.SEARCH_TOP_K_SIMILAR_NODES:
                     return await search_top_k_similar_nodes(**arguments)
+                case TigerGraphToolName.GSQL:
+                    return await gsql(**arguments)
+                case TigerGraphToolName.LIST_METADATA:
+                    return await list_metadata(**arguments)
                 case TigerGraphToolName.CREATE_DATA_SOURCE:
                     return await create_data_source(**arguments)
+                case TigerGraphToolName.UPDATE_DATA_SOURCE:
+                    return await update_data_source(**arguments)
                 case TigerGraphToolName.GET_DATA_SOURCE:
                     return await get_data_source(**arguments)
                 case TigerGraphToolName.DROP_DATA_SOURCE:
                     return await drop_data_source(**arguments)
+                case TigerGraphToolName.GET_ALL_DATA_SOURCES:
+                    return await get_all_data_sources(**arguments)
+                case TigerGraphToolName.DROP_ALL_DATA_SOURCES:
+                    return await drop_all_data_sources(**arguments)
                 case TigerGraphToolName.PREVIEW_SAMPLE_DATA:
                     return await preview_sample_data(**arguments)
                 case _:

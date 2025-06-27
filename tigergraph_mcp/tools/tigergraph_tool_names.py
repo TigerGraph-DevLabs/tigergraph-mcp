@@ -44,10 +44,16 @@ class TigerGraphToolName(str, Enum):
     SEARCH_TOP_K_SIMILAR_NODES = "graph__search_top_k_similar_nodes"
 
     # -------------------- Database Operations --------------------
+    # GSQL Operations
+    GSQL = "gsql"
+    LIST_METADATA = "list_metadata"
     # Data Source Operations
     CREATE_DATA_SOURCE = "db__create_data_source"
+    UPDATE_DATA_SOURCE = "db__update_data_source"
     GET_DATA_SOURCE = "db__get_data_source"
     DROP_DATA_SOURCE = "db__drop_data_source"
+    GET_ALL_DATA_SOURCES = "get_all_data_sources"
+    DROP_ALL_DATA_SOURCES = "drop_all_data_sources"
     PREVIEW_SAMPLE_DATA = "db__preview_sample_data"
 
     @classmethod

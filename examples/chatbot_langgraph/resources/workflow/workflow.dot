@@ -6,24 +6,38 @@ digraph ChatFlow {
     node [shape=box, style=rounded];
     START;
     send_welcome_message;
-    analyze_task_plan;
-    evaluate_next_task;
-    execute_general_tool;
-    proceed_to_next_task;
+    detect_user_intent;
     wait_for_user_input;
-    request_clarification;
+    handle_help_request;
 
     node [shape=diamond, style=""];
-    route_task_plan_status;
-    route_next_task_type;
+    route_user_intent;
     check_schema_origin;
     check_load_data_origin;
+
+    // ---------------------------
+    // Task Execution Subgraph
+    // ---------------------------
+    subgraph cluster_task_execution {
+        label = "Task Execution";
+        style = dashed;
+        color = purple;
+        rank = same;
+
+        node [shape=box, style=rounded];
+        execute_next_task;
+        execute_tool_call;
+
+        node [shape=diamond, style=""];
+        route_task_plan_status;
+        route_tool_completion;
+    }
 
     // ---------------------------
     // Create Schema Subgraph
     // ---------------------------
     subgraph cluster_create_schema {
-        label = "Create Schema Flow";
+        label = "Create Schema";
         style = dashed;
         color = red;
         rank = same;
@@ -51,7 +65,7 @@ digraph ChatFlow {
     // Load Data Subgraph
     // ---------------------------
     subgraph cluster_load_data {
-        label = "Load Data Flow";
+        label = "Load Data";
         style = dashed;
         color = green;
         rank = same;
@@ -73,14 +87,36 @@ digraph ChatFlow {
         run_loading_job -> check_load_data_origin;
     }
 
-    check_load_data_origin -> wait_for_user_input [label="load_from_onboarding"];
-    check_load_data_origin -> proceed_to_next_task [label="load_standalone"];
+    // ---------------------------
+    // Run Algorithms Subgraph
+    // ---------------------------
+    subgraph cluster_run_algorithms {
+        label = "Run Algorithms";
+        style = dashed;
+        color = orange;
+        rank = same;
+
+        node [shape=box, style=rounded];
+        suggest_algorithms;
+        wait_for_user_review_algos;
+        edit_algorithm_selection;
+        run_algorithms;
+
+        node [shape=diamond, style=""];
+        confirm_algorithm_selection;
+
+        suggest_algorithms -> wait_for_user_review_algos;
+        wait_for_user_review_algos -> confirm_algorithm_selection;
+        confirm_algorithm_selection -> run_algorithms [label="user_confirmed_algorithms"];
+        confirm_algorithm_selection -> edit_algorithm_selection [label="user_requested_algo_changes"];
+        edit_algorithm_selection -> wait_for_user_review_algos;
+    }
 
     // ---------------------------
     // Onboarding Subgraph
     // ---------------------------
     subgraph cluster_onboarding {
-        label = "Onboarding Flow";
+        label = "Onboarding";
         style = dashed;
         color = blue;
         rank = same;
@@ -107,38 +143,47 @@ digraph ChatFlow {
     }
 
     // ---------------------------
+    // Routing Logic & Flow Control
+    // ---------------------------
+    check_schema_origin -> draft_loading_job [label="schema_from_onboarding"];
+    check_schema_origin -> execute_next_task [label="schema_standalone"];
+
+    check_load_data_origin -> suggest_algorithms [label="load_from_onboarding"];
+    check_load_data_origin -> execute_next_task [label="load_standalone"];
+
+    run_algorithms -> wait_for_user_input;
+
+    execute_next_task -> route_task_plan_status;
+    route_task_plan_status -> execute_tool_call [label="task_plan_in_progress"];
+    route_task_plan_status -> wait_for_user_input [label="task_plan_completed"];
+
+    execute_tool_call -> route_tool_completion;
+
+    route_tool_completion -> classify_columns [label="trigger_schema_subgraph"];
+    route_tool_completion -> draft_loading_job [label="trigger_loading_subgraph"];
+    route_tool_completion -> execute_next_task [label="proceed_to_next_task"];
+
+    // ---------------------------
     // Main Workflow
     // ---------------------------
     START -> send_welcome_message;
     send_welcome_message -> wait_for_user_input;
-    wait_for_user_input -> analyze_task_plan;
-    analyze_task_plan -> route_task_plan_status;
+    wait_for_user_input -> detect_user_intent;
+    detect_user_intent -> route_user_intent;
 
-    route_task_plan_status -> request_clarification [label="tool_matching_failed"];
-    route_task_plan_status -> prepare_data_source_and_prompt [label="onboarding_required"];
-    route_task_plan_status -> evaluate_next_task [label="task_plan_ready"];
+    route_user_intent -> handle_help_request [label="help_requested"];
+    route_user_intent -> prepare_data_source_and_prompt [label="onboarding_required"];
+    route_user_intent -> execute_next_task [label="tool_execution_ready"];
 
-    evaluate_next_task -> route_next_task_type;
-
-    request_clarification -> wait_for_user_input;
-
-    route_next_task_type -> wait_for_user_input [label="no_tasks_remaining"];
-    route_next_task_type -> execute_general_tool [label="task_type_general_tool"];
-    route_next_task_type -> classify_columns [label="task_type_create_schema"];
-    route_next_task_type -> draft_loading_job [label="task_type_load_data"];
-    route_next_task_type -> request_clarification [label="task_type_unclear"];
-
-    execute_general_tool -> proceed_to_next_task;
-    check_schema_origin -> draft_loading_job [label="schema_from_onboarding"];
-    check_schema_origin -> proceed_to_next_task [label="schema_standalone"];
-
-    proceed_to_next_task -> evaluate_next_task;
+    handle_help_request -> wait_for_user_input;
 
     // Layout assistance with invisible edges
-    wait_for_user_input -> route_task_plan_status [style=invis];
-    wait_for_user_input -> evaluate_next_task [style=invis];
-    evaluate_next_task -> prepare_data_source_and_prompt [style=invis];
-    execute_general_tool -> prepare_data_source_and_prompt [style=invis];
-    execute_general_tool -> classify_columns [style=invis];
-    prepare_data_source_and_prompt -> classify_columns [style=invis];
+    wait_for_user_input -> route_user_intent [style=invis];
+    route_user_intent -> execute_next_task [style=invis];
+    route_user_intent -> prepare_data_source_and_prompt [style=invis];
+    prompt_file_paths_retry -> classify_columns [style=invis];
+    prepare_data_source_and_prompt -> route_tool_completion [style=invis];
+    route_tool_completion -> handle_user_confirmation [style=invis];
+    route_tool_completion -> draft_loading_job [style=invis];
+    run_loading_job -> suggest_algorithms [style=invis];
 }

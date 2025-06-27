@@ -18,7 +18,10 @@ from tigergraph_mcp.tools import TigerGraphToolName
 class CreateSchemaToolInput(BaseModel):
     """Input schema for creating a TigerGraph graph schema."""
 
-    graph_schema: Dict = Field(..., description="The schema definition of the graph.")
+    graph_schema: Dict = Field(
+        ...,
+        description="A complete graph schema definition including 'graph_name', 'nodes', and 'edges'.",
+    )
 
 
 tools = [
@@ -26,7 +29,7 @@ tools = [
         name=TigerGraphToolName.CREATE_SCHEMA,
         description="""Creates a schema inside TigerGraph using TigerGraphX.
 
-Example input:
+Provide a single JSON object called `graph_schema` with the following structure:
 ```python
 graph_schema = {
     "graph_name": "FinancialGraph",  # Example of a graph with nodes and edges
@@ -80,6 +83,7 @@ graph_schema = {
 
 Notes:
 
+* Only one top-level field `graph_schema` is expected.
 * Supported data types include: "INT", "UINT", "FLOAT", "DOUBLE", "BOOL", "STRING", and "DATETIME"
 * Always include the primary key in the attributes dictionary so its type is explicitly known.
 ```

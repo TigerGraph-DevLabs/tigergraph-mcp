@@ -18,7 +18,7 @@ from prompts import (
 )
 
 
-async def generate_data_loading_subgraph(llm, tool_executor_agent):
+async def generate_data_loading_subgraph(llm, load_data_agent):
     builder = StateGraph(ChatSessionState)
 
     async def load_config_file(state: ChatSessionState) -> ChatSessionState:
@@ -29,7 +29,7 @@ async def generate_data_loading_subgraph(llm, tool_executor_agent):
         get_schema_message = HumanMessage(
             content="Get the graph schema of the created graph."
         )
-        response = await tool_executor_agent.ainvoke(
+        response = await load_data_agent.ainvoke(
             {
                 "messages": [
                     SystemMessage(content=GET_SCHEMA_PROMPT),
@@ -135,8 +135,9 @@ async def generate_data_loading_subgraph(llm, tool_executor_agent):
         writer = get_stream_writer()
         writer({"status": "📥 Loading data..."})
 
+        state.flow_status = FlowStatus.DATA_LOADED_FAILED
         try:
-            response = await tool_executor_agent.ainvoke(
+            response = await load_data_agent.ainvoke(
                 {
                     "messages": [
                         SystemMessage(content=RUN_LOADING_JOB_PROMPT),
@@ -151,6 +152,8 @@ async def generate_data_loading_subgraph(llm, tool_executor_agent):
                 message = AIMessage(content=structured_response.message)
                 state.messages.append(message)
                 writer({"message": message})
+                if structured_response.success:
+                    state.flow_status = FlowStatus.DATA_LOADED_SUCCESSFUL
         except Exception as e:
             message = AIMessage(content=f"\n[Error] {type(e).__name__}: {str(e)}")
             writer({"message": message})

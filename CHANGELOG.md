@@ -1,6 +1,12 @@
 # Changelog
 
 ---
+### 0.1.5
+- feat: add example using LangGraph LLM and agents to call TigerGraph-MCP
+- feat: upgrade TigerGraphX to v0.2.9 with new TigerGraphDatabase class integration
+- feat: add run algorithm subgraph to onboarding workflow
+- feat: add MCP tools for update data source, get/drop all data sources, run gsql, and list metadata
+
 ### 0.1.4
 - feat: enable multi-turn human-in-the-loop schema confirmation for iterative refinement
 - feat: enable multi-turn human-in-the-loop loading job confirmation for iterative refinement

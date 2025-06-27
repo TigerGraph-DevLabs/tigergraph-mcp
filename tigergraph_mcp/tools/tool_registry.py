@@ -50,10 +50,14 @@ from .graph.vector import (
     search_multi_vector_attributes_tool,
     search_top_k_similar_nodes_tool,
 )
+from .db.gsql import gsql_tool, list_metadata_tool
 from .db.data_source import (
     create_data_source_tool,
+    update_data_source_tool,
     get_data_source_tool,
     drop_data_source_tool,
+    get_all_data_sources_tool,
+    drop_all_data_sources_tool,
     preview_sample_data_tool,
 )
 
@@ -97,9 +101,15 @@ def get_all_tools() -> list[Tool]:
         + search_tool.tools
         + search_multi_vector_attributes_tool.tools
         + search_top_k_similar_nodes_tool.tools
+        # Tools for GSQL Operations
+        + gsql_tool.tools
+        + list_metadata_tool.tools
         # Tools for Data Source Operations
         + create_data_source_tool.tools
+        + update_data_source_tool.tools
         + get_data_source_tool.tools
         + drop_data_source_tool.tools
+        + get_all_data_sources_tool.tools
+        + drop_all_data_sources_tool.tools
         + preview_sample_data_tool.tools
     )

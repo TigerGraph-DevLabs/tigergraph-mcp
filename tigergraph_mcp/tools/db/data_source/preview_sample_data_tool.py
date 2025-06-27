@@ -9,8 +9,7 @@ from typing import Optional, List, Literal
 from pydantic import Field, BaseModel
 from mcp.types import Tool, TextContent
 
-from tigergraphx.core import TigerGraphAPI
-from tigergraphx.config import TigerGraphConnectionConfig
+from tigergraphx import TigerGraphDatabase
 from tigergraph_mcp.tools import TigerGraphToolName
 
 
@@ -79,10 +78,9 @@ async def preview_sample_data(
     quote: Optional[Literal["'", '"']] = '"',
 ) -> List[TextContent]:
     try:
-        config = TigerGraphConnectionConfig()
-        api = TigerGraphAPI(config)
+        db = TigerGraphDatabase()
 
-        preview = api.preview_sample_data(
+        preview = db.preview_sample_data(
             path=path,
             data_source_type=data_source_type,
             data_source=data_source,
