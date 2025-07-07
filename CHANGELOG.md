@@ -1,6 +1,9 @@
 # Changelog
 
 ---
+### 0.1.6
+feat: add MCP tool to create schema and load data into TigerGraph
+
 ### 0.1.5
 - feat: add example using LangGraph LLM and agents to call TigerGraph-MCP
 - feat: upgrade TigerGraphX to v0.2.9 with new TigerGraphDatabase class integration

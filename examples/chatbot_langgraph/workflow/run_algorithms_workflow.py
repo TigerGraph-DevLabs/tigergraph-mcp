@@ -2,9 +2,9 @@ from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langgraph.types import interrupt
 from langgraph.config import get_stream_writer
-from workflow.chat_session_state import ChatSessionState, FlowStatus
 
-from prompts import (
+from examples.chatbot_langgraph.workflow.chat_session_state import ChatSessionState, FlowStatus
+from examples.chatbot_langgraph.prompts import (
     SUGGEST_ALGORITHMS_PROMPT,
     EDIT_ALGORITHM_SELECTION_PROMPT,
     RUN_ALGORITHMS_PROMPT,
@@ -15,7 +15,6 @@ async def generate_run_algorithms_subgraph(llm, run_algorithms_agent):
     builder = StateGraph(ChatSessionState)
 
     async def suggest_algorithms(state: ChatSessionState) -> ChatSessionState:
-        print("suggest_algorithms...")
         writer = get_stream_writer()
         writer({"status": "🤖 Suggesting graph algorithms..."})
 
@@ -30,7 +29,6 @@ async def generate_run_algorithms_subgraph(llm, run_algorithms_agent):
         return state
 
     async def wait_for_user_review_algos(state: ChatSessionState) -> ChatSessionState:
-        print("wait_for_user_review_algos...")
         human_review = interrupt(
             "Please review and confirm the suggested algorithms, or request changes."
         )
@@ -52,7 +50,6 @@ async def generate_run_algorithms_subgraph(llm, run_algorithms_agent):
             return FlowStatus.USER_CONFIRMED_ALGORITHMS
 
     async def edit_algorithm_selection(state: ChatSessionState) -> ChatSessionState:
-        print("edit_algorithm_selection...")
         writer = get_stream_writer()
         writer({"status": "✏️ Editing algorithm selection..."})
 
@@ -67,7 +64,6 @@ async def generate_run_algorithms_subgraph(llm, run_algorithms_agent):
         return state
 
     async def run_algorithms(state: ChatSessionState) -> ChatSessionState:
-        print("run_algorithms...")
         writer = get_stream_writer()
         writer({"status": "🚀 Running selected algorithms..."})
 

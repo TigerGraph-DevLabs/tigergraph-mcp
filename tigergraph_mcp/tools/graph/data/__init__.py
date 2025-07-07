@@ -6,8 +6,10 @@
 # under the License. The software is provided "AS IS", without warranty.
 
 from .load_data_tool import load_data
+from .create_schema_and_load_tool import create_schema_and_load
 
 
 __all__ = [
     "load_data",
+    "create_schema_and_load",
 ]

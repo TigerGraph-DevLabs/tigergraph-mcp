@@ -7,8 +7,11 @@ from langchain_core.messages import (
 from langgraph.config import get_stream_writer
 from langgraph.types import interrupt
 
-from workflow.chat_session_state import ChatSessionState, FlowStatus
-from prompts import (
+from examples.chatbot_langgraph.workflow.chat_session_state import (
+    ChatSessionState,
+    FlowStatus,
+)
+from examples.chatbot_langgraph.prompts import (
     CLASSIFY_COLUMNS_PROMPT,
     DRAFT_SCHEMA_PROMPT,
     EDIT_SCHEMA_PROMPT,

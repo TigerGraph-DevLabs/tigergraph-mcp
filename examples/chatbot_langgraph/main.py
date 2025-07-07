@@ -3,7 +3,7 @@ import asyncio
 from langchain_core.messages import AIMessage
 from langgraph.types import Command
 
-from workflow import build_graph
+from examples.chatbot_langgraph.workflow import build_graph
 
 
 async def _handle_stream_events(workflow, input_data, config):

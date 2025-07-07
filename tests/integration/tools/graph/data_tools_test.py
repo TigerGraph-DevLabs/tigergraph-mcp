@@ -8,21 +8,21 @@ from tests.integration.base_graph_fixture import BaseFixture
 from tigergraph_mcp import TigerGraphToolName
 
 
-@pytest.mark.skip(
-    reason="""
-Skipped by default. To enable this test, you must manually place the following files in the TigerGraph server:
-
-1. /home/tigergraph/data/person_data.csv
-Contents:
-name,age
-John,11
-
-2. /home/tigergraph/data/friendship_data.csv
-Contents:
-source,target,closeness
-John,John,11
-"""
-)
+# @pytest.mark.skip(
+#     reason="""
+# Skipped by default. To enable this test, you must manually place the following files in the TigerGraph server:
+#
+# 1. /home/tigergraph/data/person_data.csv
+# Contents:
+# name,age
+# John,11
+#
+# 2. /home/tigergraph/data/friendship_data.csv
+# Contents:
+# source,target,closeness
+# John,John,11
+# """
+# )
 class TestDataTools(BaseFixture):
     def setup_graph(self):
         """Set up the graph shared across all tests."""
@@ -127,3 +127,71 @@ class TestDataTools(BaseFixture):
                 assert "Data loaded successfully into graph" in str(result)
                 assert self.G.number_of_nodes() == 1
                 assert self.G.number_of_edges() == 1
+
+    @pytest.mark.asyncio
+    async def test_create_schema_and_load(self):
+        # Use the existing SocialGraph schema defined in setup_graph
+        loading_job_config = {
+            "loading_job_name": "loading_job_Social",
+            "files": [
+                {
+                    "file_alias": "f_person",
+                    "file_path": "/home/tigergraph/data/person_data.csv",
+                    "csv_parsing_options": {
+                        "separator": ",",
+                        "header": True,
+                        "EOL": "\\n",
+                        "quote": "DOUBLE",
+                    },
+                    "node_mappings": [
+                        {
+                            "target_name": "Person",
+                            "attribute_column_mappings": {
+                                "name": "name",
+                                "age": "age",
+                            },
+                        }
+                    ],
+                },
+                {
+                    "file_alias": "f_friendship",
+                    "file_path": "/home/tigergraph/data/friendship_data.csv",
+                    "csv_parsing_options": {
+                        "separator": ",",
+                        "header": True,
+                        "EOL": "\\n",
+                        "quote": "DOUBLE",
+                    },
+                    "edge_mappings": [
+                        {
+                            "target_name": "Friendship",
+                            "source_node_column": "source",
+                            "target_node_column": "target",
+                            "attribute_column_mappings": {
+                                "closeness": "closeness",
+                            },
+                        }
+                    ],
+                },
+            ],
+        }
+
+        async with stdio_client(self.server_params) as (read, write):
+            async with ClientSession(read, write) as session:
+                await session.initialize()
+                result = await session.call_tool(
+                    TigerGraphToolName.CREATE_SCHEMA_AND_LOAD,
+                    arguments={
+                        "graph_schema": self.graph_schema,
+                        "loading_job_config": loading_job_config,
+                    },
+                )
+                result_text = str(result)
+                assert (
+                    f"Schema for graph '{self.graph_name}' created successfully"
+                    in result_text
+                )
+                assert (
+                    f"Data loaded successfully into graph '{self.graph_name}'"
+                    in result_text
+                )

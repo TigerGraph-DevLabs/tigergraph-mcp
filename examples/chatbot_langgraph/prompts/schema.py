@@ -113,6 +113,7 @@ Be thorough and conservative:
 ```
 """
 
+
 DRAFT_SCHEMA_PROMPT = """
 ## Role
 Using classified columns and table data, draft a complete TigerGraph schema including graph name, node types, and edge types following best practices.
@@ -208,7 +209,6 @@ Assume columns have been classified earlier as primary_id, node, or attribute wi
   - Example: `WorkforceGraph` for employee and project data.
 
 - Use **PascalCase** (no spaces or underscores).
-
 
 ## Output Format
 Provide a clear, user-friendly message with three parts: a short introduction, a Markdown schema proposal, and a confirmation request.  
@@ -307,7 +307,7 @@ EmployeeGraph
 Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok". Or tell me if you want to make any changes.
 """
 
-CREATE_SCHEMA_PROMPT="""
+CREATE_SCHEMA_PROMPT = """
 ## Role
 Use the **final confirmed schema** to call the TigerGraph `CREATE_SCHEMA` tool.
 Ensure the schema format is valid and matches tool expectations exactly.
@@ -327,4 +327,3 @@ Based on the provided graph name, you will retrieve and display the schema of th
 The schema of the graph, including details such as node types, edge types, and their respective attributes.
 
 """
-

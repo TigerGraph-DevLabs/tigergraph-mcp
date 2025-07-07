@@ -1,6 +1,6 @@
 [project]
 name = "tigergraph-mcp"
-version = "0.1.5"
+version = "0.1.6"
 description = ""
 authors = [
     {name = "xunalei.lin",email = "xuanlei.lin@tigergraph.com"}
@@ -43,5 +43,5 @@ start_mcp_server = "python -m tigergraph_mcp.main"
 integration_test = {cmd = "pytest -vs ./tests/integration --html=htmlcov/it-report.html", env = {PYTHONDONTWRITEBYTECODE = "1"}}
 
 # Agentic AI
-chatbot_langgraph = "python examples/chatbot_langgraph/main.py"
+chatbot_langgraph = "python -m examples.chatbot_langgraph.main"
 chatbot_crewai = "panel serve examples/chatbot_crewai/main.py"
