@@ -7,14 +7,22 @@ from langchain_core.messages import (
 )
 from langgraph.types import interrupt
 
-from tigergraphx.core import TigerGraphAPI
-from tigergraphx.config import TigerGraphConnectionConfig
+from tigergraphx import TigerGraphDatabase
 
-from prompts import PREVIEW_SAMPLE_DATA_PROMPT
-from workflow.chat_session_state import ChatSessionState, FlowStatus
-from workflow.schema_creation_workflow import generate_schema_creation_subgraph
-from workflow.data_loading_workflow import generate_data_loading_subgraph
-from workflow.run_algorithms_workflow import generate_run_algorithms_subgraph
+from examples.chatbot_langgraph.prompts import PREVIEW_SAMPLE_DATA_PROMPT
+from examples.chatbot_langgraph.workflow.chat_session_state import (
+    ChatSessionState,
+    FlowStatus,
+)
+from examples.chatbot_langgraph.workflow.schema_creation_workflow import (
+    generate_schema_creation_subgraph,
+)
+from examples.chatbot_langgraph.workflow.data_loading_workflow import (
+    generate_data_loading_subgraph,
+)
+from examples.chatbot_langgraph.workflow.run_algorithms_workflow import (
+    generate_run_algorithms_subgraph,
+)
 
 S3_ANONYMOUS_SOURCE_NAME = "s3_anonymous_source"
 DATA_PREVIEW_ERROR_MESSAGE = (
@@ -36,14 +44,13 @@ async def generate_onboarding_subgraph(
         writer = get_stream_writer()
         writer({"status": "🔍 Checking data source existence..."})
 
-        config = TigerGraphConnectionConfig()
-        api = TigerGraphAPI(config)
+        db = TigerGraphDatabase()
 
         try:
-            api.get_data_source(S3_ANONYMOUS_SOURCE_NAME)
+            db.get_data_source(S3_ANONYMOUS_SOURCE_NAME)
         except Exception:
             writer({"status": "🔧 Creating S3 data source..."})
-            api.create_data_source(
+            db.create_data_source(
                 S3_ANONYMOUS_SOURCE_NAME,
                 data_source_type="s3",
                 extra_config={

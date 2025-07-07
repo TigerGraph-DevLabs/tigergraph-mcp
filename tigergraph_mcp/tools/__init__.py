@@ -12,6 +12,7 @@ from .graph import (
     get_schema,
     drop_graph,
     load_data,
+    create_schema_and_load,
     add_node,
     add_nodes,
     remove_node,
@@ -63,6 +64,7 @@ __all__ = [
     "drop_graph",
     # Tools for Data Operations
     "load_data",
+    "create_schema_and_load",
     # Tools for Node Operations
     "add_node",
     "add_nodes",

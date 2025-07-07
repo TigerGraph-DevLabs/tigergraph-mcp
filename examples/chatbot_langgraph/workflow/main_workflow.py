@@ -15,10 +15,18 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.config import get_stream_writer
 
 from tigergraph_mcp import TigerGraphToolName
-from prompts import ONBOARDING_DETECTOR_PROMPT
-from workflow.chat_session_state import ChatSessionState, FlowStatus, ToolCallResult
-from workflow.onboarding_workflow import generate_onboarding_subgraph
-from workflow.task_execution_workflow import generate_task_execution_subgraph
+from examples.chatbot_langgraph.prompts import ONBOARDING_DETECTOR_PROMPT
+from examples.chatbot_langgraph.workflow.chat_session_state import (
+    ChatSessionState,
+    FlowStatus,
+    ToolCallResult,
+)
+from examples.chatbot_langgraph.workflow.onboarding_workflow import (
+    generate_onboarding_subgraph,
+)
+from examples.chatbot_langgraph.workflow.task_execution_workflow import (
+    generate_task_execution_subgraph,
+)
 
 
 WELCOME_MESSAGE = (

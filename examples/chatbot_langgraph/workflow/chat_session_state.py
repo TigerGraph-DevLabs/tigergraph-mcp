@@ -31,12 +31,12 @@ class FlowStatus(str, Enum):
     SCHEMA_CREATED_SUCCESSFUL = "schema_created_successful"
     SCHEMA_CREATED_FAILED = "schema_created_failed"
 
-    DATA_LOADED_SUCCESSFUL = "data_loaded_successful"
-    DATA_LOADED_FAILED = "data_loaded_failed"
-
     # Data loading subgraph
     USER_CONFIRMED_JOB = "user_confirmed_job"
     USER_REQUESTED_JOB_CHANGES = "user_requested_job_changes"
+
+    DATA_LOADED_SUCCESSFUL = "data_loaded_successful"
+    DATA_LOADED_FAILED = "data_loaded_failed"
 
     # Run algorithm subgraph
     USER_CONFIRMED_ALGORITHMS = "user_confirmed_algorithms"

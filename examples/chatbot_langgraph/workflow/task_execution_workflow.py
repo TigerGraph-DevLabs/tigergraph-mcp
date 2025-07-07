@@ -8,12 +8,12 @@ from langgraph.config import get_stream_writer
 from langgraph.prebuilt import ToolNode
 from langchain_core.tools import Tool
 
-from workflow.chat_session_state import ChatSessionState, FlowStatus
-from prompts import (
+from examples.chatbot_langgraph.workflow.chat_session_state import ChatSessionState, FlowStatus
+from examples.chatbot_langgraph.prompts import (
     PLAN_TOOL_EXECUTION_PROMPT,
 )
-from workflow.schema_creation_workflow import generate_schema_creation_subgraph
-from workflow.data_loading_workflow import generate_data_loading_subgraph
+from examples.chatbot_langgraph.workflow.schema_creation_workflow import generate_schema_creation_subgraph
+from examples.chatbot_langgraph.workflow.data_loading_workflow import generate_data_loading_subgraph
 
 
 async def generate_task_execution_subgraph(

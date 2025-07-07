@@ -12,7 +12,10 @@ from .graph.schema import (
     get_schema_tool,
     drop_graph_tool,
 )
-from .graph.data import load_data_tool
+from .graph.data import (
+    load_data_tool,
+    create_schema_and_load_tool,
+)
 from .graph.node import (
     add_node_tool,
     add_nodes_tool,
@@ -61,6 +64,7 @@ from .db.data_source import (
     preview_sample_data_tool,
 )
 
+
 def get_all_tools() -> list[Tool]:
     return (
         # Tools for Schema Operations
@@ -69,6 +73,7 @@ def get_all_tools() -> list[Tool]:
         + drop_graph_tool.tools
         # Tools for Data Operations
         + load_data_tool.tools
+        + create_schema_and_load_tool.tools
         # Tools for Node Operations
         + add_node_tool.tools
         + add_nodes_tool.tools
