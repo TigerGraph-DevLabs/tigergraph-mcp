@@ -10,7 +10,6 @@ class TigerGraphToolName(str, Enum):
     DROP_GRAPH = "graph__drop_graph"
     # Data Operations
     LOAD_DATA = "graph__load_data"
-    CREATE_SCHEMA_AND_LOAD = "graph__create_schema_and_load"
     # Node Operations
     ADD_NODE = "graph__add_node"
     ADD_NODES = "graph__add_nodes"
@@ -46,7 +45,6 @@ class TigerGraphToolName(str, Enum):
 
     # -------------------- Database Operations --------------------
     # GSQL Operations
-    GSQL = "gsql"
     LIST_METADATA = "list_metadata"
     # Data Source Operations
     CREATE_DATA_SOURCE = "db__create_data_source"

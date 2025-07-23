@@ -9,21 +9,6 @@ from tigergraph_mcp import TigerGraphToolName
 
 class TestGSQLTool(BaseFixture):
     @pytest.mark.asyncio
-    async def test_gsql_tool(self):
-        async with stdio_client(self.server_params) as (read, write):
-            async with ClientSession(read, write) as session:
-                await session.initialize()
-
-                result = await session.call_tool(
-                    TigerGraphToolName.GSQL,
-                    arguments={"command": "LS"},
-                )
-
-                result_text = str(result)
-                assert "✅ GSQL Response" in result_text
-                assert "Graphs" in result_text or "Vertex Types" in result_text
-
-    @pytest.mark.asyncio
     async def test_list_metadata_tool(self):
         async with stdio_client(self.server_params) as (read, write):
             async with ClientSession(read, write) as session:

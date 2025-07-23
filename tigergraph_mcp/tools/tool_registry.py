@@ -14,7 +14,6 @@ from .graph.schema import (
 )
 from .graph.data import (
     load_data_tool,
-    create_schema_and_load_tool,
 )
 from .graph.node import (
     add_node_tool,
@@ -53,7 +52,7 @@ from .graph.vector import (
     search_multi_vector_attributes_tool,
     search_top_k_similar_nodes_tool,
 )
-from .db.gsql import gsql_tool, list_metadata_tool
+from .db.gsql import list_metadata_tool
 from .db.data_source import (
     create_data_source_tool,
     update_data_source_tool,
@@ -73,7 +72,6 @@ def get_all_tools() -> list[Tool]:
         + drop_graph_tool.tools
         # Tools for Data Operations
         + load_data_tool.tools
-        + create_schema_and_load_tool.tools
         # Tools for Node Operations
         + add_node_tool.tools
         + add_nodes_tool.tools
@@ -107,7 +105,6 @@ def get_all_tools() -> list[Tool]:
         + search_multi_vector_attributes_tool.tools
         + search_top_k_similar_nodes_tool.tools
         # Tools for GSQL Operations
-        + gsql_tool.tools
         + list_metadata_tool.tools
         # Tools for Data Source Operations
         + create_data_source_tool.tools

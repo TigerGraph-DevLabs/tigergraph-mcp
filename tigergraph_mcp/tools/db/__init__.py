@@ -5,7 +5,7 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from .gsql import gsql, list_metadata
+from .gsql import list_metadata
 from .data_source import (
     create_data_source,
     update_data_source,
@@ -18,7 +18,6 @@ from .data_source import (
 
 __all__ = [
     # Tools for GSQL Operations
-    "gsql",
     "list_metadata",
     # Tools for Data Source Operations
     "create_data_source",

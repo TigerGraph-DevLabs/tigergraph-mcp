@@ -12,7 +12,6 @@ from .graph import (
     get_schema,
     drop_graph,
     load_data,
-    create_schema_and_load,
     add_node,
     add_nodes,
     remove_node,
@@ -42,7 +41,6 @@ from .graph import (
     search_top_k_similar_nodes,
 )
 from .db import (
-    gsql,
     list_metadata,
     create_data_source,
     update_data_source,
@@ -64,7 +62,6 @@ __all__ = [
     "drop_graph",
     # Tools for Data Operations
     "load_data",
-    "create_schema_and_load",
     # Tools for Node Operations
     "add_node",
     "add_nodes",
@@ -99,7 +96,6 @@ __all__ = [
     "search_multi_vector_attributes",
     "search_top_k_similar_nodes",
     # Tools for GSQL Operations
-    "gsql",
     "list_metadata",
     # Tools for Data Source Operations
     "create_data_source",

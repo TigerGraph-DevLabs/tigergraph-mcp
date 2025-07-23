@@ -106,8 +106,15 @@ async def load_data(
 ) -> List[TextContent]:
     try:
         graph = Graph.from_db(graph_name)
-        graph.load_data(loading_job_config)
-        message = f"✅ Data loaded successfully into graph '{graph_name}'."
+        result = graph.load_data(loading_job_config)
+
+        if "[WARNING]" in result:
+            message = (
+                f"✅ Data loaded successfully into graph '{graph_name}'. "
+                f"However, there are some warnings in the result. Full GSQL response: {result}"
+            )
+        else:
+            message = f"✅ Data loaded successfully into graph '{graph_name}'."
     except Exception as e:
         message = f"❌ Failed to load data into graph '{graph_name}': {str(e)}"
     return [TextContent(type="text", text=message)]

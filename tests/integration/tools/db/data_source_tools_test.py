@@ -128,10 +128,7 @@ class TestDataSourceTools(BaseFixture):
                         arguments={},
                     )
                     get_all_text = str(get_all_result)
-                    assert (
-                        "✅ Successfully retrieved all data sources:"
-                        in get_all_text
-                    )
+                    assert "✅ Successfully retrieved all data sources:" in get_all_text
                     assert "tmp_data_source_1" in get_all_text
                     assert "tmp_data_source_2" in get_all_text
 
@@ -144,3 +141,10 @@ class TestDataSourceTools(BaseFixture):
                     assert "✅ All data sources is dropped successfully." in str(
                         drop_all_result
                     )
+
+                    # Get all data sources
+                    get_all_result = await session.call_tool(
+                        TigerGraphToolName.GET_ALL_DATA_SOURCES,
+                        arguments={},
+                    )
+                    assert "ℹ️ No data sources found." in str(get_all_result)

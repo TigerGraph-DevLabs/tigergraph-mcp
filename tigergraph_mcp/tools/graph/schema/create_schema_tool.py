@@ -11,6 +11,7 @@ from mcp.types import Tool, TextContent
 from pydantic import BaseModel
 
 from tigergraphx import Graph
+from tigergraphx.core.tigergraph_api import TigerGraphAPIError
 
 from tigergraph_mcp.tools import TigerGraphToolName
 
@@ -93,11 +94,19 @@ Notes:
 ]
 
 
-async def create_schema(
-    graph_schema: Dict,
-) -> List[TextContent]:
+async def create_schema(graph_schema: Dict) -> List[TextContent]:
     try:
+        # Step 1: Attempt to create the graph
         graph = Graph(graph_schema)
+
+        # Step 2: Verify that the graph exists in the database
+        try:
+            _ = Graph.from_db(graph.name)
+        except TigerGraphAPIError as e:
+            raise Exception(
+                f"Graph '{graph.name}' not found in database after creation attempt: {str(e)}"
+            )
+
         message = f"✅ Schema for graph '{graph.name}' created successfully."
     except Exception as e:
         message = f"❌ Schema creation failed: {str(e)}."
