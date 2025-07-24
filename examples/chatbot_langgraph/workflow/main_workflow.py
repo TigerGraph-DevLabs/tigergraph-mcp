@@ -74,6 +74,7 @@ async def build_graph(
             TigerGraphToolName.RUN_QUERY,
         ]:
             run_algorithms_tools.append(tool)
+            general_tools.append(tool)
         elif tool_enum == TigerGraphToolName.GET_SCHEMA:
             load_data_tools.append(tool)
             run_algorithms_tools.append(tool)
