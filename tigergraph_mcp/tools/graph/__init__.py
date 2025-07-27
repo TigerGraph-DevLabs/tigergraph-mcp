@@ -12,7 +12,6 @@ from .schema import (
 )
 from .data import (
     load_data,
-    create_schema_and_load,
 )
 from .node import (
     add_node,
@@ -60,7 +59,6 @@ __all__ = [
     "drop_graph",
     # Tools for Data Operations
     "load_data",
-    "create_schema_and_load",
     # Tools for Node Operations
     "add_node",
     "add_nodes",

@@ -18,7 +18,6 @@ from .tools import (
     get_schema,
     drop_graph,
     load_data,
-    create_schema_and_load,
     add_node,
     add_nodes,
     remove_node,
@@ -46,7 +45,6 @@ from .tools import (
     search,
     search_multi_vector_attributes,
     search_top_k_similar_nodes,
-    gsql,
     list_metadata,
     create_data_source,
     update_data_source,
@@ -81,8 +79,6 @@ async def serve() -> None:
                 # Tools for Data Operations
                 case TigerGraphToolName.LOAD_DATA:
                     return await load_data(**arguments)
-                case TigerGraphToolName.CREATE_SCHEMA_AND_LOAD:
-                    return await create_schema_and_load(**arguments)
                 # Tools for Node Operations
                 case TigerGraphToolName.ADD_NODE:
                     return await add_node(**arguments)
@@ -142,8 +138,6 @@ async def serve() -> None:
                     return await search_multi_vector_attributes(**arguments)
                 case TigerGraphToolName.SEARCH_TOP_K_SIMILAR_NODES:
                     return await search_top_k_similar_nodes(**arguments)
-                case TigerGraphToolName.GSQL:
-                    return await gsql(**arguments)
                 case TigerGraphToolName.LIST_METADATA:
                     return await list_metadata(**arguments)
                 case TigerGraphToolName.CREATE_DATA_SOURCE:

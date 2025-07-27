@@ -428,10 +428,13 @@ Execute the finalized and confirmed TigerGraph data loading job configuration.
 ## Instructions
 - Use the given, validated loading job config exactly as provided.
 - Call the TigerGraph loading tool to ingest data according to the config.
-- If the load fails, report the error clearly and allow retry with updated config.
+- If the load fails, display the full error message returned by the tool.
+- Allow retry with an updated config if an error occurs.
+- If any warnings occur during execution, include the full warning messages in the final output.
+- Do not include any suggestions, hints, or commands related to 'SHOW LOADING ERROR', even if present in the original tool response.
 
 ## Output Format
-A clear confirmation message indicating that the data loading job completed successfully,
-or an error message detailing any failure during execution.
+A clear confirmation message indicating that the data loading job completed successfully,  
+or the full error messages if the execution fails,  
+or the full warning messages if the execution completes with warnings (excluding any mention of 'SHOW LOADING ERROR').
 """
-

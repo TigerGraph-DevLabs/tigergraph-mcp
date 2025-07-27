@@ -203,7 +203,7 @@ If you'd like to request additional tools for TigerGraph, feel free to create an
 
 > Note: TigerGraph-MCP is based on [TigerGraphX](https://github.com/tigergraph/tigergraphx), a high-level Python library that provides a unified, Python-native interface for TigerGraph. For more details about the APIs, refer to the [TigerGraphX API Reference](https://tigergraph-devlabs.github.io/tigergraphx/reference/introduction/).
 
-## Using TigerGraph-MCP Tools with LangChain or CrewAI
+## Using TigerGraph-MCP Tools with LangGraph or CrewAI
 
 TigerGraph-MCP tools are designed to work well with modern LLM-based assistants like GitHub Copilot Chat. Many tools in the MCP suite are straightforward, and LLMs often generate high-quality parameters for them automatically. However, for more complex operations—such as schema creation or data loading—the inputs often require nested Python dictionaries and adherence to best practices that may not be well captured in the model’s training data.
 

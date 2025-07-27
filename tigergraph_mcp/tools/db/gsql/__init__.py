@@ -5,11 +5,9 @@
 # Permission is granted to use, copy, modify, and distribute this software
 # under the License. The software is provided "AS IS", without warranty.
 
-from .gsql_tool import gsql
 from .list_metadata_tool import list_metadata
 
 
 __all__ = [
-    "gsql",
     "list_metadata",
 ]

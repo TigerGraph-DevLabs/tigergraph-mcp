@@ -41,14 +41,30 @@ async def run_assistant():
             if not session_initialized:
                 await _handle_stream_events(workflow, {}, config)
                 session_initialized = True
+                print(
+                    "\nUse triple quotes (''') to start multi-line input; end with an empty line. "
+                    'Type "exit", "quit", or "q" to quit.'
+                )
             else:
                 print("""
 ================================ Human Message =================================
 """)
                 user_input = input("User: ").strip()
+
+                if user_input == "'''":
+                    print("Entering multi-line input mode (end with a blank line):")
+                    lines = []
+                    while True:
+                        line = input()
+                        if line.strip() == "":
+                            break
+                        lines.append(line)
+                    user_input = "\n".join(lines).strip()
+
                 if user_input.lower() in ("exit", "quit", "q"):
                     print("Goodbye! 👋")
                     break
+
                 await _handle_stream_events(
                     workflow, Command(resume=user_input), config
                 )
