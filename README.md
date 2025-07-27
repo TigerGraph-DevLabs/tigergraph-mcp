@@ -21,8 +21,8 @@ TigerGraph **version 4.1 or higher** is required to run TigerGraph-MCP. You can 
 - **TigerGraph Savanna**: Use a managed TigerGraph instance in the cloud.
 - **TigerGraph Docker**: Run TigerGraph in a containerized environment.
 
-> ⚠️ **Minimum Required Version: TigerGraph 4.1**
-> ✅ **Recommended Version: TigerGraph 4.2+** to enable **TigerVector** and advanced hybrid retrieval features.
+> - ⚠️ **Minimum Required Version: TigerGraph 4.1**
+> - ✅ **Recommended Version: TigerGraph 4.2+** to enable **TigerVector** and advanced hybrid retrieval features.
 
 Download from the [TigerGraph Downloads page](https://dl.tigergraph.com/), and follow the [official documentation](https://docs.tigergraph.com/home/) for setup.
 
@@ -140,7 +140,7 @@ TG_PASSWORD=tigergraph
 ```
 
 > Replace `<YOUR OPENAI KEY>` with your actual OpenAI API key.
-> This configuration assumes you're running TigerGraph locally and logging in with a username and password. See the [Alternative Connection Setup Methods](https://tigergraph-devlabs.github.io/tigergraphx/reference/01_core/graph/#tigergraphx.core.graph.Graph.__init__) for additional ways to connect to TigerGraph.
+> This configuration assumes you're running TigerGraph locally and logging in with a username and password. See the [Alternative Connection Setup Methods](https://tigergraph-devlabs.github.io/tigergraph-mcp-utils/reference/01_core/graph/#tigergraphx.core.graph.Graph.__init__) for additional ways to connect to TigerGraph.
 
 ### 4. Create `.vscode/mcp.json` and Start TigerGraph-MCP
 
@@ -201,7 +201,7 @@ Click the Tools icon to view all available tools in TigerGraph-MCP.
 
 If you'd like to request additional tools for TigerGraph, feel free to create an issue in the repository.
 
-> Note: TigerGraph-MCP is based on [TigerGraphX](https://github.com/tigergraph/tigergraphx), a high-level Python library that provides a unified, Python-native interface for TigerGraph. For more details about the APIs, refer to the [TigerGraphX API Reference](https://tigergraph-devlabs.github.io/tigergraphx/reference/introduction/).
+> Note: TigerGraph-MCP is based on [TigerGraphX](https://github.com/tigergraph/tigergraphx), a high-level Python library that provides a unified, Python-native interface for TigerGraph. For more details about the APIs, refer to the [TigerGraphX API Reference](https://tigergraph-devlabs.github.io/tigergraph-mcp-utils/reference/01_core/graph/#tigergraphx.core.graph.Graph.__init__).
 
 ## Using TigerGraph-MCP Tools with LangGraph or CrewAI
 
@@ -217,7 +217,8 @@ This repository includes example implementations using both frameworks:
 
 1. Clone this repository and install the package with development dependencies.
 2. Activate your virtual environment.
-3. Choose one of the following interfaces to launch:
+3. Set up the `.env` file—see [3. Create the `.env` File](#3-create-the-env-file) for more information.
+4. Choose one of the following interfaces to launch:
 
 ---
 
