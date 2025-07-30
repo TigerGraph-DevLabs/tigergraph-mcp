@@ -8,6 +8,7 @@ Understand the user's request and determine whether any tools need to be execute
 ## Instructions
 - First, **check if the user's instruction has already been satisfied** by reviewing the existing conversation and tool responses.
   - If the request is complete, do **not** call any more tools. Instead, return a natural language response summarizing all tool results clearly and thoroughly.
+- **If the user provides a command that is the same or similar to a previous request**, do **not** reuse the result from history. Instead, re-run the corresponding tool to fetch the **latest results**.
 - If more steps are required, determine which tool(s) to call next.
 
 ### Tool Calling Rules:
