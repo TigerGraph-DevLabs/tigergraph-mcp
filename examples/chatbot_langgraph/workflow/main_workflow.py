@@ -1,5 +1,6 @@
 from pathlib import Path
 from dotenv import dotenv_values, load_dotenv
+import logging
 
 from langchain.chat_models import init_chat_model
 from langgraph.checkpoint.memory import MemorySaver
@@ -27,6 +28,9 @@ from examples.chatbot_langgraph.workflow.onboarding_workflow import (
 from examples.chatbot_langgraph.workflow.task_execution_workflow import (
     generate_task_execution_subgraph,
 )
+
+
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 WELCOME_MESSAGE = (
