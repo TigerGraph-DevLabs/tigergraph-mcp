@@ -7,7 +7,11 @@ from langchain_core.messages import (
 from langgraph.config import get_stream_writer
 from langgraph.types import interrupt
 
-from examples.chatbot_langgraph.workflow.chat_session_state import ChatSessionState, FlowStatus
+from examples.chatbot_langgraph.workflow.chat_session_state import (
+    ChatSessionState,
+    FlowStatus,
+    is_confirmed,
+)
 from examples.chatbot_langgraph.prompts import (
     GET_SCHEMA_PROMPT,
     LOAD_CONFIG_FILE_PROMPT,
@@ -97,15 +101,7 @@ async def generate_data_loading_subgraph(llm, load_data_agent):
     async def wait_for_user_review_job(state: ChatSessionState) -> ChatSessionState:
         human_review = interrupt("Please provide feedback")
         state.messages.append(HumanMessage(content=human_review))
-        if any(
-            kw in human_review.lower()
-            for kw in [
-                "confirmed",
-                "approved",
-                "go ahead",
-                "ok",
-            ]
-        ):
+        if is_confirmed(human_review):
             state.flow_status = FlowStatus.USER_CONFIRMED_JOB
         else:
             state.flow_status = FlowStatus.USER_REQUESTED_JOB_CHANGES

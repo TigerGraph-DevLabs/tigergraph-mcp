@@ -63,3 +63,43 @@ class ChatSessionState(BaseModel):
 class ToolCallResult(BaseModel):
     success: bool
     message: str
+
+
+CONFIRMED_KEYWORDS_LIST = [
+    "confirmed",
+    "confirm",
+    "approve",
+    "approved",
+    "go ahead",
+    "ok",
+    "okay",
+    "yes",
+    "yep",
+    "yeah",
+    "sure",
+    "sounds good",
+    "looks good",
+    "do it",
+    "fine",
+    "alright",
+    "let's do it",
+    "proceed",
+    "that's fine",
+    "that's good",
+    "works for me",
+    "i agree",
+    "all good",
+    "go for it",
+    "makes sense",
+    "cool",
+    "got it",
+    "understood",
+    "absolutely",
+    "you can continue",
+    "continue",
+    "no problem",
+]
+
+def is_confirmed(human_review: str) -> bool:
+    normalized = human_review.strip().lower()
+    return any(kw in normalized for kw in CONFIRMED_KEYWORDS_LIST)

@@ -3,7 +3,7 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langgraph.types import interrupt
 from langgraph.config import get_stream_writer
 
-from examples.chatbot_langgraph.workflow.chat_session_state import ChatSessionState, FlowStatus
+from examples.chatbot_langgraph.workflow.chat_session_state import ChatSessionState, FlowStatus, is_confirmed
 from examples.chatbot_langgraph.prompts import (
     SUGGEST_ALGORITHMS_PROMPT,
     EDIT_ALGORITHM_SELECTION_PROMPT,
@@ -33,10 +33,7 @@ async def generate_run_algorithms_subgraph(llm, run_algorithms_agent):
             "Please review and confirm the suggested algorithms, or request changes."
         )
         state.messages.append(HumanMessage(content=human_review))
-        if any(
-            kw in human_review.lower()
-            for kw in ["confirmed", "approved", "go ahead", "ok"]
-        ):
+        if is_confirmed(human_review):
             state.flow_status = FlowStatus.USER_CONFIRMED_ALGORITHMS
         else:
             state.flow_status = FlowStatus.USER_REQUESTED_ALGO_CHANGES

@@ -10,6 +10,7 @@ from langgraph.types import interrupt
 from examples.chatbot_langgraph.workflow.chat_session_state import (
     ChatSessionState,
     FlowStatus,
+    is_confirmed,
 )
 from examples.chatbot_langgraph.prompts import (
     CLASSIFY_COLUMNS_PROMPT,
@@ -64,15 +65,7 @@ async def generate_schema_creation_subgraph(llm, create_schema_agent):
     async def wait_for_user_review_schema(state: ChatSessionState) -> ChatSessionState:
         human_review = interrupt("Please provide feedback")
         state.messages.append(HumanMessage(content=human_review))
-        if any(
-            kw in human_review.lower()
-            for kw in [
-                "confirmed",
-                "approved",
-                "go ahead",
-                "ok",
-            ]
-        ):
+        if is_confirmed(human_review):
             state.flow_status = FlowStatus.USER_CONFIRMED_SCHEMA
         else:
             state.flow_status = FlowStatus.USER_REQUESTED_SCHEMA_CHANGES
