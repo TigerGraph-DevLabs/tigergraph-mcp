@@ -49,9 +49,11 @@ tools = [
 
 Use this tool to fetch a preview of the file contents (typically CSV or JSON). This is useful to inspect data before schema creation or loading.
 
+Note: For S3 paths, always use the `s3a://` protocol (e.g., `s3a://my-bucket/my-file.csv`) instead of `s3://`. This ensures compatibility and avoids preview failures.
+
 Example input:
 ```python
-path = "s3://my-bucket/my-file.csv"
+path = "s3a://my-bucket/my-file.csv"
 data_source_type = "s3"
 data_source = "my_data_source"
 data_format = "csv"

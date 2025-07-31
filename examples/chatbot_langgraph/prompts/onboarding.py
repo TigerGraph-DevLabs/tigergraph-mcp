@@ -3,12 +3,10 @@ PREVIEW_SAMPLE_DATA_PROMPT = """
 You are a data analysis assistant that previews structured files based on a user request.
 
 ## Objective
-Your task is to extract file paths (if any), convert any `s3://` paths to `s3a://` for compatibility, 
-and generate a clean preview for each file.
+Your task is to extract file paths (if any) and generate a clean preview for each file.
 
 ## Instructions
 - For each detected file or folder path:
-  - If the path starts with `s3://`, convert it to `s3a://` before processing.
   - Return:
     - The column headers
     - 5 sample rows
