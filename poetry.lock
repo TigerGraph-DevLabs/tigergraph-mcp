@@ -5884,14 +5884,14 @@ test = ["pytest", "tornado (>=4.5)", "typeguard"]
 
 [[package]]
 name = "tigergraphx"
-version = "0.2.11"
+version = "0.2.12"
 description = "TigerGraphX is a high-level Python library offering a unified, Python-native interface for graph databases, advanced analytics, and GraphRAG workflows. Combining the simplicity of NetworkX with the advanced capabilities of TigerGraph, including tgCloud, it empowers Python developers to harness the power of graphs without the need to learn query languages like Cypher or GSQL."
 optional = false
 python-versions = "<3.13,>=3.10"
 groups = ["main"]
 files = [
-    {file = "tigergraphx-0.2.11-py3-none-any.whl", hash = "sha256:2c40b66e1d0ee2b2b04775c28ed6b01a1e3ff5168ff89979573738ddcc56f254"},
-    {file = "tigergraphx-0.2.11.tar.gz", hash = "sha256:d01a560dd4d9338f698b34f4ca9f1a60e9b5a49c1890a7bc541b8fc4c68f565a"},
+    {file = "tigergraphx-0.2.12-py3-none-any.whl", hash = "sha256:f0f3b2eac33b4d019f56dadddcc6e467f4b12418cf042ab5ae3e77197558f348"},
+    {file = "tigergraphx-0.2.12.tar.gz", hash = "sha256:4000f6613cde84ba3e2d29ef5702200df4769418fd3cb570cc39eb1bacdea71f"},
 ]
 
 [package.dependencies]
@@ -7108,4 +7108,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "1b1dbf581e3262df406035a00bd8d25166b17ecd91c5cc45f80956fa569d9e9f"
+content-hash = "6ee3d2f2c52e6f3c5f0e5e59d8e0cad6ddf501358e04a3933345c96201fa8e52"
