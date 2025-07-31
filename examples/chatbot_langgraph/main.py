@@ -51,6 +51,10 @@ async def run_assistant():
 """)
                 user_input = input("User: ").strip()
 
+                # Skip if input is empty after stripping
+                if not user_input:
+                    continue
+
                 if user_input == "'''":
                     print("Entering multi-line input mode (end with a blank line):")
                     lines = []
