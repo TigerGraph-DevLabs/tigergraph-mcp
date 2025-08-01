@@ -18,15 +18,9 @@ from tigergraph_mcp.tools import TigerGraphToolName
 class GetNodeDataToolInput(BaseModel):
     """Input schema for retrieving node data from a TigerGraph graph."""
 
-    graph_name: str = Field(
-        ..., description="The name of the graph containing the node."
-    )
-    node_id: str | int = Field(
-        ..., description="The identifier of the node to retrieve data for."
-    )
-    node_type: Optional[str] = Field(
-        None, description="The type of the node (optional)."
-    )
+    graph_name: str = Field(..., description="The name of the graph containing the node.")
+    node_id: str | int = Field(..., description="The identifier of the node to retrieve data for.")
+    node_type: Optional[str] = Field(None, description="The type of the node (optional).")
 
 
 tools = [
@@ -55,11 +49,12 @@ async def get_node_data(
         graph = Graph.from_db(graph_name)
         node_data = graph.get_node_data(node_id, node_type)
         if node_data is None:
-            message = f"⚠️ Node '{node_id}' of type '{node_type or 'default'}' not found in graph '{graph_name}'."
-        else:
             message = (
-                f"✅ Node data for '{node_id}' in graph '{graph_name}': {node_data}"
+                f"⚠️ Node '{node_id}' of type '{node_type or 'default'}' "
+                "not found in graph '{graph_name}'."
             )
+        else:
+            message = f"✅ Node data for '{node_id}' in graph '{graph_name}': {node_data}"
     except Exception as e:
         message = f"❌ Failed to retrieve node data in graph '{graph_name}': {str(e)}"
 

@@ -36,7 +36,8 @@ class BFSToolInput(BaseModel):
 tools = [
     Tool(
         name=TigerGraphToolName.BREADTH_FIRST_SEARCH,
-        description="""Performs a Breadth-First Search (BFS) traversal on a TigerGraph graph using TigerGraphX.
+        description="""Performs a Breadth-First Search (BFS) traversal on a TigerGraph graph using
+TigerGraphX.
 
 Examples:
 ```python
@@ -50,7 +51,8 @@ Notes:
 - You can specify a single or multiple starting nodes.
 - `max_hops` controls how far the search will go from the starting nodes.
 - Optionally filter traversal by specifying `edge_types`.
-- Returns all reachable nodes up to the specified depth with a '_bfs_level' indicating distance from the start node.
+- Returns all reachable nodes up to the specified depth with a '_bfs_level' indicating distance
+  from the start node.
 - Results are returned as a list of dictionaries.
 """,
         inputSchema=BFSToolInput.model_json_schema(),

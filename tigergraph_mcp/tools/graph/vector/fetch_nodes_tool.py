@@ -27,7 +27,8 @@ class FetchNodesToolInput(BaseModel):
 tools = [
     Tool(
         name=TigerGraphToolName.FETCH_NODES,
-        description="""Fetches the embedding vectors for multiple nodes in a TigerGraph database using TigerGraphX.
+        description="""Fetches the embedding vectors for multiple nodes in a TigerGraph database
+using TigerGraphX.
 
 Example input:
 ```python
@@ -37,7 +38,8 @@ vector_attribute_name = "emb_1"  # Optional
 node_type = "Person"  # Optional
 ```
 
-If `vector_attribute_name` is not provided, no vectors will be retrieved, and a warning will be returned.
+If `vector_attribute_name` is not provided, no vectors will be retrieved, and a warning will
+be returned.
 """,
         inputSchema=FetchNodesToolInput.model_json_schema(),
     )

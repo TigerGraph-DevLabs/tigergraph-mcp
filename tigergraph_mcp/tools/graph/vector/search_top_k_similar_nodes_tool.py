@@ -11,9 +11,7 @@ class SearchTopKSimilarNodesInput(BaseModel):
     """Input schema for top-k similar node search using a reference node's vector."""
 
     graph_name: str = Field(..., description="The name of the graph to search in.")
-    node_id: str = Field(
-        ..., description="The ID of the source node to compare against."
-    )
+    node_id: str = Field(..., description="The ID of the source node to compare against.")
     vector_attribute_name: str = Field(
         ...,
         description="The name of the vector attribute used for similarity comparison.",
@@ -21,9 +19,7 @@ class SearchTopKSimilarNodesInput(BaseModel):
     node_type: Optional[str] = Field(
         None, description="The type of the node (optional, defaults to all node types)."
     )
-    limit: int = Field(
-        5, description="Number of most similar nodes to return (default is 5)."
-    )
+    limit: int = Field(5, description="Number of most similar nodes to return (default is 5).")
     return_attributes: Optional[List[str]] = Field(
         None, description="List of attributes to include in the results (optional)."
     )
@@ -33,7 +29,8 @@ tools = [
     Tool(
         name=TigerGraphToolName.SEARCH_TOP_K_SIMILAR_NODES,
         description="""
-Retrieves the top-k nodes most similar to a given node in a TigerGraph database based on the specified vector attribute.
+Retrieves the top-k nodes most similar to a given node in a TigerGraph database based on the
+specified vector attribute.
 
 Example input:
 ```python
@@ -74,6 +71,8 @@ async def search_top_k_similar_nodes(
             formatted = "\n".join(str(entry) for entry in results)
             message = f"🔍 Top-k similar nodes for '{node_id}':\n{formatted}"
     except Exception as e:
-        message = f"❌ Failed to search similar nodes for '{node_id}' in graph '{graph_name}': {str(e)}"
+        message = (
+            f"❌ Failed to search similar nodes for '{node_id}' in graph '{graph_name}': {str(e)}"
+        )
 
     return [TextContent(type="text", text=message)]

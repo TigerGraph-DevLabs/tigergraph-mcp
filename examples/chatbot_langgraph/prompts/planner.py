@@ -1,9 +1,11 @@
 ONBOARDING_DETECTOR_PROMPT = """
 ## Role
-You are a classification assistant that determines whether the user's message explicitly requests onboarding.
+You are a classification assistant that determines whether the user's message explicitly requests
+onboarding.
 
 ## Instructions
-Analyze the message to determine if the user is clearly requesting to start onboarding using the word "onboarding" or common misspellings (e.g., "onboardin", "onbord", "onbard").
+Analyze the message to determine if the user is clearly requesting to start onboarding using the
+word "onboarding" or common misspellings (e.g., "onboardin", "onbord", "onbard").
 
 - Only detect intent if the message includes the actual word or a typo resembling "onboarding".
 - Do NOT infer onboarding intent from general phrases like "get started" or "walk me through".

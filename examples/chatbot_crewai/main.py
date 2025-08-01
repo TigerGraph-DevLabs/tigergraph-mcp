@@ -32,9 +32,7 @@ class TigerGraphChatApp:
         """Starts a new CrewAI process if one isn't already running."""
         chat_session.set_flow_active(True)
         try:
-            env_dict: dict = dotenv_values(
-                dotenv_path=self.dotenv_path.expanduser().resolve()
-            )
+            env_dict: dict = dotenv_values(dotenv_path=self.dotenv_path.expanduser().resolve())
             with MCPServerAdapter(
                 StdioServerParameters(command="tigergraph-mcp", env=env_dict),
             ) as tools:
@@ -45,15 +43,15 @@ class TigerGraphChatApp:
                 )
                 flow.kickoff()
         except Exception as e:
-            chat_session.chat_ui.send(
-                f"An error occurred: {e}", user="Assistant", respond=False
-            )
+            chat_session.chat_ui.send(f"An error occurred: {e}", user="Assistant", respond=False)
         chat_session.set_flow_active(False)
 
     def send_welcome_message(self):
         """Sends the initial welcome message."""
         chat_session.chat_ui.send(
-            "**Welcome!** I'm your **TigerGraph Assistant**—here to help you design schemas, load and explore data, run queries, and more. Type what you'd like to do, or say **'onboarding'** to get started or **'help'** to see what I can do. 🚀",
+            "**Welcome!** I'm your **TigerGraph Assistant**—here to help you design schemas, "
+            "load and explore data, run queries, and more. Type what you'd like to do, or say "
+            "**'onboarding'** to get started or **'help'** to see what I can do. 🚀",
             user="Assistant",
             respond=False,
         )

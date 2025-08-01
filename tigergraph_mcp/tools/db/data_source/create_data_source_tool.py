@@ -62,7 +62,8 @@ data_source_type = "s3"
 access_key = None
 secret_key = None
 extra_config = {
-    "file.reader.settings.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
+    "file.reader.settings.fs.s3a.aws.credentials.provider":
+        "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
 }
 graph = "MyGraph"  # optional
 ```
@@ -94,9 +95,15 @@ async def create_data_source(
         )
 
         if isinstance(response, str) and f"Data source {name} is created" in response:
-            message = f"✅ Successfully created data source '{name}'.\n\nTigerGraph response:\n{response}"
+            message = (
+                f"✅ Successfully created data source '{name}'."
+                f"\n\nTigerGraph response:\n{response}"
+            )
         else:
-            message = f"⚠️ Attempted to create data source '{name}', but received an unexpected response:\n{response}"
+            message = (
+                f"⚠️ Attempted to create data source '{name}', "
+                f"but received an unexpected response:\n{response}"
+            )
 
     except Exception as e:
         message = f"❌ Error creating data source '{name}': {str(e)}"

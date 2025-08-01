@@ -22,9 +22,7 @@ class RemoveNodeToolInput(BaseModel):
         ..., description="The name of the graph from which the node will be removed."
     )
     node_id: str = Field(..., description="The identifier of the node to be removed.")
-    node_type: Optional[str] = Field(
-        None, description="The type of the node (optional)."
-    )
+    node_type: Optional[str] = Field(None, description="The type of the node (optional).")
 
 
 tools = [
@@ -53,12 +51,13 @@ async def remove_node(
         graph = Graph.from_db(graph_name)
         success = graph.remove_node(node_id, node_type)
         if success:
-            message = f"✅ Node '{node_id}' of type '{node_type or 'default'}' removed successfully from graph '{graph_name}'."
+            message = (
+                f"✅ Node '{node_id}' of type '{node_type or 'default'}' removed "
+                f"successfully from graph '{graph_name}'."
+            )
         else:
             message = f"⚠️ Node '{node_id}' not found in graph '{graph_name}'."
     except Exception as e:
-        message = (
-            f"❌ Failed to remove node '{node_id}' from graph '{graph_name}': {str(e)}"
-        )
+        message = f"❌ Failed to remove node '{node_id}' from graph '{graph_name}': {str(e)}"
 
     return [TextContent(type="text", text=message)]

@@ -10,7 +10,8 @@ from tigergraph_mcp import TigerGraphToolName
 
 @pytest.mark.skip(
     reason="""
-Skipped by default. To enable this test, you must manually place the following files in the TigerGraph server:
+Skipped by default. To enable this test, you must manually place the following files in the
+TigerGraph server:
 
 1. /home/tigergraph/data/person_data.csv
 Contents:

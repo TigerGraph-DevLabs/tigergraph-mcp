@@ -18,9 +18,7 @@ from tigergraph_mcp.tools import TigerGraphToolName
 class AddEdgesFromToolInput(BaseModel):
     """Input schema for adding multiple edges to a graph."""
 
-    graph_name: str = Field(
-        ..., description="The name of the graph where the edges will be added."
-    )
+    graph_name: str = Field(..., description="The name of the graph where the edges will be added.")
     ebunch_to_add: Sequence[List] = Field(
         ...,
         description="A list of (src, tgt) or (src, tgt, attribute_dict) edge tuples.",
@@ -28,9 +26,7 @@ class AddEdgesFromToolInput(BaseModel):
     src_node_type: Optional[str] = Field(
         None, description="The type of the source nodes (optional)."
     )
-    edge_type: Optional[str] = Field(
-        None, description="The type of the edge (optional)."
-    )
+    edge_type: Optional[str] = Field(None, description="The type of the edge (optional).")
     tgt_node_type: Optional[str] = Field(
         None, description="The type of the target nodes (optional)."
     )
@@ -101,7 +97,10 @@ async def add_edges(
         )
 
         if count:
-            message = f"✅ Successfully added {count} edge(s) of type '{edge_type or 'default'}' to graph '{graph_name}'."
+            message = (
+                f"✅ Successfully added {count} edge(s) of type "
+                f"'{edge_type or 'default'}' to graph '{graph_name}'."
+            )
         else:
             message = f"❌ Failed to add edges to graph '{graph_name}'."
     except Exception as e:

@@ -110,8 +110,7 @@ async def generate_data_loading_subgraph(llm, load_data_agent):
     async def confirm_loading_job(state: ChatSessionState) -> FlowStatus:
         if state.flow_status == FlowStatus.USER_REQUESTED_JOB_CHANGES:
             return FlowStatus.USER_REQUESTED_JOB_CHANGES
-        else:
-            return FlowStatus.USER_CONFIRMED_JOB
+        return FlowStatus.USER_CONFIRMED_JOB
 
     async def edit_loading_job(state: ChatSessionState) -> ChatSessionState:
         writer = get_stream_writer()

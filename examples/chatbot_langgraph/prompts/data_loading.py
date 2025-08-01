@@ -1,38 +1,40 @@
-LOAD_CONFIG_FILE_PROMPT="""
+LOAD_CONFIG_FILE_PROMPT = """
 ## Objective
-Your task is to generate the first step of a TigerGraph loading job config: define the `files` section with valid
-file aliases, file paths, and CSV parsing options — but **do not** define any node or edge mappings yet.
+Your task is to generate the first step of a TigerGraph loading job config: define the `files`
+section with valid
+file aliases, file paths, and CSV parsing options — but **do not** define any node or edge mappings
+yet.
 
 ## Instructions
 Follow these best practices with examples:
 
-- **File Reference Correctness**:  
-    Every file must have a unique alias and a valid path.  
-    Example:  
+- **File Reference Correctness**:
+    Every file must have a unique alias and a valid path.
+    Example:
     ```json
-    "file_alias": "f_customer",  
+    "file_alias": "f_customer",
     "file_path": "/data/input/customer.csv"
     ```
 
-- **S3 vs Local Paths**:  
+- **S3 vs Local Paths**:
     Use the correct format for paths:
     - Local file: starts with `/`, e.g. `"/data/files/file.csv"`
-    - S3 file: use `$<data source name>:s3://...`, e.g. `"$s3_main:s3://my-bucket/data.csv"`  
-    Example:  
+    - S3 file: use `$<data source name>:s3://...`, e.g. `"$s3_main:s3://my-bucket/data.csv"`
+    Example:
     ```json
     "file_path": "$s3_main:s3://tg-datasets/bank/transactions.csv"
     ```
 
-- **Single Alias per File**:  
+- **Single Alias per File**:
     Do not reuse or define multiple aliases for the same file path.
-    For instance, do not assign both `"f_orders"` and `"f_orders_v2"` to the same `/data/orders.csv`.
+    For instance, do not assign both `f_orders` and `f_orders_v2` to the same `/data/orders.csv`.
 
-- **CSV Parsing Configuration**:  
+- **CSV Parsing Configuration**:
     Always include parsing options with the following defaults unless overridden:
     - `separator`: set to `","`
     - `header`: set to `True` (first row is the header)
-    - `quote`: set to `"DOUBLE"`  
-    Example:
+    - `quote`: set to `"DOUBLE"`
+    Example
     ```json
     "csv_parsing_options": {
     "separator": ",",
@@ -70,12 +72,14 @@ files = [
 ```
 """
 
-LOAD_CONFIG_NODE_MAPPING_PROMPT="""
+LOAD_CONFIG_NODE_MAPPING_PROMPT = """
 ## Objective
-Your task is to add **node mappings** to the loading job config based on the previously defined `files` section.
+Your task is to add **node mappings** to the loading job config based on the previously defined
+`files` section.
 This is Step 2 in the loading job config process — do not add any edge mappings yet.
 
-You must analyze each file’s columns and detect **all** node types it contributes to based on the schema.
+You must analyze each file’s columns and detect **all** node types it contributes to based on the
+schema.
 This is critical for enabling correct edge mappings in the next step.
 
 ## Instructions
@@ -100,7 +104,8 @@ This is critical for enabling correct edge mappings in the next step.
     - Map its attributes: `name`, `age`.
 
 - **Map All Relevant Attributes**:
-    - Also map `email`, `phone`, and `account_id` — even if some might be edge-related later, they must be included if they match node types in the schema.
+    - Also map `email`, `phone`, and `account_id` — even if some might be edge-related later,
+      they must be included if they match node types in the schema.
 
 - **Multi-File Support for Node Types**:
     - File 2 also defines a node type: `Account`, using `account_id` as the primary key.
@@ -127,7 +132,8 @@ This is critical for enabling correct edge mappings in the next step.
     - Each of the 4 node types detected in File 1 must have its own node mapping block.
 
 - **Validate Column Existence**:
-    - Only map attributes that are present in the file’s header. Skip any schema attributes not in the file.
+    - Only map attributes that are present in the file’s header. Skip any schema attributes not
+      in the file.
 
 - **One Alias per File Path**:
     - Do not duplicate or reuse aliases for other files.
@@ -206,25 +212,31 @@ LOAD_CONFIG_EDGE_MAPPING_PROMPT = """
 ## Objective
 Use the schema to validate edge directionality, node types, and edge attributes.
 Only define edge mappings for files that include both the source and target node identifier columns.
-Do not fabricate mappings that cannot be grounded in both the file contents and the schema definition.
+Do not fabricate mappings that cannot be grounded in both the file contents and the schema
+definition.
 
 ## Instructions
 Follow these best practices when adding edge mappings:
 
 - **Interpret File Role**:
-    - Each file is typically either node-oriented (describes a node and its attributes) or edge-oriented (defines a relationship between two nodes).
-    - Node files may also embed foreign key references to other nodes — infer edges accordingly only if schema confirms the relationship.
+    - Each file is typically either node-oriented (describes a node and its attributes) or
+      edge-oriented (defines a relationship between two nodes).
+    - Node files may also embed foreign key references to other nodes — infer edges accordingly
+      only if schema confirms the relationship.
 
 - **Validate Edge Direction and Existence**:
     - Confirm the presence of an edge between two node types using the schema.
     - Ensure edge direction matches the schema: the edge must go from `from_type` → `to_type`.
 
 - **Do Not Guess Missing Columns**:
-    - Do not add an edge mapping unless both the source and target node identifier columns exist in the file.
-    - Do not define edge mappings based on attribute mappings alone — they must be grounded in actual node identifiers.
+    - Do not add an edge mapping unless both the source and target node identifier columns exist
+      in the file.
+    - Do not define edge mappings based on attribute mappings alone — they must be grounded in
+      actual node identifiers.
 
 - **Handle Multi-Node Columns**:
-    - If a file maps multiple nodes (e.g., `Individual`, `Email`, and `Phone`), check each pair of node columns for valid edges in the schema.
+    - If a file maps multiple nodes (e.g., `Individual`, `Email`, and `Phone`), check each pair of
+      node columns for valid edges in the schema.
     - Create separate edge mappings per valid node pair.
 
 - **Correct Mapping Format**:
@@ -240,7 +252,8 @@ Follow these best practices when adding edge mappings:
         }
     }
     ```
-    - Only include `attribute_column_mappings` keys present in the schema and backed by actual file columns.
+    - Only include `attribute_column_mappings` keys present in the schema and backed by actual file
+      columns.
 
 - **Support Mixed Files**:
     - Files that contain multiple edge relationships must declare each mapping separately.
@@ -251,12 +264,14 @@ Follow these best practices when adding edge mappings:
     - Use the correct file alias and attach mappings under the corresponding file block.
 
 - **Avoid Redundant or Invalid Mappings**:
-    - Do not add a mapping if the same edge has already been covered elsewhere unless this file uniquely contributes to it.
+    - Do not add a mapping if the same edge has already been covered elsewhere unless this file
+      uniquely contributes to it.
     - Avoid adding mappings for node-attribute pairs that are not valid edge endpoints.
 
 ## Output Format
 
-Provide a short introduction, followed by the complete Python code block with the final `loading_job_config`,
+Provide a short introduction, followed by the complete Python code block with the final
+`loading_job_config`,
 including node and edge mappings in each file.
 
 Example:
@@ -326,7 +341,8 @@ loading_job_config = {
 }
 ```
 
-Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok". Or tell me if you want to make any changes.
+Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok".
+Or tell me if you want to make any changes.
 """
 
 EDIT_LOADING_JOB_PROMPT = """
@@ -336,19 +352,22 @@ Refine the proposed TigerGraph loading job configuration based on a single round
 ## Instructions
 - Receive the current loading job configuration draft and the user's comments or change requests.
 - Apply the requested changes fully and accurately.
-- Follow TigerGraph loading best practices, ensuring mappings are consistent with the graph schema and data file contents.
+- Follow TigerGraph loading best practices, ensuring mappings are consistent with the graph schema
+  and data file contents.
 - Do not add speculative changes beyond what the user requested.
 - This task is **single-pass only** — do not ask for clarifications or initiate iterative feedback.
-- Output the revised loading job configuration in Python syntax, properly formatted and ready for review or execution.
+- Output the revised loading job configuration in Python syntax, properly formatted and ready for
+  review or execution.
 
 ## Output Format
-Provide a clear, user-friendly message with three parts: a short update message, the revised loading job config in Python syntax, and a confirmation request. 
+Provide a clear, user-friendly message with three parts: a short update message, the revised
+loading job config in Python syntax, and a confirmation request.
 Only show the results — **do not include any process or reasoning!**
 
 Follow this structure:
 
-1. Short update message  
-2. Python code block showing the revised config  
+1. Short update message
+2. Python code block showing the revised config
 3. Clear confirmation request
 
 Example:
@@ -423,11 +442,13 @@ Let me know if this looks correct or if you'd like to make additional edits.
 
 RUN_LOADING_JOB_PROMPT = """
 ## Role
-You are responsible for **executing the finalized data loading job in TigerGraph** using the confirmed loading job configuration provided by the user.
+You are responsible for **executing the finalized data loading job in TigerGraph** using the
+confirmed loading job configuration provided by the user.
 
 ## Objective
 1. Execute the data loading using the TigerGraph `LOAD_DATA` tool.
-2. If data loading fails, analyze the error message, automatically revise the config to fix the issue, and retry.
+2. If data loading fails, analyze the error message, automatically revise the config to fix the
+issue, and retry.
 3. Retry until success or no further meaningful correction is possible.
 
 ## Instructions

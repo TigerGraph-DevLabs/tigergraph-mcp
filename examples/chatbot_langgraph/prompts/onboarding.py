@@ -12,7 +12,7 @@ Your task is to extract file paths (if any) and generate a clean preview for eac
     - 5 sample rows
 - Use **markdown table format** for each preview.
 - Precede each table with a label such as: `**Preview for: <filename_or_path>**`.
-- If no valid path is found, return a short message:  
+- If no valid path is found, return a short message:
   `"⚠️ No valid file paths detected in the command."`
 - Do NOT add any explanation or commentary.
 

@@ -74,8 +74,7 @@ async def generate_schema_creation_subgraph(llm, create_schema_agent):
     async def handle_user_confirmation(state: ChatSessionState) -> FlowStatus:
         if state.flow_status == FlowStatus.USER_REQUESTED_SCHEMA_CHANGES:
             return FlowStatus.USER_REQUESTED_SCHEMA_CHANGES
-        else:
-            return FlowStatus.USER_CONFIRMED_SCHEMA
+        return FlowStatus.USER_CONFIRMED_SCHEMA
 
     async def edit_schema(state: ChatSessionState) -> ChatSessionState:
         writer = get_stream_writer()

@@ -69,9 +69,7 @@ async def run_assistant():
                     print("Goodbye! 👋")
                     break
 
-                await _handle_stream_events(
-                    workflow, Command(resume=user_input), config
-                )
+                await _handle_stream_events(workflow, Command(resume=user_input), config)
         except Exception as e:
             print(f"\n[Error] {type(e).__name__}: {str(e)}")
             break

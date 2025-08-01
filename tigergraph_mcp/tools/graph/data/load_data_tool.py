@@ -30,7 +30,8 @@ class LoadDataToolInput(BaseModel):
 tools = [
     Tool(
         name=TigerGraphToolName.LOAD_DATA,
-        description="""Loads data into a TigerGraph database using a defined loading job configuration.
+        description="""Loads data into a TigerGraph database using a defined loading job
+configuration.
 
 Example input:
 ```python
@@ -58,7 +59,8 @@ loading_job_config = {
         },
         {
             "file_alias": "f_friendship",
-            "file_path": "$s1:s3://bucket-name/path/to/friendship_data.csv",  # S3 file example with data source prefix
+            # S3 file example with data source prefix
+            "file_path": "$s1:s3://bucket-name/path/to/friendship_data.csv",
             "node_mappings": [
                 {
                     "target_name": "Person",
@@ -90,11 +92,14 @@ loading_job_config = {
 
 Notes:
 
-* Use `"file_path"` as the absolute path to a local file on the TigerGraph server, or in the form of `"$<data_source_name>:<s3_uri>"` for S3 paths.
-* Ensure the specified data source (`s1` in this case) is already created and accessible by TigerGraph.
-* The "quote" style can be either "DOUBLE" or "SINGLE", with "DOUBLE" being the most common.
-* In `"attribute_column_mappings"`, the **key** is the attribute name in the **graph schema**, and the **value** is the corresponding column name in the **data file**.
-  """,
+- Use `"file_path"` as the absolute path to a local file on the TigerGraph server, or in the form
+  of `"$<data_source_name>:<s3_uri>"` for S3 paths.
+- Ensure the specified data source (`s1` in this case) is already created and accessible by
+  TigerGraph.
+- The "quote" style can be either "DOUBLE" or "SINGLE", with "DOUBLE" being the most common.
+- In `"attribute_column_mappings"`, the **key** is the attribute name in the **graph schema**,
+  and the **value** is the corresponding column name in the **data file**.
+""",
         inputSchema=LoadDataToolInput.model_json_schema(),
     )
 ]

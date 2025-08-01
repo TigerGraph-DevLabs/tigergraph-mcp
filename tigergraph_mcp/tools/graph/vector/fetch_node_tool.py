@@ -19,15 +19,14 @@ class FetchNodeToolInput(BaseModel):
         None,
         description="The name of the vector attribute to fetch from the node (optional).",
     )
-    node_type: Optional[str] = Field(
-        None, description="The type of the node (optional)."
-    )
+    node_type: Optional[str] = Field(None, description="The type of the node (optional).")
 
 
 tools = [
     Tool(
         name=TigerGraphToolName.FETCH_NODE,
-        description="""Fetches the embedding vector of a node in a TigerGraph database using TigerGraphX.
+        description="""Fetches the embedding vector of a node in a TigerGraph database using
+TigerGraphX.
 
 Example input:
 ```python
@@ -37,7 +36,8 @@ vector_attribute_name = "emb_1"  # Optional
 node_type = "Person"  # Optional
 ```
 
-If `vector_attribute_name` is not provided, no vector will be retrieved, and a warning will be returned.
+If `vector_attribute_name` is not provided, no vector will be retrieved, and
+a warning will be returned.
 """,
         inputSchema=FetchNodeToolInput.model_json_schema(),
     )
@@ -61,9 +61,17 @@ async def fetch_node(
             ]
         vector = graph.fetch_node(node_id, vector_attribute_name, node_type)
         if vector is None:
-            message = f"⚠️ Vector attribute '{vector_attribute_name}' not found for node '{node_id}' in graph '{graph_name}'."
+            message = (
+                f"⚠️ Vector attribute '{vector_attribute_name}' not found for "
+                f"node '{node_id}' in graph '{graph_name}'."
+            )
         else:
-            message = f"📦 Retrieved vector for node '{node_id}' (type: {node_type or 'default'}): {vector}"
+            message = (
+                f"📦 Retrieved vector for node '{node_id}' "
+                f"(type: {node_type or 'default'}): {vector}"
+            )
     except Exception as e:
-        message = f"❌ Failed to fetch node vector for '{node_id}' in graph '{graph_name}': {str(e)}"
+        message = (
+            f"❌ Failed to fetch node vector for '{node_id}' in graph '{graph_name}': {str(e)}"
+        )
     return [TextContent(type="text", text=message)]

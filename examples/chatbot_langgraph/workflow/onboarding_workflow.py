@@ -50,12 +50,11 @@ async def generate_onboarding_subgraph(
             db.get_data_source(S3_ANONYMOUS_SOURCE_NAME)
         except Exception:
             writer({"status": "🔧 Creating S3 data source..."})
+            provider = "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
             db.create_data_source(
                 S3_ANONYMOUS_SOURCE_NAME,
                 data_source_type="s3",
-                extra_config={
-                    "file.reader.settings.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
-                },
+                extra_config={"file.reader.settings.fs.s3a.aws.credentials.provider": provider},
             )
 
         # Final message to user
@@ -113,8 +112,7 @@ async def generate_onboarding_subgraph(
     async def evaluate_preview_result(state: ChatSessionState) -> FlowStatus:
         if state.flow_status == FlowStatus.PREVIEW_FAILED:
             return FlowStatus.PREVIEW_FAILED
-        else:
-            return FlowStatus.PREVIEW_SUCCESSFUL
+        return FlowStatus.PREVIEW_SUCCESSFUL
 
     async def prompt_file_paths_retry(state: ChatSessionState) -> ChatSessionState:
         message = AIMessage(content=DATA_PREVIEW_ERROR_MESSAGE)
@@ -127,13 +125,9 @@ async def generate_onboarding_subgraph(
         llm, create_schema_agent
     )
 
-    call_data_loading_subgraph = await generate_data_loading_subgraph(
-        llm, load_data_agent
-    )
+    call_data_loading_subgraph = await generate_data_loading_subgraph(llm, load_data_agent)
 
-    call_run_algorithms_subgraph = await generate_run_algorithms_subgraph(
-        llm, run_algorithms_agent
-    )
+    call_run_algorithms_subgraph = await generate_run_algorithms_subgraph(llm, run_algorithms_agent)
 
     async def route_schema_creation_status(state: ChatSessionState) -> FlowStatus:
         if state.flow_status == FlowStatus.SCHEMA_CREATED_SUCCESSFUL:

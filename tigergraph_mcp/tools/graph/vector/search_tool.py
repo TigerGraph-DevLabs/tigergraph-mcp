@@ -11,9 +11,7 @@ class SearchToolInput(BaseModel):
     """Input schema for vector-based node search."""
 
     graph_name: str = Field(..., description="The name of the graph to search in.")
-    data: List[float] = Field(
-        ..., description="The query vector to search for similar nodes."
-    )
+    data: List[float] = Field(..., description="The query vector to search for similar nodes.")
     vector_attribute_name: str = Field(
         ..., description="The name of the vector attribute to search against."
     )
@@ -25,7 +23,8 @@ class SearchToolInput(BaseModel):
     )
     return_attributes: Optional[str | List[str]] = Field(
         None,
-        description="Attributes to return with the result (optional, can be a single string or list of strings).",
+        description="Attributes to return with the result (optional, can be a single string or "
+        "list of strings).",
     )
     candidate_ids: Optional[Set[str]] = Field(
         None, description="Specific node IDs to limit the search to (optional)."
@@ -35,7 +34,8 @@ class SearchToolInput(BaseModel):
 tools = [
     Tool(
         name=TigerGraphToolName.SEARCH,
-        description="""Searches for nodes most similar to a given query vector in a TigerGraph database using TigerGraphX.
+        description="""Searches for nodes most similar to a given query vector in a TigerGraph
+database using TigerGraphX.
 
 Example input:
 ```python
@@ -48,7 +48,8 @@ return_attributes = ["name", "gender"]
 candidate_ids = None  # Optional
 ```
 
-This tool performs a vector similarity search and returns the most similar nodes based on the given vector.
+This tool performs a vector similarity search and returns the most similar nodes based on the given
+vector.
 """,
         inputSchema=SearchToolInput.model_json_schema(),
     )

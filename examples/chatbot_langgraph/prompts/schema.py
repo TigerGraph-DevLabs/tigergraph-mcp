@@ -1,16 +1,20 @@
 CLASSIFY_COLUMNS_PROMPT = """
 ## Role
-Analyze the provided data tables and classify each column as one of: `primary_id`, `node`, or `attribute`. Also infer the data type.
+Analyze the provided data tables and classify each column as one of: `primary_id`, `node`,
+or `attribute`. Also infer the data type.
 
-> **Note:** Do not define node types or edge types at this stage. This step focuses only on per-column classification and type inference.
-> The output should be structured per file and include every column except headers and null-only columns.
+> **Note:** Do not define node types or edge types at this stage. This step focuses only on
+per-column classification and type inference.
+> The output should be structured per file and include every column except headers and null-only
+columns.
 
 ## Objective
 1. Automatically infer the data type of each column.
 2. Identify primary keys (columns with unique values) and mark them as `primary_id`.
 3. For non-primary ID columns:
     - If the column is a reference to another entity or table → mark as `node`.
-    - If the column contains a small number of repeated values or is not STRING/INT/UINT → mark as `attribute`.
+    - If the column contains a small number of repeated values or is not STRING/INT/UINT →
+      mark as `attribute`.
 
 ## Instructions
 - **Step 1: Infer data type**
@@ -22,32 +26,37 @@ Analyze the provided data tables and classify each column as one of: `primary_id
 
 - **Step 3: For remaining columns, classify as `node` or `attribute`**
 
-  **Heuristic-Based Rule**  
-  - Use a combination of data type, value variety, row coverage, and data format characteristics to decide if a column represents a separate entity (`node`) or a property (`attribute`).
+  **Heuristic-Based Rule**
+  - Use a combination of data type, value variety, row coverage, and data format characteristics to
+    decide if a column represents a separate entity (`node`) or a property (`attribute`).
 
-  **Type Constraint**  
+  **Type Constraint**
   - Only consider columns with type `STRING`, `INT`, or `UINT` as potential `node` candidates.
 
-  **Node Classification Heuristics**  
+  **Node Classification Heuristics**
   - Classify a column as `node` if:
-    - It has a moderate to high variety of values (roughly estimated ≥10% unique values based on sample or distribution),
+    - It has a moderate to high variety of values (roughly estimated ≥10% unique values based on
+      sample or distribution),
     - It appears in most or all rows (i.e., column is not sparse or mostly null),
     - It shows consistent formatting or length patterns typical of entity identifiers (e.g., IDs),
     - And it is not already marked as a `primary_id`.
 
-  **Attribute Defaults**  
+  **Attribute Defaults**
   - If a column has:
     - Low uniqueness (many repeated values),
     - Or a data type not suitable for nodes (e.g. `FLOAT`, `DOUBLE`, `DATETIME`, `BOOL`),
     - Or sparse or inconsistent population,
     → classify it as `attribute`.
 
-  **Avoid Bias by Column Name**  
-  - Do not use column names directly to influence classification; rely only on structural and content heuristics.
+  **Avoid Bias by Column Name**
+  - Do not use column names directly to influence classification; rely only on structural and
+    content heuristics.
 
-  **Practical Examples**  
-  - Columns like `email`, `device_id` with moderate to high uniqueness and consistent format should be classified as `node`.
-  - Columns like `country`, `state`, or `department` with low uniqueness should be classified as `attribute`.
+  **Practical Examples**
+  - Columns like `email`, `device_id` with moderate to high uniqueness and consistent format should
+    be classified as `node`.
+  - Columns like `country`, `state`, or `department` with low uniqueness should be classified as
+    `attribute`.
 
 ## Output Format
 
@@ -116,11 +125,13 @@ Be thorough and conservative:
 
 DRAFT_SCHEMA_PROMPT = """
 ## Role
-Using classified columns and table data, draft a complete TigerGraph schema including graph name, node types, and edge types following best practices.
+Using classified columns and table data, draft a complete TigerGraph schema including graph name,
+node types, and edge types following best practices.
 
 ## Objective
 Your task is to:
-1. Define node types with primary IDs and attributes based on classified columns and their originating tables.
+1. Define node types with primary IDs and attributes based on classified columns and their
+originating tables.
 2. Define edge types using table relationships and classified nodes.
 3. Include all relationship-specific attributes.
 4. Specify edge directionality.
@@ -150,7 +161,8 @@ Assume the user previously provided the following data tables:
 
 ### Example Column Classification
 
-Assume columns have been classified earlier as primary_id, node, or attribute with data types, for example:
+Assume columns have been classified earlier as primary_id, node, or attribute with data types,
+for example:
 
 - Employee:
   - employee_id: primary_id, STRING
@@ -169,18 +181,21 @@ Assume columns have been classified earlier as primary_id, node, or attribute wi
 
 #### Node Types
 
-- Nodes should have a unique primary ID, usually the primary_id column or inferred node column used as ID.
+- Nodes should have a unique primary ID, usually the primary_id column or inferred node column used
+  as ID.
 - Include the primary ID as part of the node’s attributes with its data type.
 - Attributes come only from columns in the node’s own table (the one defining the primary ID).
 - If a column is classified as a separate node, define it accordingly.
 
 #### Edge Inference
 
-- **Reference columns** (e.g., `manager_id` in the Employee table) imply an edge between two nodes of the same type:
+- **Reference columns** (e.g., `manager_id` in the Employee table) imply an edge between two nodes
+  of the same type:
   - `manages` from `Employee` → `Employee` is a **directed** edge.
 
 - **Join tables** (e.g., `Employee_Project`) imply edges between two different node types:
-  - `works_on_project` from `Employee` ↔ `Project` is an **undirected** edge with `role`, `start_date`.
+  - `works_on_project` from `Employee` ↔ `Project` is an **undirected** edge with `role`,
+    `start_date`.
 
 - **Attribute columns linked to unique fields** (e.g., `email`) imply a connection to another node:
   - `has_email` from `Employee` ↔ `Email` is an **undirected** edge.
@@ -197,10 +212,12 @@ Assume columns have been classified earlier as primary_id, node, or attribute wi
 #### Directionality
 
 - **Directed**:
-  - Only apply directionality when the source and target are the **same node type** and the relationship is hierarchical or asymmetric.
+  - Only apply directionality when the source and target are the **same node type** and the
+    relationship is hierarchical or asymmetric.
   - Example: `Employee → Employee` via `manager_id` → use a **directed** edge (`manages`).
 
-- For edges between **different node types**, do **not specify direction** unless the relationship explicitly implies a flow of control or hierarchy.
+- For edges between **different node types**, do **not specify direction** unless the relationship
+  explicitly implies a flow of control or hierarchy.
   - Example: `Employee` ↔ `Project` via `works_on_project` is **undirected**.
 
 #### Graph Naming
@@ -211,13 +228,15 @@ Assume columns have been classified earlier as primary_id, node, or attribute wi
 - Use **PascalCase** (no spaces or underscores).
 
 ## Output Format
-Provide a clear, user-friendly message with three parts: a short introduction, a Markdown schema proposal, and a confirmation request.  
+Provide a clear, user-friendly message with three parts: a short introduction, a Markdown schema
+proposal, and a confirmation request.
 Only show the results—**do not include any process or reasoning!**
 
 Follow this structure:
 
-1. Short introduction  
-2. Markdown schema proposal (include graph name, all node types with primary IDs and attributes, and edge types)  
+1. Short introduction
+2. Markdown schema proposal (include graph name, all node types with primary IDs and attributes,
+and edge types)
 3. Clear confirmation request
 
 Example:
@@ -248,7 +267,8 @@ WorkforceGraph
 
 - **has_email** (FROM: Employee, TO: Email, undirected)
 
-Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok". Or let me know if you'd like to revise anything.
+Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok".
+Or let me know if you'd like to revise anything.
 
 """
 
@@ -260,24 +280,30 @@ Refine the proposed TigerGraph schema based on a single round of user feedback.
 
 - Receive the initial schema proposal along with the user's comments or change requests.
 - Apply the requested changes accurately and completely.
-- Use TigerGraph best practices to ensure structural consistency—for example, when adding a new node type,
-    consider whether related edge types should also be introduced, if logically implied by the context.
-- Avoid overreaching: only make logical inferences that enhance schema coherence, not speculative or structural overhauls.
+- Use TigerGraph best practices to ensure structural consistency—for example, when adding a
+  new node type,
+    consider whether related edge types should also be introduced, if logically implied by the
+    context.
+- Avoid overreaching: only make logical inferences that enhance schema coherence, not speculative
+  or structural overhauls.
 
-⚠️ This task is **single-pass only** — do not ask follow-up questions or prompt the user for clarification.
+⚠️ This task is **single-pass only** — do not ask follow-up questions or prompt the user for
+clarification.
 Validation, iteration, and confirmation will occur in downstream steps.
 
 - Output the revised schema in well-formatted Markdown.
 
 ## Output Format
 
-Provide a clear, user-friendly message with three parts: a short introduction, a Markdown schema proposal, and a confirmation request. 
+Provide a clear, user-friendly message with three parts: a short introduction, a Markdown schema
+proposal, and a confirmation request.
 Only show the results—**do not include any process or reasoning!**
 
 Follow this structure:
 
-1. Short introduction  
-2. Markdown schema proposal (include graph name, node types with primary IDs and attributes, and edge types)  
+1. Short introduction
+2. Markdown schema proposal (include graph name, node types with primary IDs and attributes,
+and edge types)
 3. Clear confirmation request
 
 Example:
@@ -304,7 +330,8 @@ EmployeeGraph
 - manages (FROM: employee, TO: employee, directed)
     - level: STRING
 
-Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok". Or tell me if you want to make any changes.
+Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok".
+Or tell me if you want to make any changes.
 """
 
 CREATE_SCHEMA_PROMPT = """
@@ -321,9 +348,11 @@ GET_SCHEMA_PROMPT = """
 Retrieve the schema of a graph from TigerGraph using the provided graph name.
 
 ## Instructions
-Based on the provided graph name, you will retrieve and display the schema of the corresponding graph in TigerGraph. Ensure that the user has provided the correct graph name.
+Based on the provided graph name, you will retrieve and display the schema of the corresponding
+graph in TigerGraph. Ensure that the user has provided the correct graph name.
 
 ## Output Format
-The schema of the graph, including details such as node types, edge types, and their respective attributes.
+The schema of the graph, including details such as node types, edge types, and their respective
+attributes.
 
 """

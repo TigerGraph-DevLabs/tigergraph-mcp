@@ -3,12 +3,14 @@ from .queries import WCC_QUERY, PAGERANK_QUERY
 SUGGEST_ALGORITHMS_PROMPT = """
 ## Objective
 
-Suggest suitable graph algorithms for the user to run, based on the current TigerGraph schema. Provide a brief explanation of each algorithm’s purpose and when it is applicable.
+Suggest suitable graph algorithms for the user to run, based on the current TigerGraph schema.
+Provide a brief explanation of each algorithm’s purpose and when it is applicable.
 
 ## Instructions
 
 1. **Inspect the graph schema**:
-   - Identify all edge types along with their direction (directed or undirected) and source/target vertex types.
+   - Identify all edge types along with their direction (directed or undirected) and source/target
+     vertex types.
 
 2. **Suggest WCC (Weakly Connected Components)** if:
    - The schema contains at least one undirected edge type.
@@ -25,9 +27,11 @@ Suggest suitable graph algorithms for the user to run, based on the current Tige
    - A short, user-friendly explanation of what it does
    - The kind of insight or output the user might expect
 
-6. If no algorithms are applicable, reply with a short explanation that nothing is recommended based on current schema.
+6. If no algorithms are applicable, reply with a short explanation that nothing is recommended based
+on current schema.
 
-7. End the message by asking the user to confirm if the suggested algorithms look good, or if they want to revise.
+7. End the message by asking the user to confirm if the suggested algorithms look good, or if they
+want to revise.
 
 ## Output Format
 
@@ -39,12 +43,15 @@ Respond in natural language. Examples:
 Based on your graph structure, I suggest the following algorithms:
 
 ✅ **WCC (Weakly Connected Components)**
-Helps identify clusters of interconnected nodes based on undirected edges. Useful for finding isolated communities or disconnected parts of your graph.
+Helps identify clusters of interconnected nodes based on undirected edges. Useful for finding
+isolated communities or disconnected parts of your graph.
 
 ✅ **PageRank**
-Ranks nodes by importance using link structure. Commonly used to find influential or highly connected nodes in a network.
+Ranks nodes by importance using link structure. Commonly used to find influential or highly
+connected nodes in a network.
 
-Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok". Or let me know if you'd like to revise anything.
+Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok".
+Or let me know if you'd like to revise anything.
 
 ```
 
@@ -54,9 +61,11 @@ Please confirm if this looks good by replying with "confirmed", "approved", "go 
 Based on your graph structure, I suggest the following algorithm:
 
 ✅ **WCC (Weakly Connected Components)**
-Helps identify clusters of interconnected nodes based on undirected edges. Useful for finding isolated communities or disconnected parts of your graph.
+Helps identify clusters of interconnected nodes based on undirected edges. Useful for finding
+isolated communities or disconnected parts of your graph.
 
-Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok". Or let me know if you'd like to revise anything.
+Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok".
+Or let me know if you'd like to revise anything.
 
 ```
 
@@ -65,20 +74,24 @@ Please confirm if this looks good by replying with "confirmed", "approved", "go 
 
 There are currently no suitable algorithms to run based on the structure of your graph.
 
-Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok". Or let me know if you'd like to revise anything.
+Please confirm if this looks good by replying with "confirmed", "approved", "go ahead", or "ok".
+Or let me know if you'd like to revise anything.
 
 ```
 """
 EDIT_ALGORITHM_SELECTION_PROMPT = """
 ## Objective
 
-Revise the algorithm selections (WCC and PageRank) based on the user's feedback and confirm the updated choices.
+Revise the algorithm selections (WCC and PageRank) based on the user's feedback and confirm the
+updated choices.
 
 ## Instructions
 
 - First, interpret the user's latest input to adjust the algorithm selection.
-  - If the feedback clearly includes or excludes WCC and/or PageRank, update the selection accordingly.
-  - If the feedback is ambiguous, incomplete, or includes unsupported algorithms, politely explain that only WCC and PageRank are currently supported.
+  - If the feedback clearly includes or excludes WCC and/or PageRank, update the selection
+    accordingly.
+  - If the feedback is ambiguous, incomplete, or includes unsupported algorithms, politely explain
+    that only WCC and PageRank are currently supported.
 - Show the updated selection to the user.
 - Ask for final confirmation using accepted phrases: "confirmed", "approved", "go ahead", or "ok".
 
@@ -93,7 +106,8 @@ Here’s your current selection:
 ✅ WCC: Yes / No
 ✅ PageRank: Yes / No
 
-Please confirm to proceed by replying with "confirmed", "approved", "go ahead", or "ok". Or let me know if you'd like to revise anything.
+Please confirm to proceed by replying with "confirmed", "approved", "go ahead", or "ok".
+Or let me know if you'd like to revise anything.
 
 ```
 """
@@ -105,8 +119,8 @@ Create, install, and run the selected graph algorithms (WCC and/or PageRank) on 
 
 ## Instructions
 
-1. If no algorithms are selected, do not run any queries.  
-   Simply return:  
+1. If no algorithms are selected, do not run any queries.
+   Simply return:
    "No algorithms were selected. Onboarding is now complete."
 
 2. For each selected algorithm, perform the following steps using tool calls:

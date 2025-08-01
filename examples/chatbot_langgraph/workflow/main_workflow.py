@@ -144,10 +144,9 @@ async def build_graph(
     async def route_user_intent(state: ChatSessionState) -> FlowStatus:
         if state.flow_status == FlowStatus.TOOL_EXECUTION_READY:
             return FlowStatus.TOOL_EXECUTION_READY
-        elif state.flow_status == FlowStatus.ONBOARDING_REQUIRED:
+        if state.flow_status == FlowStatus.ONBOARDING_REQUIRED:
             return FlowStatus.ONBOARDING_REQUIRED
-        else:
-            return FlowStatus.HELP_REQUESTED
+        return FlowStatus.HELP_REQUESTED
 
     async def handle_help_request(state: ChatSessionState) -> ChatSessionState:
         message = AIMessage(content=_get_help_message(tools))
