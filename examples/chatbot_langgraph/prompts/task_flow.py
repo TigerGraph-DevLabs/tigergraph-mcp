@@ -56,6 +56,8 @@ select and execute the next appropriate tool(s), following the correct order.
   Do not ask any additional questions beyond those listed above.
   Do not suggest a schema, as this will be handled by the `trigger_graph_schema_creation` tool.
 
+- Don't start data loading unless the user explicitly asks for it.
+
 ### Rules for Loading Data:
 
 - To load data into a graph, ensure the following prerequisites are met:
