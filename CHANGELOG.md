@@ -1,6 +1,19 @@
 # Changelog
 
 ---
+### 0.2.0
+- doc: add LangGraph chatbot usage examples
+- feat: format code to comply with ruff lint rules (E, W, F, N, R)
+- feat: upgrade TigerGraph to 0.2.12 to enable reserved keyword validation in schema
+- feat: enforce use of 's3a' protocol for S3 files in preview sample data tool
+- feat: add more confirmation keywords and helper method for detection
+- feat: skip empty user input in single-line mode during assistant interaction
+- feat: enhance RUN_LOADING_JOB_PROMPT to improve data loading stability
+- chore: suppress httpx INFO logs to reduce console noise during LLM calls
+- feat: ensure tools are re-executed for repeated user commands to fetch latest results
+- fix: update metadata listing tool description for accuracy and clarity
+- doc: update README.md
+
 ### 0.1.6
 feat: add MCP tool to create schema and load data into TigerGraph
 
