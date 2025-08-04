@@ -18,17 +18,13 @@ from tigergraph_mcp.tools import TigerGraphToolName
 class AddEdgeToolInput(BaseModel):
     """Input schema for adding an edge to a TigerGraph graph."""
 
-    graph_name: str = Field(
-        ..., description="The name of the graph where the edge will be added."
-    )
+    graph_name: str = Field(..., description="The name of the graph where the edge will be added.")
     src_node_id: str | int = Field(..., description="The ID of the source node.")
     tgt_node_id: str | int = Field(..., description="The ID of the target node.")
     src_node_type: Optional[str] = Field(
         None, description="The type of the source node (optional)."
     )
-    edge_type: Optional[str] = Field(
-        None, description="The type of the edge (optional)."
-    )
+    edge_type: Optional[str] = Field(None, description="The type of the edge (optional).")
     tgt_node_type: Optional[str] = Field(
         None, description="The type of the target node (optional)."
     )
@@ -80,7 +76,13 @@ async def add_edge(
             tgt_node_type,
             **attributes,
         )
-        message = f"✅ Edge from '{src_node_id}' to '{tgt_node_id}' (EdgeType: {edge_type or 'default'}) added successfully to graph '{graph_name}'."
+        message = (
+            f"✅ Edge from '{src_node_id}' to '{tgt_node_id}' (EdgeType: {edge_type or 'default'})"
+            f"added successfully to graph '{graph_name}'."
+        )
     except Exception as e:
-        message = f"❌ Failed to add edge from '{src_node_id}' to '{tgt_node_id}' in graph '{graph_name}': {str(e)}"
+        message = (
+            f"❌ Failed to add edge from '{src_node_id}' to '{tgt_node_id}'"
+            f"in graph '{graph_name}': {str(e)}"
+        )
     return [TextContent(type="text", text=message)]

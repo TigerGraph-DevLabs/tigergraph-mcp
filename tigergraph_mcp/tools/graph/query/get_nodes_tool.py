@@ -28,7 +28,8 @@ class GetNodesToolInput(BaseModel):
     )
     node_alias: Optional[str] = Field(
         "s",
-        description="Alias for the node, mainly used inside the filter expression. Defaults to 's'.",
+        description="Alias for the node, mainly used inside the filter expression. "
+        "Defaults to 's'.",
     )
     filter_expression: Optional[str] = Field(
         None,
@@ -36,11 +37,10 @@ class GetNodesToolInput(BaseModel):
     )
     return_attributes: Optional[List[str]] = Field(
         None,
-        description="A list of attributes to return for each node. If omitted, returns all attributes.",
+        description="A list of attributes to return for each node. "
+        "If omitted, returns all attributes.",
     )
-    limit: Optional[int] = Field(
-        None, description="The maximum number of nodes to retrieve."
-    )
+    limit: Optional[int] = Field(None, description="The maximum number of nodes to retrieve.")
 
 
 tools = [

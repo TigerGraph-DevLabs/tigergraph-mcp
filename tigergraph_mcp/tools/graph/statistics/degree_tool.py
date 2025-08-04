@@ -18,18 +18,15 @@ from tigergraph_mcp.tools import TigerGraphToolName
 class DegreeToolInput(BaseModel):
     """Input schema for computing the degree of a node in a TigerGraph graph."""
 
-    graph_name: str = Field(
-        ..., description="The name of the graph containing the node."
-    )
+    graph_name: str = Field(..., description="The name of the graph containing the node.")
     node_id: str | int = Field(
         ..., description="The identifier of the node whose degree is to be computed."
     )
-    node_type: Optional[str] = Field(
-        None, description="The type of the node (optional)."
-    )
+    node_type: Optional[str] = Field(None, description="The type of the node (optional).")
     edge_types: Optional[List[str] | str] = Field(
         None,
-        description="A single edge type or list of edge types to consider. If omitted, all edge types are included.",
+        description="A single edge type or list of edge types to consider. If omitted, all edge "
+        "types are included.",
     )
 
 
@@ -62,7 +59,12 @@ async def degree(
     try:
         graph = Graph.from_db(graph_name)
         deg = graph.degree(node_id, node_type=node_type, edge_types=edge_types)
-        message = f"📏 Degree of node '{node_id}' (Type: {node_type or 'default'}) in graph '{graph_name}' is {deg}."
+        message = (
+            f"📏 Degree of node '{node_id}' (Type: {node_type or 'default'}) "
+            f"in graph '{graph_name}' is {deg}."
+        )
     except Exception as e:
-        message = f"❌ Failed to compute degree for node '{node_id}' in graph '{graph_name}': {str(e)}"
+        message = (
+            f"❌ Failed to compute degree for node '{node_id}' in graph '{graph_name}': {str(e)}"
+        )
     return [TextContent(type="text", text=message)]

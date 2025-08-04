@@ -17,15 +17,9 @@ from tigergraph_mcp.tools import TigerGraphToolName
 class GetNodeEdgesToolInput(BaseModel):
     """Input schema for retrieving edges connected to a specific node."""
 
-    graph_name: str = Field(
-        ..., description="The name of the graph containing the node."
-    )
-    node_id: str | int = Field(
-        ..., description="The identifier of the node to retrieve edges for."
-    )
-    node_type: Optional[str] = Field(
-        None, description="The type of the node (optional)."
-    )
+    graph_name: str = Field(..., description="The name of the graph containing the node.")
+    node_id: str | int = Field(..., description="The identifier of the node to retrieve edges for.")
+    node_type: Optional[str] = Field(None, description="The type of the node (optional).")
     edge_types: Optional[str | List[str]] = Field(
         None,
         description="A single edge type or a list of edge types to filter by (optional).",
@@ -35,7 +29,8 @@ class GetNodeEdgesToolInput(BaseModel):
 tools = [
     Tool(
         name=TigerGraphToolName.GET_NODE_EDGES,
-        description="""Retrieves edges connected to a specific node in a TigerGraph graph using TigerGraphX.
+        description="""Retrieves edges connected to a specific node in a TigerGraph graph using
+TigerGraphX.
 
 Example input:
 ```python
@@ -61,10 +56,15 @@ async def get_node_edges(
         edges = graph.get_node_edges(node_id, node_type, edge_types)
 
         if not edges:
-            message = f"⚠️ No edges found for node '{node_id}' of type '{node_type or 'default'}' in graph '{graph_name}'."
+            message = (
+                f"⚠️ No edges found for node '{node_id}' of type '{node_type or 'default'}'"
+                f"in graph '{graph_name}'."
+            )
         else:
             message = f"✅ Edges connected to node '{node_id}' in graph '{graph_name}': {edges}"
     except Exception as e:
-        message = f"❌ Failed to retrieve edges for node '{node_id}' in graph '{graph_name}': {str(e)}"
+        message = (
+            f"❌ Failed to retrieve edges for node '{node_id}' in graph '{graph_name}': {str(e)}"
+        )
 
     return [TextContent(type="text", text=message)]

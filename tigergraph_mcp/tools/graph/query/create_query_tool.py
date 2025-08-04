@@ -53,7 +53,10 @@ async def create_query(graph_name: str, gsql_query: str) -> List[TextContent]:
         if success:
             message = f"✅ GSQL query successfully created on graph '{graph_name}'."
         else:
-            message = f"⚠️ Query creation on graph '{graph_name}' failed. Please verify the GSQL syntax and graph context."
+            message = (
+                f"⚠️ Query creation on graph '{graph_name}' failed. "
+                "Please verify the GSQL syntax and graph context."
+            )
     except Exception as e:
         message = f"❌ Failed to create GSQL query on graph '{graph_name}': {str(e)}"
     return [TextContent(type="text", text=message)]

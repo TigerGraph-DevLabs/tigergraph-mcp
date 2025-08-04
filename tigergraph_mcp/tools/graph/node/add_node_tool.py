@@ -18,13 +18,9 @@ from tigergraph_mcp.tools import TigerGraphToolName
 class AddNodeToolInput(BaseModel):
     """Input schema for adding a node to a TigerGraph graph."""
 
-    graph_name: str = Field(
-        ..., description="The name of the graph where the node will be added."
-    )
+    graph_name: str = Field(..., description="The name of the graph where the node will be added.")
     node_id: str | int = Field(..., description="The unique identifier of the node.")
-    node_type: Optional[str] = Field(
-        None, description="The type of the node (optional)."
-    )
+    node_type: Optional[str] = Field(None, description="The type of the node (optional).")
     attributes: Optional[Dict] = Field(
         default_factory=dict, description="Additional attributes for the node."
     )
@@ -58,7 +54,10 @@ async def add_node(
         attributes = attributes or {}
         graph = Graph.from_db(graph_name)
         graph.add_node(node_id, node_type, **attributes)
-        message = f"✅ Node '{node_id}' (Type: {node_type or 'default'}) added successfully to graph '{graph_name}'."
+        message = (
+            f"✅ Node '{node_id}' (Type: {node_type or 'default'}) "
+            f"added successfully to graph '{graph_name}'."
+        )
     except Exception as e:
         message = f"❌ Failed to add node '{node_id}' to graph '{graph_name}': {str(e)}"
     return [TextContent(type="text", text=message)]

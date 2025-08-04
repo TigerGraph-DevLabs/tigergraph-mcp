@@ -11,9 +11,7 @@ class SearchMultiVectorAttributesInput(BaseModel):
     """Input schema for searching with multiple vector attributes."""
 
     graph_name: str = Field(..., description="The name of the graph to search in.")
-    data: List[float] = Field(
-        ..., description="The query vector to search for similar nodes."
-    )
+    data: List[float] = Field(..., description="The query vector to search for similar nodes.")
     vector_attribute_names: List[str] = Field(
         ...,
         description="A list of vector attribute names to use for similarity search.",
@@ -34,16 +32,20 @@ class SearchMultiVectorAttributesInput(BaseModel):
 tools = [
     Tool(
         name=TigerGraphToolName.SEARCH_MULTI_VECTOR_ATTRIBUTES,
-        description="""Searches for nodes most similar to a given query vector using multiple vector attributes.
+        description="""Searches for nodes most similar to a given query vector using multiple
+vector attributes.
 
 Single Node Type Example:
 ```python
 G = Graph(graph_schema)
 G.upsert(
     data=[
-        {"name": "Alice", "age": 30, "gender": "Female", "emb_1": [0.1, 0.2, 0.3], "emb_2": [0.2, 0.4, 0.6]},
-        {"name": "Bob", "age": 32, "gender": "Male", "emb_1": [0.4, 0.5, 0.6], "emb_2": [0.5, 0.6, 0.7]},
-        {"name": "Eve", "age": 29, "gender": "Female", "emb_1": [0.3, 0.2, 0.1], "emb_2": [0.1, 0.2, 0.3]},
+        {"name": "Alice", "age": 30, "gender": "Female",
+         "emb_1": [0.1, 0.2, 0.3], "emb_2": [0.2, 0.4, 0.6]},
+        {"name": "Bob", "age": 32, "gender": "Male",
+         "emb_1": [0.4, 0.5, 0.6], "emb_2": [0.5, 0.6, 0.7]},
+        {"name": "Eve", "age": 29, "gender": "Female",
+         "emb_1": [0.3, 0.2, 0.1], "emb_2": [0.1, 0.2, 0.3]},
     ]
 )
 
@@ -60,9 +62,12 @@ Multiple Node Types Example:
 G = Graph(graph_schema)
 G.upsert(
     data=[
-        {"name": "Alice", "age": 30, "gender": "Female", "emb_1": [0.1, 0.2, 0.3], "emb_2": [0.2, 0.4, 0.6]},
-        {"name": "Bob", "age": 32, "gender": "Male", "emb_1": [0.4, 0.5, 0.6], "emb_2": [0.5, 0.6, 0.7]},
-        {"name": "Eve", "age": 29, "gender": "Female", "emb_1": [0.3, 0.2, 0.1], "emb_2": [0.1, 0.2, 0.3]},
+        {"name": "Alice", "age": 30, "gender": "Female",
+         "emb_1": [0.1, 0.2, 0.3], "emb_2": [0.2, 0.4, 0.6]},
+        {"name": "Bob", "age": 32, "gender": "Male",
+         "emb_1": [0.4, 0.5, 0.6], "emb_2": [0.5, 0.6, 0.7]},
+        {"name": "Eve", "age": 29, "gender": "Female",
+         "emb_1": [0.3, 0.2, 0.1], "emb_2": [0.1, 0.2, 0.3]},
     ],
     node_type="Person",
 )

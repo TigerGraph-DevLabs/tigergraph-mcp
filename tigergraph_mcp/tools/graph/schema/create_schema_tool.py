@@ -21,7 +21,8 @@ class CreateSchemaToolInput(BaseModel):
 
     graph_schema: Dict = Field(
         ...,
-        description="A complete graph schema definition including 'graph_name', 'nodes', and 'edges'.",
+        description="A complete graph schema definition including 'graph_name', 'nodes', "
+        "and 'edges'.",
     )
 
 

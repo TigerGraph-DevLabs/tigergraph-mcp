@@ -18,13 +18,9 @@ from tigergraph_mcp.tools import TigerGraphToolName
 class HasNodeToolInput(BaseModel):
     """Input schema for checking node existence in a TigerGraph graph."""
 
-    graph_name: str = Field(
-        ..., description="The name of the graph where the node exists."
-    )
+    graph_name: str = Field(..., description="The name of the graph where the node exists.")
     node_id: str | int = Field(..., description="The identifier of the node to check.")
-    node_type: Optional[str] = Field(
-        None, description="The type of the node (optional)."
-    )
+    node_type: Optional[str] = Field(None, description="The type of the node (optional).")
 
 
 tools = [
@@ -52,7 +48,10 @@ async def has_node(
     try:
         graph = Graph.from_db(graph_name)
         exists = graph.has_node(node_id, node_type)
-        message = f"✅ Node '{node_id}' of type '{node_type or 'default'}' exists in graph '{graph_name}': {exists}."
+        message = (
+            f"✅ Node '{node_id}' of type '{node_type or 'default'}' exists "
+            f"in graph '{graph_name}': {exists}."
+        )
     except Exception as e:
         message = f"❌ Failed to check node existence in graph '{graph_name}': {str(e)}"
     return [TextContent(type="text", text=message)]

@@ -1,5 +1,6 @@
 from pathlib import Path
 from dotenv import dotenv_values, load_dotenv
+import logging
 
 from langchain.chat_models import init_chat_model
 from langgraph.checkpoint.memory import MemorySaver
@@ -27,6 +28,9 @@ from examples.chatbot_langgraph.workflow.onboarding_workflow import (
 from examples.chatbot_langgraph.workflow.task_execution_workflow import (
     generate_task_execution_subgraph,
 )
+
+
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 WELCOME_MESSAGE = (
@@ -140,10 +144,9 @@ async def build_graph(
     async def route_user_intent(state: ChatSessionState) -> FlowStatus:
         if state.flow_status == FlowStatus.TOOL_EXECUTION_READY:
             return FlowStatus.TOOL_EXECUTION_READY
-        elif state.flow_status == FlowStatus.ONBOARDING_REQUIRED:
+        if state.flow_status == FlowStatus.ONBOARDING_REQUIRED:
             return FlowStatus.ONBOARDING_REQUIRED
-        else:
-            return FlowStatus.HELP_REQUESTED
+        return FlowStatus.HELP_REQUESTED
 
     async def handle_help_request(state: ChatSessionState) -> ChatSessionState:
         message = AIMessage(content=_get_help_message(tools))

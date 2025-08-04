@@ -1,4 +1,5 @@
 # Copyright 2025 TigerGraph Inc.
+#
 # Licensed under the Apache License, Version 2.0.
 # See the LICENSE file or https://www.apache.org/licenses/LICENSE-2.0
 #
@@ -18,9 +19,7 @@ from tigergraph_mcp.tools import TigerGraphToolName
 class GetSchemaToolInput(BaseModel):
     """Input schema for retrieving a TigerGraph graph schema."""
 
-    graph_name: str = Field(
-        ..., description="The name of the graph to retrieve schema for."
-    )
+    graph_name: str = Field(..., description="The name of the graph to retrieve schema for.")
 
 
 tools = [

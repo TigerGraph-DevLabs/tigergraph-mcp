@@ -10,7 +10,7 @@ requires-python = ">=3.10,<3.13"
 
 dependencies = [
     "mcp (>=1.9.2,<2.0.0)",
-    "tigergraphx (>=0.2.11,<0.3.0)",
+    "tigergraphx (>=0.2.12,<0.3.0)",
 ]
 
 [tool.poetry.group.dev.dependencies]
@@ -31,6 +31,18 @@ langchain-mcp-adapters = "^0.1.7"
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+  "E",  # Error codes (e.g., syntax errors, runtime errors)
+  "W",  # Warning codes (potential issues or bad practices)
+  "F",  # Pyflakes codes (unused imports, undefined names)
+  "N",  # Naming conventions (variable/function/class naming)
+  "R",  # Refactor suggestions (complexity, code quality improvements)
+]
 
 [project.scripts]
 tigergraph-mcp = "tigergraph_mcp.main:main"

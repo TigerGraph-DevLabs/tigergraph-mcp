@@ -48,5 +48,7 @@ async def drop_query(
         else:
             message = f"⚠️ Failed to drop query '{query_name}' from graph '{graph_name}'."
     except Exception as e:
-        message = f"❌ Error while dropping query '{query_name}' from graph '{graph_name}': {str(e)}"
+        message = (
+            f"❌ Error while dropping query '{query_name}' from graph '{graph_name}': {str(e)}"
+        )
     return [TextContent(type="text", text=message)]

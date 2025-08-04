@@ -51,6 +51,10 @@ async def run_assistant():
 """)
                 user_input = input("User: ").strip()
 
+                # Skip if input is empty after stripping
+                if not user_input:
+                    continue
+
                 if user_input == "'''":
                     print("Entering multi-line input mode (end with a blank line):")
                     lines = []
@@ -65,9 +69,7 @@ async def run_assistant():
                     print("Goodbye! 👋")
                     break
 
-                await _handle_stream_events(
-                    workflow, Command(resume=user_input), config
-                )
+                await _handle_stream_events(workflow, Command(resume=user_input), config)
         except Exception as e:
             print(f"\n[Error] {type(e).__name__}: {str(e)}")
             break

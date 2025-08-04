@@ -12,7 +12,9 @@ from examples.chatbot_langgraph.workflow.chat_session_state import ChatSessionSt
 from examples.chatbot_langgraph.prompts import (
     PLAN_TOOL_EXECUTION_PROMPT,
 )
-from examples.chatbot_langgraph.workflow.schema_creation_workflow import generate_schema_creation_subgraph
+from examples.chatbot_langgraph.workflow.schema_creation_workflow import (
+    generate_schema_creation_subgraph,
+)
 from examples.chatbot_langgraph.workflow.data_loading_workflow import generate_data_loading_subgraph
 
 
@@ -36,8 +38,9 @@ async def generate_task_execution_subgraph(
         func=lambda _: "",
         name="trigger_load_data",
         description=(
-            "Triggers the subgraph flow to map file contents to the graph schema and load data into TigerGraph. "
-            "This tool acts as a trigger only; the actual loading logic runs in a dedicated subgraph.\n\n"
+            "Triggers the subgraph flow to map file contents to the graph schema and load data "
+            "into TigerGraph. This tool acts as a trigger only; the actual loading logic runs in "
+            "a dedicated subgraph.\n\n"
             "⚠️ Important: This tool must be called **individually**, without being grouped "
             "with any other tools in the same tool_calls block."
         ),
@@ -65,8 +68,7 @@ async def generate_task_execution_subgraph(
             return FlowStatus.TASK_PLAN_COMPLETED
         if not last_message.tool_calls:
             return FlowStatus.TASK_PLAN_COMPLETED
-        else:
-            return FlowStatus.TASK_PLAN_IN_PROGRESS
+        return FlowStatus.TASK_PLAN_IN_PROGRESS
 
     async def route_tool_completion(state: ChatSessionState) -> str:
         last_message = state.messages[-1]
@@ -80,9 +82,7 @@ async def generate_task_execution_subgraph(
     call_schema_creation_subgraph = await generate_schema_creation_subgraph(
         llm, create_schema_agent
     )
-    call_data_loading_subgraph = await generate_data_loading_subgraph(
-        llm, load_data_agent
-    )
+    call_data_loading_subgraph = await generate_data_loading_subgraph(llm, load_data_agent)
 
     builder = StateGraph(ChatSessionState)
 

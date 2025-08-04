@@ -22,7 +22,8 @@ class GetDataSourceToolInput(BaseModel):
 tools = [
     Tool(
         name=TigerGraphToolName.GET_DATA_SOURCE,
-        description="""Retrieves the configuration details of a specified data source in TigerGraph using TigerGraphX.
+        description="""Retrieves the configuration details of a specified data source in TigerGraph
+using TigerGraphX.
 
 Example:
 ```python

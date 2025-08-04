@@ -24,7 +24,14 @@ class ListMetadataToolInput(BaseModel):
 tools = [
     Tool(
         name=TigerGraphToolName.LIST_METADATA,
-        description="""Lists metadata in the TigerGraph database, including vertex/edge types, graphs, jobs, data sources, and packages.
+        description="""Lists metadata from the TigerGraph database, including:
+
+- Vertex and edge types
+- Graphs
+- Jobs
+- Data sources
+- Queries (graph-specific)
+- Packages (global-only)
 
 If a graph name is provided, runs `USE GRAPH {graph_name}` followed by `LS`.
 Otherwise, runs a global `LS`.

@@ -10,7 +10,9 @@ from tigergraph_mcp import TigerGraphToolName
 class TestDataSourceTools(BaseFixture):
     @pytest.mark.asyncio
     async def test_data_source_tools_basic(self):
-        SAMPLE_PATH = "s3a://tigergraph-solution-kits/connected_customer/customer_360/data/Session.csv"
+        sample_path = (
+            "s3a://tigergraph-solution-kits/connected_customer/customer_360/data/Session.csv"
+        )
 
         async with stdio_client(self.server_params) as (read, write):
             async with ClientSession(read, write) as session:
@@ -18,6 +20,7 @@ class TestDataSourceTools(BaseFixture):
 
                 try:
                     # Create the data source
+                    provider = "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
                     create_result = await session.call_tool(
                         TigerGraphToolName.CREATE_DATA_SOURCE,
                         arguments={
@@ -26,7 +29,7 @@ class TestDataSourceTools(BaseFixture):
                             "access_key": "",
                             "secret_key": "",
                             "extra_config": {
-                                "file.reader.settings.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
+                                "file.reader.settings.fs.s3a.aws.credentials.provider": provider
                             },
                         },
                     )
@@ -39,8 +42,7 @@ class TestDataSourceTools(BaseFixture):
                     )
                     get_result_text = str(get_result)
                     assert (
-                        "✅ Successfully retrieved configuration for data source"
-                        in get_result_text
+                        "✅ Successfully retrieved configuration for data source" in get_result_text
                     )
 
                     # Update the data source
@@ -52,7 +54,7 @@ class TestDataSourceTools(BaseFixture):
                             "access_key": "updated-key",
                             "secret_key": "updated-secret",
                             "extra_config": {
-                                "file.reader.settings.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
+                                "file.reader.settings.fs.s3a.aws.credentials.provider": provider
                             },
                         },
                     )
@@ -75,7 +77,7 @@ class TestDataSourceTools(BaseFixture):
                     preview_result = await session.call_tool(
                         TigerGraphToolName.PREVIEW_SAMPLE_DATA,
                         arguments={
-                            "path": SAMPLE_PATH,
+                            "path": sample_path,
                             "data_source_type": "s3",
                             "data_source": "data_source_1",
                             "data_format": "csv",
@@ -102,6 +104,7 @@ class TestDataSourceTools(BaseFixture):
             async with ClientSession(read, write) as session:
                 await session.initialize()
 
+                provider = "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
                 # Create two data sources
                 try:
                     for i in [1, 2]:
@@ -113,13 +116,12 @@ class TestDataSourceTools(BaseFixture):
                                 "access_key": "",
                                 "secret_key": "",
                                 "extra_config": {
-                                    "file.reader.settings.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
+                                    "file.reader.settings.fs.s3a.aws.credentials.provider": provider
                                 },
                             },
                         )
-                        assert (
-                            f"✅ Successfully created data source 'tmp_data_source_{i}'"
-                            in str(result)
+                        assert f"✅ Successfully created data source 'tmp_data_source_{i}'" in str(
+                            result
                         )
 
                     # Get all data sources
@@ -138,9 +140,7 @@ class TestDataSourceTools(BaseFixture):
                         TigerGraphToolName.DROP_ALL_DATA_SOURCES,
                         arguments={},
                     )
-                    assert "✅ All data sources is dropped successfully." in str(
-                        drop_all_result
-                    )
+                    assert "✅ All data sources is dropped successfully." in str(drop_all_result)
 
                     # Get all data sources
                     get_all_result = await session.call_tool(

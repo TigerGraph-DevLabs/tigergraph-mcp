@@ -18,21 +18,13 @@ from tigergraph_mcp.tools import TigerGraphToolName
 class GetEdgeDataToolInput(BaseModel):
     """Input schema for retrieving a specific edge's data from a TigerGraph graph."""
 
-    graph_name: str = Field(
-        ..., description="The name of the graph where the edge is located."
-    )
-    src_node_id: str | int = Field(
-        ..., description="The identifier of the source node."
-    )
-    tgt_node_id: str | int = Field(
-        ..., description="The identifier of the target node."
-    )
+    graph_name: str = Field(..., description="The name of the graph where the edge is located.")
+    src_node_id: str | int = Field(..., description="The identifier of the source node.")
+    tgt_node_id: str | int = Field(..., description="The identifier of the target node.")
     src_node_type: Optional[str] = Field(
         None, description="The type of the source node (optional)."
     )
-    edge_type: Optional[str] = Field(
-        None, description="The type of the edge (optional)."
-    )
+    edge_type: Optional[str] = Field(None, description="The type of the edge (optional).")
     tgt_node_type: Optional[str] = Field(
         None, description="The type of the target node (optional)."
     )
@@ -41,9 +33,11 @@ class GetEdgeDataToolInput(BaseModel):
 tools = [
     Tool(
         name=TigerGraphToolName.GET_EDGE_DATA,
-        description="""Retrieves data for a specific edge in a TigerGraph database using TigerGraphX.
+        description="""Retrieves data for a specific edge in a TigerGraph database using
+TigerGraphX.
 
-You must provide the source and target node IDs. Optionally, specify the source node type, edge type, and target node type.
+You must provide the source and target node IDs. Optionally, specify the source node type,
+edge type, and target node type.
 
 Example input:
 ```python
@@ -78,7 +72,10 @@ async def get_edge_data(
             tgt_node_type=tgt_node_type,
         )
         if response is None:
-            message = f"⚠️ No edge found between '{src_node_id}' and '{tgt_node_id}' in graph '{graph_name}'."
+            message = (
+                f"⚠️ No edge found between '{src_node_id}' and '{tgt_node_id}' "
+                f"in graph '{graph_name}'."
+            )
         else:
             message = f"✅ Edge data retrieved: {response}"
     except Exception as e:

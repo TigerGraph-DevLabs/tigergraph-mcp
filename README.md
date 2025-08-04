@@ -21,8 +21,8 @@ TigerGraph **version 4.1 or higher** is required to run TigerGraph-MCP. You can 
 - **TigerGraph Savanna**: Use a managed TigerGraph instance in the cloud.
 - **TigerGraph Docker**: Run TigerGraph in a containerized environment.
 
-> ⚠️ **Minimum Required Version: TigerGraph 4.1**
-> ✅ **Recommended Version: TigerGraph 4.2+** to enable **TigerVector** and advanced hybrid retrieval features.
+> - ⚠️ **Minimum Required Version: TigerGraph 4.1**
+> - ✅ **Recommended Version: TigerGraph 4.2+** to enable **TigerVector** and advanced hybrid retrieval features.
 
 Download from the [TigerGraph Downloads page](https://dl.tigergraph.com/), and follow the [official documentation](https://docs.tigergraph.com/home/) for setup.
 
@@ -114,160 +114,34 @@ eval $(poetry env activate)
 
 For more information about managing virtual environments in Poetry, please refer to the official documentation: [Managing Environments](https://python-poetry.org/docs/managing-environments/).
 
-## Using TigerGraph-MCP Tools with GitHub Copilot Chat in VS Code
+## 🚀 Getting Started: Choose Your Interface
 
-To enable the use of TigerGraph-MCP tools via GitHub Copilot Chat in VS Code, follow these steps:
+We recommend **LangGraph** as the preferred interface for using TigerGraph-MCP, especially for advanced workflows like schema creation, data loading, and algorithm orchestration. However, if your workflow is relatively simple or you're just getting started, **CrewAI** may be easier to adopt initially. **GitHub Copilot Chat** is also supported for lightweight use cases directly in VS Code.
 
-### 1. Set Up GitHub Copilot Chat
+TigerGraph-MCP supports three main interfaces:
 
-Follow the [official GitHub Copilot Chat documentation](https://code.visualstudio.com/docs/copilot/chat/copilot-chat) to set up GitHub Copilot Chat.
+### ✅ Recommended: Using TigerGraph-MCP Tools with LangGraph
 
-### 2. Enable Agent Mode
+LangGraph is ideal for building **stateful, agent-based workflows** that involve complex tool chaining and strict schema compliance. It offers the highest level of flexibility and control for power users and is the recommended framework going forward.
 
-Open GitHub Copilot Chat and switch to "Agent" mode using the Mode dropdown in the Chat view.
+* Setup guide: [`docs/langgraph_setup.md`](./docs/langgraph_setup.md)
+* Full chatbot implementation using LangGraph and TigerGraph-MCP:
+  [chatbot_langgraph](./examples/chatbot_langgraph)
 
-![](https://code.visualstudio.com/assets/docs/copilot/chat/copilot-chat/chat-mode-dropdown.png)
+### Using TigerGraph-MCP Tools with CrewAI
 
-### 3. Create the `.env` File
+CrewAI was the original framework used for implementing agentic workflows in TigerGraph-MCP. It provides a **simpler and more approachable starting point**, especially for basic workflows. However, as our workflows grew in complexity, CrewAI’s limitations in agent definition and orchestration became more apparent. We now recommend LangGraph for most use cases, unless your workflow remains relatively simple.
 
-In the root of your project, create a `.env` file with the following content:
+* Setup guide: [`docs/crewai_setup.md`](./docs/crewai_setup.md)
+* Full chatbot implementation using CrewAI and TigerGraph-MCP:
+  [chatbot_crewai](./examples/chatbot_crewai)
 
-```
-OPENAI_API_KEY=<YOUR OPENAI KEY>
-TG_HOST=http://127.0.0.1
-TG_USERNAME=tigergraph
-TG_PASSWORD=tigergraph
-```
+### Using TigerGraph-MCP Tools with GitHub Copilot Chat in VS Code
 
-> Replace `<YOUR OPENAI KEY>` with your actual OpenAI API key.
-> This configuration assumes you're running TigerGraph locally and logging in with a username and password. See the [Alternative Connection Setup Methods](https://tigergraph-devlabs.github.io/tigergraphx/reference/01_core/graph/#tigergraphx.core.graph.Graph.__init__) for additional ways to connect to TigerGraph.
+For quick tasks or straightforward tool invocations, you can use **GitHub Copilot Chat** directly in VS Code. This works well for simple tools, but may struggle with the nested parameters and best practices required by more advanced operations like data loading or schema creation.
 
-### 4. Create `.vscode/mcp.json` and Start TigerGraph-MCP
+* Setup guide: [`docs/copilot_setup.md`](./docs/copilot_setup.md)
 
-Add the following configuration to `.vscode/mcp.json` in your workspace:
-
-```json
-{
-  "inputs": [],
-  "servers": {
-    "tigergraph-mcp-server": {
-      "command": "${workspaceFolder}/.venv/bin/python",
-      "args": [
-        "-m",
-        "tigergraph_mcp.main"
-      ],
-      "envFile": "${workspaceFolder}/.env"
-    }
-  }
-}
-```
-
-> Note: Adjust the path in `"command"` if your virtual environment is located elsewhere.
-
-After creating this file, you'll see a "Start" button appear above the line containing `"tigergraph-mcp-server":`. Click it to start the TigerGraph-MCP server.
-
-### 5. Interact with the MCP Tool
-
-You can now interact with the MCP tool by entering instructions like:
-
-```
-Suppose I have the following CSV files, please help create a graph schema in TigerGraph:
-
-from_name,to_name,since,closeness
-Alice,Bob,2018-03-05,0.9
-Bob,Charlie,2020-07-08,0.7
-Charlie,Alice,2022-09-10,0.5
-Alice,Diana,2021-01-02,0.8
-Eve,Alice,2023-03-05,0.6
-```
-
-GitHub Copilot will automatically select the `graph__create_schema` tool and configure the parameters.
-
-Click "See more" to expand and edit the parameters if needed, or provide another suggestion in the chat to let Copilot modify the parameters based on your needs.
-
-Then click the "Continue" button to run the tool. It will return a message such as:
-
-```
-I have created a TigerGraph schema named "SocialGraph"
-```
-
-indicating that the graph has been created successfully.
-
-### 6. View Available Tools in TigerGraph-MCP
-
-Click the Tools icon to view all available tools in TigerGraph-MCP.
-
-![](https://code.visualstudio.com/assets/docs/copilot/chat/copilot-edits/agent-mode-select-tools.png)
-
-If you'd like to request additional tools for TigerGraph, feel free to create an issue in the repository.
-
-> Note: TigerGraph-MCP is based on [TigerGraphX](https://github.com/tigergraph/tigergraphx), a high-level Python library that provides a unified, Python-native interface for TigerGraph. For more details about the APIs, refer to the [TigerGraphX API Reference](https://tigergraph-devlabs.github.io/tigergraphx/reference/introduction/).
-
-## Using TigerGraph-MCP Tools with LangGraph or CrewAI
-
-TigerGraph-MCP tools are designed to work well with modern LLM-based assistants like GitHub Copilot Chat. Many tools in the MCP suite are straightforward, and LLMs often generate high-quality parameters for them automatically. However, for more complex operations—such as schema creation or data loading—the inputs often require nested Python dictionaries and adherence to best practices that may not be well captured in the model’s training data.
-
-For these advanced use cases, or if you prefer more control over tool usage, you can define custom AI agents and workflows using open-source frameworks like **LangGraph** or **CrewAI**.
-
-This repository includes example implementations using both frameworks:
-- [chatbot_langgraph](https://github.com/TigerGraph-DevLabs/tigergraph-mcp/tree/main/examples/chatbot_langgraph)
-- [chatbot_crewai](https://github.com/TigerGraph-DevLabs/tigergraph-mcp/tree/main/examples/chatbot_crewai)
-
-### How to Run the Demo
-
-1. Clone this repository and install the package with development dependencies.
-2. Activate your virtual environment.
-3. Choose one of the following interfaces to launch:
-
----
-
-#### Run with LangGraph
-
-```bash
-poe chatbot_langgraph
-# or
-python examples/chatbot_langgraph/main.py
-```
-
-You’ll see output like this:
-
-```
-Poe => python examples/chatbot_langgraph/main.py
-
-================================== Ai Message ==================================
-
-**Welcome!** I'm your **TigerGraph Assistant**—here to help you design schemas, load and explore data, run queries, and more.
-
-Type what you'd like to do, or say **'onboarding'** to get started, or **'help'** to see what I can do. 🚀
-
-================================ Human Message =================================
-
-User:
-```
-
-Now you can chat directly with the agent in your terminal. A web-based UI is planned for future versions—stay tuned!
-
----
-
-#### Run with CrewAI (UI-Based)
-
-```bash
-poe chatbot_crewai
-# or
-panel serve examples/chatbot_crewai/main.py
-```
-
-You’ll see output like this:
-
-```
-Poe => panel serve examples/chatbot_crewai/main.py
-2025-05-21 14:54:21,472 Starting Bokeh server version 3.7.2 (running on Tornado 6.4.2)
-2025-05-21 14:54:21,473 User authentication hooks NOT provided (default user enabled)
-2025-05-21 14:54:21,476 Bokeh app running at: http://localhost:5006/main
-2025-05-21 14:54:21,476 Starting Bokeh server with process id: 22032
-```
-
-Then open [http://localhost:5006/main](http://localhost:5006/main) in your browser to start chatting with the AI agents via a user-friendly interface.
 
 
 ## Core MCP Features

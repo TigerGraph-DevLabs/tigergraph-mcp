@@ -18,17 +18,13 @@ from tigergraph_mcp.tools import TigerGraphToolName
 class HasEdgeToolInput(BaseModel):
     """Input schema for checking if an edge exists in a TigerGraph graph."""
 
-    graph_name: str = Field(
-        ..., description="The name of the graph to check for the edge."
-    )
+    graph_name: str = Field(..., description="The name of the graph to check for the edge.")
     src_node_id: str | int = Field(..., description="The source node identifier.")
     tgt_node_id: str | int = Field(..., description="The target node identifier.")
     src_node_type: Optional[str] = Field(
         None, description="The type of the source node (optional)."
     )
-    edge_type: Optional[str] = Field(
-        None, description="The type of the edge (optional)."
-    )
+    edge_type: Optional[str] = Field(None, description="The type of the edge (optional).")
     tgt_node_type: Optional[str] = Field(
         None, description="The type of the target node (optional)."
     )
@@ -37,7 +33,8 @@ class HasEdgeToolInput(BaseModel):
 tools = [
     Tool(
         name=TigerGraphToolName.HAS_EDGE,
-        description="""Checks whether an edge exists between two nodes in a TigerGraph database using TigerGraphX.
+        description="""Checks whether an edge exists between two nodes in a TigerGraph database
+using TigerGraphX.
 
 Example input:
 ```python
@@ -73,7 +70,13 @@ async def has_edge(
             edge_type=edge_type,
             tgt_node_type=tgt_node_type,
         )
-        message = f"✅ Edge between '{src_node_id}' and '{tgt_node_id}' exists in graph '{graph_name}': {exists}."
+        message = (
+            f"✅ Edge between '{src_node_id}' and '{tgt_node_id}' exists "
+            f"in graph '{graph_name}': {exists}."
+        )
     except Exception as e:
-        message = f"❌ Failed to check edge between '{src_node_id}' and '{tgt_node_id}' in graph '{graph_name}': {str(e)}"
+        message = (
+            f"❌ Failed to check edge between '{src_node_id}' and '{tgt_node_id}' "
+            f"in graph '{graph_name}': {str(e)}"
+        )
     return [TextContent(type="text", text=message)]

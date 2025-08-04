@@ -50,7 +50,8 @@ data_source_type = "s3"
 access_key = "new-access"
 secret_key = "new-secret"
 extra_config = {
-    "file.reader.settings.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
+    "file.reader.settings.fs.s3a.aws.credentials.provider":
+        "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
 }
 graph = "MyGraph"  # optional
 ```""",
@@ -80,9 +81,15 @@ async def update_data_source(
         )
 
         if isinstance(response, str) and f"Data source {name} is created" in response:
-            message = f"✅ Successfully updated data source '{name}'.\n\nTigerGraph response:\n{response}"
+            message = (
+                f"✅ Successfully updated data source '{name}'.\n\n"
+                "TigerGraph response:\n{response}"
+            )
         else:
-            message = f"⚠️ Attempted to update data source '{name}', but received an unexpected response:\n{response}"
+            message = (
+                f"⚠️ Attempted to update data source '{name}', "
+                f"but received an unexpected response:\n{response}"
+            )
 
     except Exception as e:
         message = f"❌ Error updating data source '{name}': {str(e)}"

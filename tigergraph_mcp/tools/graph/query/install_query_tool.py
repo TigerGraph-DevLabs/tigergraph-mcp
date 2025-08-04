@@ -43,9 +43,7 @@ async def install_query(graph_name: str, query_name: str) -> List[TextContent]:
         if success:
             message = f"✅ Query '{query_name}' successfully installed on graph '{graph_name}'."
         else:
-            message = (
-                f"⚠️ Query '{query_name}' installation on graph '{graph_name}' failed."
-            )
+            message = f"⚠️ Query '{query_name}' installation on graph '{graph_name}' failed."
     except Exception as e:
         message = f"❌ Failed to install query '{query_name}' on graph '{graph_name}': {str(e)}"
     return [TextContent(type="text", text=message)]

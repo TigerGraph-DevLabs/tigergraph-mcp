@@ -19,7 +19,8 @@ class DropDataSourceToolInput(BaseModel):
     name: str = Field(..., description="The name of the data source to drop.")
     graph: Optional[str] = Field(
         None,
-        description="The name of the graph if dropping from a graph-specific context (e.g., for local data sources).",
+        description="The name of the graph if dropping from a graph-specific context (e.g., "
+        "for local data sources).",
     )
 
 
@@ -40,18 +41,21 @@ graph = "MyGraph"  # optional
 ]
 
 
-async def drop_data_source(
-    name: str, graph_name: Optional[str] = None
-) -> List[TextContent]:
+async def drop_data_source(name: str, graph_name: Optional[str] = None) -> List[TextContent]:
     try:
         db = TigerGraphDatabase()
 
         response = db.drop_data_source(name=name, graph_name=graph_name)
 
         if isinstance(response, str) and f"Data source {name} is dropped" in response:
-            message = f"✅ Successfully dropped data source '{name}'.\n\nTigerGraph response:\n{response}"
+            message = (
+                f"✅ Successfully dropped data source '{name}'.\n\nTigerGraph response:\n{response}"
+            )
         else:
-            message = f"⚠️ Attempted to drop data source '{name}', but received an unexpected response:\n{response}"
+            message = (
+                f"⚠️ Attempted to drop data source '{name}', but received an unexpected "
+                f"response:\n{response}"
+            )
 
     except Exception as e:
         message = f"❌ Error dropping data source '{name}': {str(e)}"

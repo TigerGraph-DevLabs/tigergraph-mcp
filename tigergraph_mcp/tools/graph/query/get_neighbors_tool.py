@@ -21,9 +21,7 @@ class GetNeighborsToolInput(BaseModel):
     start_nodes: str | int | List[str] | List[int] = Field(
         ..., description="The starting node(s) from which to get neighbors."
     )
-    start_node_type: Optional[str] = Field(
-        None, description="The type of the starting nodes."
-    )
+    start_node_type: Optional[str] = Field(None, description="The type of the starting nodes.")
     start_node_alias: Optional[str] = Field(
         "s", description="Alias for the starting node, used in the filter expression."
     )
@@ -45,17 +43,17 @@ class GetNeighborsToolInput(BaseModel):
     )
     return_attributes: Optional[List[str]] = Field(
         None,
-        description="List of attributes to return for each neighbor. If omitted, returns all attributes.",
+        description="List of attributes to return for each neighbor. "
+        "If omitted, returns all attributes.",
     )
-    limit: Optional[int] = Field(
-        None, description="Maximum number of neighbors to retrieve."
-    )
+    limit: Optional[int] = Field(None, description="Maximum number of neighbors to retrieve.")
 
 
 tools = [
     Tool(
         name=TigerGraphToolName.GET_NEIGHBORS,
-        description="""Retrieves neighbors of specific nodes in a TigerGraph database using TigerGraphX.
+        description="""Retrieves neighbors of specific nodes in a TigerGraph database using
+TigerGraphX.
 
 Examples:
 ```python
@@ -112,9 +110,7 @@ async def get_neighbors(
         if not neighbors:
             message = "⚠️ No neighbors found."
         else:
-            message = "✅ Retrieved neighbors:\n" + "\n".join(
-                [str(n) for n in neighbors]
-            )
+            message = "✅ Retrieved neighbors:\n" + "\n".join([str(n) for n in neighbors])
     except Exception as e:
         message = f"❌ Failed to retrieve neighbors from graph '{graph_name}': {str(e)}"
     return [TextContent(type="text", text=message)]

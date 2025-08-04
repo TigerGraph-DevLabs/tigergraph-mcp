@@ -68,3 +68,32 @@ class TestSchemaTools(BaseFixture):
                     },
                 )
                 assert "✅" in str(drop_result)
+
+    @pytest.mark.asyncio
+    async def test_reserved_keyword_in_node_attribute(self):
+        async with stdio_client(self.server_params) as (read, write):
+            async with ClientSession(read, write) as session:
+                await session.initialize()
+
+                graph_name = "TestReservedKeyword"
+                # Use a reserved keyword "type" as an attribute name
+                create_result = await session.call_tool(
+                    TigerGraphToolName.CREATE_SCHEMA,
+                    arguments={
+                        "graph_schema": {
+                            "graph_name": graph_name,
+                            "nodes": {
+                                "Entity": {
+                                    "primary_key": "id",
+                                    "attributes": {
+                                        "id": "STRING",
+                                        "type": "STRING",  # Reserved keyword
+                                    },
+                                },
+                            },
+                            "edges": {},
+                        }
+                    },
+                )
+                assert "Schema creation failed:" in str(create_result)
+                assert "Attribute name 'type' is a reserved keyword." in str(create_result)

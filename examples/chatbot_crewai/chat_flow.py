@@ -36,9 +36,7 @@ class ChatSessionState(BaseModel):
     # Onboarding Data Preview
     last_user_file_input: str = ""
     last_data_preview: str = ""  # Output from the most recent data preview
-    is_from_onboarding: bool = (
-        False  # Set to True if it was generated during onboarding
-    )
+    is_from_onboarding: bool = False  # Set to True if it was generated during onboarding
 
     # Schema Creation State
     current_schema_draft: str = ""  # Latest schema draft
@@ -53,17 +51,13 @@ class ChatFlow(Flow[ChatSessionState]):
     def initialize_session(self):
         logger.info("Session initialized.")
 
-    @router(
-        or_(initialize_session, "on_user_command_received", "on_user_input_updated")
-    )
+    @router(or_(initialize_session, "on_user_command_received", "on_user_input_updated"))
     def analyze_and_evaluate_plan(self):
         logger.debug("Matching tool(s) from conversation...")
 
         last_command = ""
         if len(self.state.conversation_history) > 0:
-            last_command = self.state.conversation_history[
-                len(self.state.conversation_history) - 1
-            ]
+            last_command = self.state.conversation_history[len(self.state.conversation_history) - 1]
         inputs = {
             "conversation_history": str(self.state.conversation_history),
             "last_command": last_command,
@@ -91,15 +85,11 @@ class ChatFlow(Flow[ChatSessionState]):
                 for step in parsed
             ):
                 valid_steps = [
-                    step
-                    for step in parsed
-                    if step["tool_name"] in self.state.tool_registry
+                    step for step in parsed if step["tool_name"] in self.state.tool_registry
                 ]
                 self.state.task_plan = valid_steps
                 self.state.current_task_index = 0
-                logger.debug(
-                    f"Planner returned valid tool-command steps: {valid_steps}"
-                )
+                logger.debug(f"Planner returned valid tool-command steps: {valid_steps}")
 
             else:
                 logger.warning("Planner output did not match expected formats.")
@@ -121,8 +111,7 @@ class ChatFlow(Flow[ChatSessionState]):
             self.state.task_plan = []
             self.state.current_task_index = 0
             return "no_tasks_remaining"
-        else:
-            return "more_tasks_remaining"
+        return "more_tasks_remaining"
 
     @router("more_tasks_remaining")
     def evaluate_task_type(self):
@@ -137,8 +126,7 @@ class ChatFlow(Flow[ChatSessionState]):
             return "task_type_create_schema"
         if tool_enum == TigerGraphToolName.LOAD_DATA:
             return "task_type_load_data"
-        else:
-            return "task_type_general_tool"
+        return "task_type_general_tool"
 
     @router("task_type_general_tool")
     def execute_general_tool(self):
@@ -147,16 +135,15 @@ class ChatFlow(Flow[ChatSessionState]):
         if not tool_enum:
             return "task_type_unclear"
         crew_method_name = tool_enum.name.lower() + "_crew"
-        crew_factory = ToolExecutorCrews(
-            tools=self.state.tool_registry, verbose=verbose, llm=llm
-        )
+        crew_factory = ToolExecutorCrews(tools=self.state.tool_registry, verbose=verbose, llm=llm)
 
         if not hasattr(crew_factory, crew_method_name):
             available = [m for m in dir(crew_factory) if m.endswith("_crew")]
             self._send_message(
-                f"🚫 Tool `{self.state.current_tool_name}` is not available. Available: {available}",
+                "🚫 Tool `{self.state.current_tool_name}` is not available. "
+                f"Available: {available}",
             )
-            return
+            return None
 
         chat_message = self._send_message("⚙️ Executing tool...", record_history=False)
         crew = getattr(crew_factory, crew_method_name)()
@@ -202,16 +189,16 @@ class ChatFlow(Flow[ChatSessionState]):
             self._update_message(
                 chat_message, "🔧 Creating S3 data source...", record_history=False
             )
+            provider = "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
             api.create_data_source(
                 S3_ANONYMOUS_SOURCE_NAME,
                 data_source_type="s3",
-                extra_config={
-                    "file.reader.settings.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider"
-                },
+                extra_config={"file.reader.settings.fs.s3a.aws.credentials.provider": provider},
             )
         self._update_message(
             chat_message,
-            "Please provide the S3 path(s) to your data file(s) to get started. Only S3 paths with anonymous access are supported.",
+            "Please provide the S3 path(s) to your data file(s) to get started. Only S3 paths with "
+            "anonymous access are supported.",
         )
         return "on_prompt_displayed"
 
@@ -220,12 +207,8 @@ class ChatFlow(Flow[ChatSessionState]):
         user_input = self._wait_for_user_input()
         self.last_user_file_input = user_input  # Cache for reuse
 
-        chat_message = self._send_message(
-            "📄 Previewing sample data...", record_history=False
-        )
-        crew_factory = ToolExecutorCrews(
-            tools=self.state.tool_registry, verbose=verbose, llm=llm
-        )
+        chat_message = self._send_message("📄 Previewing sample data...", record_history=False)
+        crew_factory = ToolExecutorCrews(tools=self.state.tool_registry, verbose=verbose, llm=llm)
         crew = crew_factory.preview_sample_data_crew()
         current_command = (
             f"Please preview the data in the data source '{S3_ANONYMOUS_SOURCE_NAME}'. "
@@ -263,9 +246,7 @@ class ChatFlow(Flow[ChatSessionState]):
     @router(or_("task_type_create_schema", "preview_successful"))
     def draft_schema(self):
         chat_message = self._send_message("Drafting schema...", record_history=False)
-        crew_factory = SchemaCreationCrews(
-            tools=self.state.tool_registry, verbose=verbose, llm=llm
-        )
+        crew_factory = SchemaCreationCrews(tools=self.state.tool_registry, verbose=verbose, llm=llm)
         crew = crew_factory.draft_schema_crew()
         output = crew.kickoff(
             inputs={
@@ -296,9 +277,7 @@ class ChatFlow(Flow[ChatSessionState]):
     @router("user_requested_changes")
     def edit_schema(self):
         chat_message = self._send_message("✏️ Editing schema...", record_history=False)
-        crew_factory = SchemaCreationCrews(
-            tools=self.state.tool_registry, verbose=verbose, llm=llm
-        )
+        crew_factory = SchemaCreationCrews(tools=self.state.tool_registry, verbose=verbose, llm=llm)
         crew = crew_factory.edit_schema_crew()
         output = crew.kickoff(
             inputs={
@@ -312,9 +291,7 @@ class ChatFlow(Flow[ChatSessionState]):
     @router("user_confirmed_schema")
     def create_schema(self):
         chat_message = self._send_message("🛠️ Creating schema...", record_history=False)
-        crew_factory = SchemaCreationCrews(
-            tools=self.state.tool_registry, verbose=verbose, llm=llm
-        )
+        crew_factory = SchemaCreationCrews(tools=self.state.tool_registry, verbose=verbose, llm=llm)
         crew = crew_factory.create_schema_crew()
         output = crew.kickoff(inputs={"final_schema": self.state.current_schema_draft})
         self._update_message(chat_message, output.raw)
@@ -336,12 +313,8 @@ class ChatFlow(Flow[ChatSessionState]):
     # ------------------------------ Load Data Workflow ------------------------------
     @router(or_("task_type_load_data", "schema_from_onboarding"))
     def draft_loading_job(self):
-        chat_message = self._send_message(
-            "🧾 Drafting loading config...", record_history=False
-        )
-        crew_factory = DataLoadingCrews(
-            tools=self.state.tool_registry, verbose=verbose, llm=llm
-        )
+        chat_message = self._send_message("🧾 Drafting loading config...", record_history=False)
+        crew_factory = DataLoadingCrews(tools=self.state.tool_registry, verbose=verbose, llm=llm)
         crew = crew_factory.draft_loading_job_crew()
         output = crew.kickoff(
             inputs={
@@ -370,12 +343,8 @@ class ChatFlow(Flow[ChatSessionState]):
 
     @router("user_requested_job_changes")
     def edit_loading_job(self):
-        chat_message = self._send_message(
-            "✏️ Editing loading config...", record_history=False
-        )
-        crew_factory = DataLoadingCrews(
-            tools=self.state.tool_registry, verbose=verbose, llm=llm
-        )
+        chat_message = self._send_message("✏️ Editing loading config...", record_history=False)
+        crew_factory = DataLoadingCrews(tools=self.state.tool_registry, verbose=verbose, llm=llm)
         crew = crew_factory.edit_loading_job_crew()
         output = crew.kickoff(
             inputs={
@@ -389,9 +358,7 @@ class ChatFlow(Flow[ChatSessionState]):
     @router("user_confirmed_job")
     def run_loading_job(self):
         chat_message = self._send_message("📥 Loading data...", record_history=False)
-        crew_factory = DataLoadingCrews(
-            tools=self.state.tool_registry, verbose=verbose, llm=llm
-        )
+        crew_factory = DataLoadingCrews(tools=self.state.tool_registry, verbose=verbose, llm=llm)
         crew = crew_factory.run_loading_job_crew()
         output = crew.kickoff(
             inputs={"final_loading_job_config": self.state.current_loading_job_draft}
@@ -403,11 +370,7 @@ class ChatFlow(Flow[ChatSessionState]):
 
     @router("on_job_completed")
     def check_load_data_origin(self):
-        return (
-            "load_from_onboarding"
-            if self.state.is_from_onboarding
-            else "load_standalone"
-        )
+        return "load_from_onboarding" if self.state.is_from_onboarding else "load_standalone"
 
     # ------------------------------ Utility Functions ------------------------------
     def _wait_for_user_input(self):
@@ -416,18 +379,14 @@ class ChatFlow(Flow[ChatSessionState]):
         return user_input
 
     def _send_message(self, message: str, record_history: bool = True) -> ChatMessage:
-        chat_message = chat_session.chat_ui.send(
-            message, user="Assistant", respond=False
-        )
+        chat_message = chat_session.chat_ui.send(message, user="Assistant", respond=False)
         if chat_message is None:
             raise RuntimeError("Failed to send chat message.")
         if record_history:
             self.state.conversation_history.append(f"Assistant: {message}")
         return chat_message
 
-    def _update_message(
-        self, chat_message: ChatMessage, message: str, record_history: bool = True
-    ):
+    def _update_message(self, chat_message: ChatMessage, message: str, record_history: bool = True):
         chat_message.update(message)
         if record_history:
             self.state.conversation_history.append(f"Assistant: {message}")
