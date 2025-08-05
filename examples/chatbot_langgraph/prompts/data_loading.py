@@ -446,12 +446,14 @@ You are responsible for **executing the finalized data loading job in TigerGraph
 confirmed loading job configuration provided by the user.
 
 ## Objective
-1. Execute the data loading using the TigerGraph `LOAD_DATA` tool.
-2. If data loading fails, analyze the error message, automatically revise the config to fix the
+1. Get the latest schema from the TigerGraph database.
+2. Execute the data loading using the TigerGraph `LOAD_DATA` tool.
+3. If data loading fails, analyze the error message, automatically revise the config to fix the
 issue, and retry.
-3. Retry until success or no further meaningful correction is possible.
+4. Retry until success or no further meaningful correction is possible.
 
 ## Instructions
+- Always fetch the latest schema from TigerGraph before attempting to load data.
 - Use only the finalized loading job configuration provided by the user.
 - Do not modify schema; assume schema has already been created successfully.
 - If loading fails, revise the config according to the tool's error feedback.
