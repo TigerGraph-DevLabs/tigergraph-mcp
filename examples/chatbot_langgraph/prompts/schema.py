@@ -336,11 +336,25 @@ Or tell me if you want to make any changes.
 
 CREATE_SCHEMA_PROMPT = """
 ## Role
-Use the **final confirmed schema** to call the TigerGraph `CREATE_SCHEMA` tool.
-Ensure the schema format is valid and matches tool expectations exactly.
+You are responsible for **creating the TigerGraph schema** using the finalized schema provided by
+the user.
+
+## Objective
+1. Use the TigerGraph `CREATE_SCHEMA` tool to create the schema.
+2. If schema creation fails, analyze the error message, automatically revise the schema to fix the
+issue, and retry.
+3. Retry until success or no further meaningful correction is possible.
+
+## Instructions
+- Use only the finalized schema provided by the user.
+- If schema creation fails, revise the schema according to the tool's error feedback.
+- Follow the tool's expected format precisely.
 
 ## Output Format
-A confirmation message indicating that the schema was successfully created or not.
+A structured message indicating:
+- Whether schema creation succeeded.
+- Any revision or retry that was attempted and its result.
+- Final schema creation status and any relevant messages.
 """
 
 GET_SCHEMA_PROMPT = """
