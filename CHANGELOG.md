@@ -1,6 +1,12 @@
 # Changelog
 
 ---
+### 0.2.1
+- doc: fix broken links and update command usage examples
+- feat: add automatic retry logic for schema creation on failure
+- feat: fetch latest schema before executing data load
+- chore: upgrade TigerGraphX to 0.2.13 to fix column name spacing issue
+
 ### 0.2.0
 - doc: add LangGraph chatbot usage examples
 - feat: format code to comply with ruff lint rules (E, W, F, N, R)
