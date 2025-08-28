@@ -18,9 +18,7 @@ from tigergraph_mcp.tools import TigerGraphToolName
 class LoadDataToolInput(BaseModel):
     """Input schema for loading data into a TigerGraph graph."""
 
-    graph_name: str = Field(
-        ..., description="The name of the graph where data will be loaded."
-    )
+    graph_name: str = Field(..., description="The name of the graph where data will be loaded.")
     loading_job_config: Dict = Field(
         ...,
         description=("The loading job configuration used to load data into the graph."),
@@ -86,6 +84,40 @@ loading_job_config = {
                 }
             ],
         },
+        {
+            "file_alias": "f_purchase",
+            "file_path": "/data/files/purchase_data.csv",
+            "csv_parsing_options": {
+                "separator": ",",
+                "header": False,   # No header row in the file
+                "quote": "DOUBLE",
+            },
+            "node_mappings": [
+                {
+                    "target_name": "Person",
+                    "attribute_column_mappings": {
+                        "person_id": 0,     # First column
+                    },
+                },
+                {
+                    "target_name": "Product",
+                    "attribute_column_mappings": {
+                        "product_id": 1,    # Second column
+                    },
+                }
+            ],
+            "edge_mappings": [
+                {
+                    "target_name": "purchase",
+                    "source_node_column": 0,   # Person.person_id
+                    "target_node_column": 1,   # Product.product_id
+                    "attribute_column_mappings": {
+                        "quantity": 2,
+                        "total_price": 3,
+                    },
+                }
+            ],
+        },
     ],
 }
 ````
@@ -99,6 +131,10 @@ Notes:
 - The "quote" style can be either "DOUBLE" or "SINGLE", with "DOUBLE" being the most common.
 - In `"attribute_column_mappings"`, the **key** is the attribute name in the **graph schema**,
   and the **value** is the corresponding column name in the **data file**.
+
+  - When `"header": True`, values should match the column names from the file header.
+  - When `"header": False`, values should be integer indices (0-based), where `0` means the first
+    column.
 """,
         inputSchema=LoadDataToolInput.model_json_schema(),
     )
