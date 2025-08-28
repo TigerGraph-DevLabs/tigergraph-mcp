@@ -1,6 +1,9 @@
 # Changelog
 
 ---
+### 0.2.2
+- feat: add support for numeric column indices in load data tool
+
 ### 0.2.1
 - doc: fix broken links and update command usage examples
 - feat: add automatic retry logic for schema creation on failure
