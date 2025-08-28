@@ -8,27 +8,27 @@ from tests.integration.base_graph_fixture import BaseFixture
 from tigergraph_mcp import TigerGraphToolName
 
 
-# @pytest.mark.skip(
-#     reason="""
-# Skipped by default. To enable this test, you must manually place the following files in the
-# TigerGraph server:
-#
-# 1. /home/tigergraph/data/person_data.csv
-# Contents:
-# name,age
-# John,11
-#
-# 2. /home/tigergraph/data/friendship_data.csv
-# Contents:
-# source,target,closeness
-# John,John,11
-#
-# 3. /home/tigergraph/data/purchase_data.csv
-# Contents:
-# John,Product_1,1,100
-# Lily,Product_2,2,500
-# """
-# )
+@pytest.mark.skip(
+    reason="""
+Skipped by default. To enable this test, you must manually place the following files in the
+TigerGraph server:
+
+1. /home/tigergraph/data/person_data.csv
+Contents:
+name,age
+John,11
+
+2. /home/tigergraph/data/friendship_data.csv
+Contents:
+source,target,closeness
+John,John,11
+
+3. /home/tigergraph/data/purchase_data.csv
+Contents:
+John,Product_1,1,100
+Lily,Product_2,2,500
+"""
+)
 class TestDataTools(BaseFixture):
     def setup_graph(self):
         """Set up the graph shared across all tests."""
