@@ -40,6 +40,7 @@ from .graph.query import (
     install_query_tool,
     drop_query_tool,
     run_query_tool,
+    is_query_installed_tool,
     get_nodes_tool,
     get_neighbors_tool,
     breadth_first_search_tool,
@@ -94,6 +95,7 @@ def get_all_tools() -> list[Tool]:
         + install_query_tool.tools
         + drop_query_tool.tools
         + run_query_tool.tools
+        + is_query_installed_tool.tools
         + get_nodes_tool.tools
         + get_neighbors_tool.tools
         + breadth_first_search_tool.tools
