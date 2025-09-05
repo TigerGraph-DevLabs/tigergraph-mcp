@@ -1,6 +1,9 @@
 # Changelog
 
 ---
+### 0.2.3
+- feat: add MCP tool to check if a query is installed on a TigerGraph graph
+
 ### 0.2.2
 - feat: add support for numeric column indices in load data tool
 

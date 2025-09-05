@@ -36,6 +36,7 @@ from .tools import (
     install_query,
     drop_query,
     run_query,
+    is_query_installed,
     get_nodes,
     get_neighbors,
     breadth_first_search,
@@ -119,6 +120,8 @@ async def serve() -> None:
                     return await drop_query(**arguments)
                 case TigerGraphToolName.RUN_QUERY:
                     return await run_query(**arguments)
+                case TigerGraphToolName.IS_QUERY_INSTALLED:
+                    return await is_query_installed(**arguments)
                 case TigerGraphToolName.GET_NODES:
                     return await get_nodes(**arguments)
                 case TigerGraphToolName.GET_NEIGHBORS:

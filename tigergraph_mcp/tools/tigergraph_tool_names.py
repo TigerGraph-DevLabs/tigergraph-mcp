@@ -32,6 +32,7 @@ class TigerGraphToolName(str, Enum):
     INSTALL_QUERY = "graph__install_query"
     DROP_QUERY = "graph__drop_query"
     RUN_QUERY = "graph__run_query"
+    IS_QUERY_INSTALLED = "graph__is_query_installed"
     GET_NODES = "graph__get_nodes"
     GET_NEIGHBORS = "graph__get_neighbors"
     BREADTH_FIRST_SEARCH = "graph__breadth_first_search"

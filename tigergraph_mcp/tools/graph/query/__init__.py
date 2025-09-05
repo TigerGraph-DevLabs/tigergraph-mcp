@@ -9,6 +9,7 @@ from .create_query_tool import create_query
 from .install_query_tool import install_query
 from .drop_query_tool import drop_query
 from .run_query_tool import run_query
+from .is_query_installed_tool import is_query_installed
 from .get_nodes_tool import get_nodes
 from .get_neighbors_tool import get_neighbors
 from .breadth_first_search_tool import breadth_first_search
@@ -18,6 +19,7 @@ __all__ = [
     "install_query",
     "drop_query",
     "run_query",
+    "is_query_installed",
     "get_nodes",
     "get_neighbors",
     "breadth_first_search",
