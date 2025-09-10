@@ -9,8 +9,8 @@ readme = "README.md"
 requires-python = ">=3.10,<3.13"
 
 dependencies = [
-    "mcp (>=1.9.2,<2.0.0)",
-    "tigergraphx (>=0.2.14,<0.3.0)",
+    "mcp (>=1.10.0,<2.0.0)",
+    "tigergraphx (>=0.2.15,<0.3.0)",
 ]
 
 [tool.poetry.group.dev.dependencies]
@@ -27,6 +27,18 @@ panel = "^1.6.2"
 crewai-tools = {extras = ["mcp"], version = "^0.46.0"}
 langgraph = "^0.4.8"
 langchain-mcp-adapters = "^0.1.7"
+
+# Security patches
+langchain-community = "^0.3.27"
+h11 = "^0.16.0"
+pillow = "^11.3.0"
+tornado = "^6.5"
+h2 = "^4.3.0"
+uv = "^0.8.6"
+starlette = "^0.47.2"
+urllib3 = "^2.5.0"
+requests = "^2.32.4"
+aiohttp = "^3.12.14"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
