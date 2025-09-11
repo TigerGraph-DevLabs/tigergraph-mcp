@@ -1,6 +1,9 @@
 # Changelog
 
 ---
+### 0.2.4
+- chore: upgrade dependencies to patched versions to fix security vulnerabilities
+
 ### 0.2.3
 - feat: add MCP tool to check if a query is installed on a TigerGraph graph
 
